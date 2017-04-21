@@ -7,15 +7,6 @@ geometry: margin=2cm
 ---
 \newpage
 
-                  ___                      _
-                 |  _`\                   ( )
-                 | (_) )   __     _ _    _| |  ___ ___     __
-                 | ,  /  /'__`\ /'_` ) /'_` |/' _ ` _ `\ /'__`\
-                 | |\ \ (  ___/( (_| |( (_| || ( ) ( ) |(  ___/
-                 (_) (_)`\____)`\__,_)`\__,_)(_) (_) (_)`\____)
-
-                        @author: Meziane AITE
-
 ################################################################################
 
 ##Description
@@ -36,7 +27,32 @@ pip install padmet
 or
 
 make install (from git/padmet-tools)
-	
+
+
+## Architecture
+
+<pre>
+    .
+    ├── LICENSE
+    ├── Makefile
+    ├── MANIFEST.in
+    ├── README.md
+    ├── setup.cfg
+    ├── setup.py
+    └──  padmet
+        ├── __init__.py
+        ├── aspGenerator.py
+        ├── node.py
+        ├── padmetRef.py
+        ├── padmetSpec.py
+        ├── policy.py
+        ├── README.md
+        ├── relation.py
+        ├── sbmlGenerator.py
+        ├── sbmlPlugin.py
+        └── wikiGenerator.py
+</pre>
+
 ##Documentation
 node.py:
 	Description:
