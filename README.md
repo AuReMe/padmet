@@ -9,7 +9,7 @@ geometry: margin=2cm
 
 ################################################################################
 
-##Description
+## Description
 @padmet Version: 2.4
 author: meziane aite (meziane.aite@inria.fr)
 Python 2.7
@@ -22,16 +22,17 @@ heterogeneous knowledge and data sources, including the information reported by 
 
 ## Installation
 
-pip install padmet
+From pip:
+	pip install padmet
 
-or
-
-make install (from git/padmet-tools)
+From git:
+	git clone https://gitlab.inria.fr/maite/padmet.git
+	make install (from git/padmet)
 
 
 ## Architecture
 
-<pre>
+
     .
     ├── LICENSE
     ├── Makefile
@@ -51,9 +52,8 @@ make install (from git/padmet-tools)
         ├── sbmlGenerator.py
         ├── sbmlPlugin.py
         └── wikiGenerator.py
-</pre>
 
-##Documentation
+## Documentation
 node.py:
 	Description:
 	Define the class Node used in padmet.

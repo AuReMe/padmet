@@ -45,10 +45,10 @@ class Relation:
         if len(self.misc) != 0:
             for k,n in self.misc.iteritems():
                 if len(n) == 1:
-                    line += sep.join([str(k),str(n[0])])
+                    line += sep + sep.join([str(k),str(n[0])])
                 else:
                     for i in range(len(n)):
-                        line += sep.join([str(k),str(n[i])])
+                        line += sep + sep.join([str(k),str(n[i])])
         return line
     
     def compare(self,relation):
