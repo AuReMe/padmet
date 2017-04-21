@@ -1,0 +1,124 @@
+Metadata-Version: 1.1
+Name: padmet
+Version: 2.4.2
+Summary: Test padmet package
+Home-page: http://gitlab.inria.fr/DYLISS/padmet
+Author: Meziane AITE
+Author-email: meziane.aite@inria.fr
+License: UNKNOWN
+Description: ---
+        title:  Padmet-tools - Documentation
+        author: Meziane AITE
+        date: 2017-04-20
+        version: 2.4
+        geometry: margin=2cm
+        ---
+        \newpage
+        
+                          ___                      _
+                         |  _`\                   ( )
+                         | (_) )   __     _ _    _| |  ___ ___     __
+                         | ,  /  /'__`\ /'_` ) /'_` |/' _ ` _ `\ /'__`\
+                         | |\ \ (  ___/( (_| |( (_| || ( ) ( ) |(  ___/
+                         (_) (_)`\____)`\__,_)`\__,_)(_) (_) (_)`\____)
+        
+                                @author: Meziane AITE
+        
+        ################################################################################
+        
+        ## Installation
+        
+        From git repository:
+        
+        	cd ~/programs
+        	git clone https://gitlab.inria.fr/maite/padmet-tools.git
+        
+        ## Architecture
+        
+        	.
+        	├── LICENSE
+        	├── Makefile
+        	├── MANIFEST.in
+        	├── README.md
+        	├── setup.cfg
+        	├── setup.py
+        	├── padmet
+        	│	├── __init__.py
+        	│	├── aspGenerator.py
+        	│	├── node.py
+        	│	├── padmetRef.py
+        	│	├── padmetSpec.py
+        	│	├── policy.py
+        	│	├── README.md
+        	│	├── relation.py
+        	│	├── sbmlGenerator.py
+        	│	├── sbmlPlugin.py
+        	│	└── wikiGenerator.py
+        	└── padmet-utils
+        		├── README.md
+        		├── connection
+        		│	├── __init__.py
+        		│	├── biggAPI_to_padmet.py
+        		│	├── biggTSV_to_padmet.py
+        		│	├── compounds_to_sbml.py
+        		│	├── enhanced_meneco_output.py
+        		│	├── enhanced_sgs_output.py
+        		│	├── extract_rxn_with_gene_assoc.py
+        		│	├── gbk_to_faa.py
+        		│	├── gene_to_targets.py
+        		│	├── padmet_to_askomic.py
+        		│	├── padmet_to_asp.py
+        		│	├── padmet_to_sbml.py
+        		│	├── pre_pantograph.py
+        		│	├── reactions_to_sbml.py
+        		│	├── sbml_to_gene.py
+        		│	├── sbml_to_padmet.py
+        		│	└── wikipage_creation.py
+        		├── exploration
+        		│	├── __ini__.py
+        		│	├── change_biomass_cobra.py
+        		│	├── change_biomass_cobra_allspecies.py
+        		│	├── change_biomass_cobra_givencpd.py
+        		│	├── check_db.py
+        		│	├── compare_sbml_padmet.py
+        		│	├── extract_pwy_sources.py
+        		│	├── extract_pwy_sources_with_filter.py
+        		│	├── fba_test.py
+        		│	├── get_pwy_from_rxn.py
+        		│	├── report_network.py
+        		│	└── visu_path.py
+        		├── management
+        		│	├── __init__.py
+        		│	├── add_seeds_rxn.py
+        		│	├── change_compart.py
+        		│	├── manual_curation.py
+        		│	├── rxn_creator.py
+        		│	└── updata_padmetSpec.py
+        		└── wiki-docker
+        			├── defautl
+        			├── docker-compose
+        			├── Dockerfile
+        			├── LocalSettings.php
+        			├── Makefile
+        			├── README
+        			├── supervisord.conf
+        			└── wikiManager
+        				├── configuration.php
+        				├── deletaPage.php
+        				├── getPage.php
+        				├── globals.php
+        				├── mediaWiki_README.txt
+        				├── sendPage.php
+        				├── sendPage_dir.php
+        				├── Wikimate.php
+        				└── vendor
+        
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved
+Classifier: Natural Language :: French
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
