@@ -6,8 +6,8 @@ Description:
 Contains all necessary functions to generate wikiPages from a padmet file and update 
 a wiki online. Require WikiManager module (with wikiMate,Vendor)
 """
-from lib.padmetRef import PadmetRef
-from lib.padmetSpec import PadmetSpec
+from padmetRef import PadmetRef
+from padmetSpec import PadmetSpec
 from multiprocessing import Pool, cpu_count
 import os
 import shutil
