@@ -134,7 +134,7 @@ def convert_from_coded_id(coded):
     @rtype: tuple
     """
     #replace DASH from very old sbmls
-    coded = coded.replace('_DASH_', '_')
+    coded = coded.replace('_DASH_', '__')
     #an original id starting with int will start with '_' in sbml
     if coded.startswith("_"):
         coded = coded[1:]
