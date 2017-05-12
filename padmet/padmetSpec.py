@@ -289,112 +289,112 @@ class PadmetSpec:
             for reaction in listOfReactions:
                 dicOfAssocReactions[reaction.getId()] = sbmlPlugin.convert_from_coded_id(reaction.getId())[0]
 
-            if verbose: print("start with reactions")
-            #dictionnary used to stock association gene:reaction
-            dicOfGeneReaction = {}
-            count = 0
-            for (idOrigin, idRef) in dicOfAssocReactions.iteritems():
-                count += 1
-                #recovere the reaction element from sbml
-                reactionSBML = listOfReactions.getElementBySId(idOrigin)
-                nextStep = False
-                if verbose:
-                    print("%s/%s" % (count, nbReactions))
-                    print("idOrigin: %s \t idRef: %s" % (idOrigin, idRef))
-                try:
-                    #check if reaction already in the padmet
+        if verbose: print("start with reactions")
+        #dictionnary used to stock association gene:reaction
+        dicOfGeneReaction = {}
+        count = 0
+        for (idOrigin, idRef) in dicOfAssocReactions.iteritems():
+            count += 1
+            #recovere the reaction element from sbml
+            reactionSBML = listOfReactions.getElementBySId(idOrigin)
+            nextStep = False
+            if verbose:
+                print("%s/%s" % (count, nbReactions))
+                print("idOrigin: %s \t idRef: %s" % (idOrigin, idRef))
+            try:
+                #check if reaction already in the padmet
+                self.dicOfNode[idRef]
+                nextStep = True
+            except KeyError:
+                if padmetRef is not None and idRef in padmetRef.dicOfNode.keys():
+                    #copy the node reaction and dependency relations/nodes cf copyNode()
+                    if verbose: print("Try to copy node from padmetRef")
+                    self.copyNode(padmetRef, idRef)
                     self.dicOfNode[idRef]
                     nextStep = True
-                except KeyError:
-                    if padmetRef is not None and idRef in padmetRef.dicOfNode.keys():
-                        #copy the node reaction and dependency relations/nodes cf copyNode()
-                        if verbose: print("Try to copy node from padmetRef")
-                        self.copyNode(padmetRef, idRef)
-                        self.dicOfNode[idRef]
-                        nextStep = True
-                    elif force or padmetRef is None:
-                        #force will allow to create not found reactions
-                        cname = reactionSBML.getName()
-                        if verbose: print("creating new reaction: %s" %idRef)
-                        if reactionSBML.getReversible():
-                            reaction_dir = "REVERSIBLE"
-                        else:
-                            reaction_dir = "LEFT-TO-RIGHT"
-                        if len(cname) != 0:
-                            reaction_node = Node("reaction", idRef, {"DIRECTION":[reaction_dir], "COMMON_NAME":[cname]})
-                        else:
-                            reaction_node = Node("reaction", idRef, {"DIRECTION":[reaction_dir]})
-                        self.dicOfNode[idRef] = reaction_node
-                        reactants = reactionSBML.getListOfReactants()
-                        for reactant in reactants: #convert ids
-                            reactant_id, _type, reactant_compart = sbmlPlugin.convert_from_coded_id(reactant.getSpecies())
-                            reactant_stoich = reactant.getStoichiometry()
-                            if reactant_id not in self.dicOfNode.keys():
-                                if padmetRef is not None and reactant_id in padmetRef.dicOfNode.keys():
-                                    self._copyNodeExtend(padmetRef, reactant_id)
-                                else:
-                                    if verbose: print("creating new compound: %s" %reactant_id)
-                                    reactant_cname = listOfSpecies.getElementBySId(reactant.getSpecies()).getName()
-                                    if len(reactant_cname) != 0:
-                                        reactant_node = Node("compound", reactant_id, {"COMMON_NAME":[reactant_cname]})
-                                    else:
-                                        reactant_node = Node("compound", reactant_id)
-                                    self.dicOfNode[reactant_id] = reactant_node
-                            if reactant_compart is None:
-                                if verbose: print("%s has no compart, set to 'c'" %reactant)
-                                reactant_compart = "c"
-                            consumes_rlt = Relation(idRef,"consumes",reactant_id, {"STOICHIOMETRY":[reactant_stoich],"COMPARTMENT":[reactant_compart]})
-                            self._addRelation(consumes_rlt)
-                        products = reactionSBML.getListOfProducts()
-                        for product in products: #convert ids
-                            product_id, _type, product_compart = sbmlPlugin.convert_from_coded_id(product.getSpecies())
-                            product_stoich = product.getStoichiometry()
-                            if product_id not in self.dicOfNode.keys():
-                                if padmetRef is not None and product_id in padmetRef.dicOfNode.keys():
-                                    self._copyNodeExtend(padmetRef, product_id)
-                                else:
-                                    print("creating new compound: %s" %product_id)
-                                    product_cname = listOfSpecies.getElementBySId(product.getSpecies()).getName()
-                                    if len(product_cname) != 0:
-                                        product_node = Node("compound", product_id, {"COMMON_NAME":[product_cname]})
-                                    else:
-                                        product_node = Node("compound", product_id)
-                                    self.dicOfNode[product_id] = product_node
-                            if product_compart is None:
-                                if verbose: print("%s has no compart, set to 'c'" %product)
-                                product_compart = "c"
-                            produces_rlt = Relation(idRef, "produces", product_id, {"STOICHIOMETRY":[product_stoich],"COMPARTMENT":[reactant_compart]})
-                            self._addRelation(produces_rlt)
-                        nextStep = True
+                elif force or padmetRef is None:
+                    #force will allow to create not found reactions
+                    cname = reactionSBML.getName()
+                    if verbose: print("creating new reaction: %s" %idRef)
+                    if reactionSBML.getReversible():
+                        reaction_dir = "REVERSIBLE"
                     else:
-                            print("Error: idRef %s not found" %idRef)
-                if nextStep:
-                    #Reaction was found in current network
-                    #Extracting all data to create the supplementary data node
-                    #Using sbmlPlugin to recovere the formula from the sbml
-                    formula = sbmlPlugin.extractFormula(reactionSBML)
-                    #Using sbmlPlugin to recover the note section from the sbml
-                    notes = sbmlPlugin.parseNotes(reactionSBML)
-                    #data will be stored in a suppData node
-                    data = {"ORIGIN_FILE":[file_name],"ORIGIN_ID":[str(idOrigin)],
-                    "NAME":[reactionSBML.getName()],"REVERSIBLE":[str(reactionSBML.getReversible())],
-                    "FORMULA":[formula]}
-                    #add notes to data                
-                    data.update(notes)
-                    #create the node suppData and the relation has_suppData
-                    suppData = self.createNode("suppData",data,[[idRef,"has_suppData","_self"]])
-                    if verbose: print("Creating suppData %s" %suppData[0])
-                                    
-                    #parses gene_association and create gene node or update already existing genes
-                    if "GENE_ASSOCIATION" in notes.keys():
-                        #Using sbmlPlugin to recover all genes associated to the reaction
-                        listOfGenes = sbmlPlugin.parseGeneAssoc(notes["GENE_ASSOCIATION"][0])
-                        if len(listOfGenes) != 0:
-                            for gene in listOfGenes:
-                                try:
-                                    dicOfGeneReaction[gene].add(idRef)
-                                except KeyError:
-                                    dicOfGeneReaction[gene] = set([idRef])
+                        reaction_dir = "LEFT-TO-RIGHT"
+                    if len(cname) != 0:
+                        reaction_node = Node("reaction", idRef, {"DIRECTION":[reaction_dir], "COMMON_NAME":[cname]})
+                    else:
+                        reaction_node = Node("reaction", idRef, {"DIRECTION":[reaction_dir]})
+                    self.dicOfNode[idRef] = reaction_node
+                    reactants = reactionSBML.getListOfReactants()
+                    for reactant in reactants: #convert ids
+                        reactant_id, _type, reactant_compart = sbmlPlugin.convert_from_coded_id(reactant.getSpecies())
+                        reactant_stoich = reactant.getStoichiometry()
+                        if reactant_id not in self.dicOfNode.keys():
+                            if padmetRef is not None and reactant_id in padmetRef.dicOfNode.keys():
+                                self._copyNodeExtend(padmetRef, reactant_id)
+                            else:
+                                if verbose: print("creating new compound: %s" %reactant_id)
+                                reactant_cname = listOfSpecies.getElementBySId(reactant.getSpecies()).getName()
+                                if len(reactant_cname) != 0:
+                                    reactant_node = Node("compound", reactant_id, {"COMMON_NAME":[reactant_cname]})
+                                else:
+                                    reactant_node = Node("compound", reactant_id)
+                                self.dicOfNode[reactant_id] = reactant_node
+                        if reactant_compart is None:
+                            if verbose: print("%s has no compart, set to 'c'" %reactant)
+                            reactant_compart = "c"
+                        consumes_rlt = Relation(idRef,"consumes",reactant_id, {"STOICHIOMETRY":[reactant_stoich],"COMPARTMENT":[reactant_compart]})
+                        self._addRelation(consumes_rlt)
+                    products = reactionSBML.getListOfProducts()
+                    for product in products: #convert ids
+                        product_id, _type, product_compart = sbmlPlugin.convert_from_coded_id(product.getSpecies())
+                        product_stoich = product.getStoichiometry()
+                        if product_id not in self.dicOfNode.keys():
+                            if padmetRef is not None and product_id in padmetRef.dicOfNode.keys():
+                                self._copyNodeExtend(padmetRef, product_id)
+                            else:
+                                print("creating new compound: %s" %product_id)
+                                product_cname = listOfSpecies.getElementBySId(product.getSpecies()).getName()
+                                if len(product_cname) != 0:
+                                    product_node = Node("compound", product_id, {"COMMON_NAME":[product_cname]})
+                                else:
+                                    product_node = Node("compound", product_id)
+                                self.dicOfNode[product_id] = product_node
+                        if product_compart is None:
+                            if verbose: print("%s has no compart, set to 'c'" %product)
+                            product_compart = "c"
+                        produces_rlt = Relation(idRef, "produces", product_id, {"STOICHIOMETRY":[product_stoich],"COMPARTMENT":[product_compart]})
+                        self._addRelation(produces_rlt)
+                    nextStep = True
+                else:
+                        print("Error: idRef %s not found" %idRef)
+            if nextStep:
+                #Reaction was found in current network
+                #Extracting all data to create the supplementary data node
+                #Using sbmlPlugin to recovere the formula from the sbml
+                formula = sbmlPlugin.extractFormula(reactionSBML)
+                #Using sbmlPlugin to recover the note section from the sbml
+                notes = sbmlPlugin.parseNotes(reactionSBML)
+                #data will be stored in a suppData node
+                data = {"ORIGIN_FILE":[file_name],"ORIGIN_ID":[str(idOrigin)],
+                "NAME":[reactionSBML.getName()],"REVERSIBLE":[str(reactionSBML.getReversible())],
+                "FORMULA":[formula]}
+                #add notes to data                
+                data.update(notes)
+                #create the node suppData and the relation has_suppData
+                suppData = self.createNode("suppData",data,[[idRef,"has_suppData","_self"]])
+                if verbose: print("Creating suppData %s" %suppData[0])
+                                
+                #parses gene_association and create gene node or update already existing genes
+                if "GENE_ASSOCIATION" in notes.keys():
+                    #Using sbmlPlugin to recover all genes associated to the reaction
+                    listOfGenes = sbmlPlugin.parseGeneAssoc(notes["GENE_ASSOCIATION"][0])
+                    if len(listOfGenes) != 0:
+                        for gene in listOfGenes:
+                            try:
+                                dicOfGeneReaction[gene].add(idRef)
+                            except KeyError:
+                                dicOfGeneReaction[gene] = set([idRef])
         if verbose: print("Creates gene's nodes:")
         count = 0
         nbGenes = len(dicOfGeneReaction.keys())
