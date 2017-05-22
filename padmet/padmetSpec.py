@@ -276,13 +276,16 @@ class PadmetSpec:
                 all_assoc = (line.split("\t") for line in f.read().splitlines()
                 if not line.startswith("#"))
                 for id_origin, id_ref in all_assoc:
-                    nodeType = padmetRef.dicOfNode[id_ref].type
-                    #in case of reaction
-                    if nodeType == "reaction":
-                        dicOfAssocReactions.update({id_origin:id_ref})
-                    #in case of species
+                    if id_ref in padmetRef.dicOfNode.keys():
+                        nodeType = padmetRef.dicOfNode[id_ref].type
+                        #in case of reaction
+                        if nodeType == "reaction":
+                            dicOfAssocReactions.update({id_origin:id_ref})
+                        #in case of species
+                        else:
+                            dicOfAssocSpecies.update({id_origin:id_ref})
                     else:
-                        dicOfAssocSpecies.update({id_origin:id_ref})
+                        print("id ref %s from dict not found in padmetRef" %id_ref)
         else:
             for species in listOfSpecies:
                 dicOfAssocSpecies[species.getId()] = sbmlPlugin.convert_from_coded_id(species.getId())[0]
@@ -299,7 +302,7 @@ class PadmetSpec:
             reactionSBML = listOfReactions.getElementBySId(idOrigin)
             nextStep = False
             if verbose:
-                print("%s/%s" % (count, nbReactions))
+                print("%s/%s" % (count, len(dicOfAssocReactions.keys())))
                 print("idOrigin: %s \t idRef: %s" % (idOrigin, idRef))
             try:
                 #check if reaction already in the padmet
@@ -327,7 +330,11 @@ class PadmetSpec:
                     self.dicOfNode[idRef] = reaction_node
                     reactants = reactionSBML.getListOfReactants()
                     for reactant in reactants: #convert ids
-                        reactant_id, _type, reactant_compart = sbmlPlugin.convert_from_coded_id(reactant.getSpecies())
+                        try:
+                            reactant_id = dicOfAssocSpecies[reactant.getSpecies()]
+                        except KeyError:
+                            reactant_id = sbmlPlugin.convert_from_coded_id(reactant.getSpecies().getId())[0]
+                        reactant_compart = model.getElementBySId(reactant.getSpecies()).getCompartment()
                         reactant_stoich = reactant.getStoichiometry()
                         if reactant_id not in self.dicOfNode.keys():
                             if padmetRef is not None and reactant_id in padmetRef.dicOfNode.keys():
@@ -335,7 +342,7 @@ class PadmetSpec:
                             else:
                                 if verbose: print("creating new compound: %s" %reactant_id)
                                 reactant_cname = listOfSpecies.getElementBySId(reactant.getSpecies()).getName()
-                                if len(reactant_cname) != 0:
+                                if reactant_cname:
                                     reactant_node = Node("compound", reactant_id, {"COMMON_NAME":[reactant_cname]})
                                 else:
                                     reactant_node = Node("compound", reactant_id)
@@ -347,7 +354,11 @@ class PadmetSpec:
                         self._addRelation(consumes_rlt)
                     products = reactionSBML.getListOfProducts()
                     for product in products: #convert ids
-                        product_id, _type, product_compart = sbmlPlugin.convert_from_coded_id(product.getSpecies())
+                        try:
+                            product_id = dicOfAssocSpecies[product.getSpecies()]
+                        except KeyError:
+                            product_id = sbmlPlugin.convert_from_coded_id(product.getSpecies().getId())[0]
+                        product_compart = model.getElementBySId(product.getSpecies()).getCompartment()
                         product_stoich = product.getStoichiometry()
                         if product_id not in self.dicOfNode.keys():
                             if padmetRef is not None and product_id in padmetRef.dicOfNode.keys():
@@ -355,7 +366,7 @@ class PadmetSpec:
                             else:
                                 print("creating new compound: %s" %product_id)
                                 product_cname = listOfSpecies.getElementBySId(product.getSpecies()).getName()
-                                if len(product_cname) != 0:
+                                if product_cname:
                                     product_node = Node("compound", product_id, {"COMMON_NAME":[product_cname]})
                                 else:
                                     product_node = Node("compound", product_id)
@@ -368,33 +379,33 @@ class PadmetSpec:
                     nextStep = True
                 else:
                         print("Error: idRef %s not found" %idRef)
-            if nextStep:
-                #Reaction was found in current network
-                #Extracting all data to create the supplementary data node
-                #Using sbmlPlugin to recovere the formula from the sbml
-                formula = sbmlPlugin.extractFormula(reactionSBML)
-                #Using sbmlPlugin to recover the note section from the sbml
-                notes = sbmlPlugin.parseNotes(reactionSBML)
-                #data will be stored in a suppData node
-                data = {"ORIGIN_FILE":[file_name],"ORIGIN_ID":[str(idOrigin)],
-                "NAME":[reactionSBML.getName()],"REVERSIBLE":[str(reactionSBML.getReversible())],
-                "FORMULA":[formula]}
-                #add notes to data                
-                data.update(notes)
-                #create the node suppData and the relation has_suppData
-                suppData = self.createNode("suppData",data,[[idRef,"has_suppData","_self"]])
-                if verbose: print("Creating suppData %s" %suppData[0])
-                                
-                #parses gene_association and create gene node or update already existing genes
-                if "GENE_ASSOCIATION" in notes.keys():
-                    #Using sbmlPlugin to recover all genes associated to the reaction
-                    listOfGenes = sbmlPlugin.parseGeneAssoc(notes["GENE_ASSOCIATION"][0])
-                    if len(listOfGenes) != 0:
-                        for gene in listOfGenes:
-                            try:
-                                dicOfGeneReaction[gene].add(idRef)
-                            except KeyError:
-                                dicOfGeneReaction[gene] = set([idRef])
+                if nextStep:
+                    #Reaction was found in current network
+                    #Extracting all data to create the supplementary data node
+                    #Using sbmlPlugin to recovere the formula from the sbml
+                    formula = sbmlPlugin.extractFormula(reactionSBML)
+                    #Using sbmlPlugin to recover the note section from the sbml
+                    notes = sbmlPlugin.parseNotes(reactionSBML)
+                    #data will be stored in a suppData node
+                    data = {"ORIGIN_FILE":[file_name],"ORIGIN_ID":[str(idOrigin)],
+                    "NAME":[reactionSBML.getName()],"REVERSIBLE":[str(reactionSBML.getReversible())],
+                    "FORMULA":[formula]}
+                    #add notes to data                
+                    data.update(notes)
+                    #create the node suppData and the relation has_suppData
+                    suppData = self.createNode("suppData",data,[[idRef,"has_suppData","_self"]])
+                    if verbose: print("Creating suppData %s" %suppData[0])
+                                    
+                    #parses gene_association and create gene node or update already existing genes
+                    if "GENE_ASSOCIATION" in notes.keys():
+                        #Using sbmlPlugin to recover all genes associated to the reaction
+                        listOfGenes = sbmlPlugin.parseGeneAssoc(notes["GENE_ASSOCIATION"][0])
+                        if len(listOfGenes) != 0:
+                            for gene in listOfGenes:
+                                try:
+                                    dicOfGeneReaction[gene].add(idRef)
+                                except KeyError:
+                                    dicOfGeneReaction[gene] = set([idRef])
         if verbose: print("Creates gene's nodes:")
         count = 0
         nbGenes = len(dicOfGeneReaction.keys())
@@ -418,7 +429,7 @@ class PadmetSpec:
             count += 1
             speciesSBML = listOfSpecies.getElementBySId(idOrigin)
             if verbose:
-                print("%s/%s" % (count, nbSpecies))
+                print("%s/%s" % (count, len(dicOfAssocSpecies.keys())))
                 print("idOrigin: %s \t %s" % (idOrigin, idRef))
             try:
                 #check if species is already in the padmet
@@ -438,6 +449,7 @@ class PadmetSpec:
                 self.createNode("suppData",data,[[idRef,"has_suppData","_self"]])
             except KeyError:
                 pass
+
             
     def generateFile(self, output):
         """
