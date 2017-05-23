@@ -379,33 +379,33 @@ class PadmetSpec:
                     nextStep = True
                 else:
                         print("Error: idRef %s not found" %idRef)
-                if nextStep:
-                    #Reaction was found in current network
-                    #Extracting all data to create the supplementary data node
-                    #Using sbmlPlugin to recovere the formula from the sbml
-                    formula = sbmlPlugin.extractFormula(reactionSBML)
-                    #Using sbmlPlugin to recover the note section from the sbml
-                    notes = sbmlPlugin.parseNotes(reactionSBML)
-                    #data will be stored in a suppData node
-                    data = {"ORIGIN_FILE":[file_name],"ORIGIN_ID":[str(idOrigin)],
-                    "NAME":[reactionSBML.getName()],"REVERSIBLE":[str(reactionSBML.getReversible())],
-                    "FORMULA":[formula]}
-                    #add notes to data                
-                    data.update(notes)
-                    #create the node suppData and the relation has_suppData
-                    suppData = self.createNode("suppData",data,[[idRef,"has_suppData","_self"]])
-                    if verbose: print("Creating suppData %s" %suppData[0])
-                                    
-                    #parses gene_association and create gene node or update already existing genes
-                    if "GENE_ASSOCIATION" in notes.keys():
-                        #Using sbmlPlugin to recover all genes associated to the reaction
-                        listOfGenes = sbmlPlugin.parseGeneAssoc(notes["GENE_ASSOCIATION"][0])
-                        if len(listOfGenes) != 0:
-                            for gene in listOfGenes:
-                                try:
-                                    dicOfGeneReaction[gene].add(idRef)
-                                except KeyError:
-                                    dicOfGeneReaction[gene] = set([idRef])
+            if nextStep:
+                #Reaction was found in current network
+                #Extracting all data to create the supplementary data node
+                #Using sbmlPlugin to recovere the formula from the sbml
+                formula = sbmlPlugin.extractFormula(reactionSBML)
+                #Using sbmlPlugin to recover the note section from the sbml
+                notes = sbmlPlugin.parseNotes(reactionSBML)
+                #data will be stored in a suppData node
+                data = {"ORIGIN_FILE":[file_name],"ORIGIN_ID":[str(idOrigin)],
+                "NAME":[reactionSBML.getName()],"REVERSIBLE":[str(reactionSBML.getReversible())],
+                "FORMULA":[formula]}
+                #add notes to data                
+                data.update(notes)
+                #create the node suppData and the relation has_suppData
+                suppData = self.createNode("suppData",data,[[idRef,"has_suppData","_self"]])
+                if verbose: print("Creating suppData %s" %suppData[0])
+                                
+                #parses gene_association and create gene node or update already existing genes
+                if "GENE_ASSOCIATION" in notes.keys():
+                    #Using sbmlPlugin to recover all genes associated to the reaction
+                    listOfGenes = sbmlPlugin.parseGeneAssoc(notes["GENE_ASSOCIATION"][0])
+                    if len(listOfGenes) != 0:
+                        for gene in listOfGenes:
+                            try:
+                                dicOfGeneReaction[gene].add(idRef)
+                            except KeyError:
+                                dicOfGeneReaction[gene] = set([idRef])
         if verbose: print("Creates gene's nodes:")
         count = 0
         nbGenes = len(dicOfGeneReaction.keys())
@@ -426,7 +426,7 @@ class PadmetSpec:
                         linked_rlt.misc["ASSIGNMENT"].append(file_name)
                     except KeyError:
                         linked_rlt.misc["ASSIGNMENT"] = [file_name]
-                except KeyError:
+                except IndexError:
                     linked_rlt = Relation(rxn_id, "is_linked_to", gene_id,{"ASSIGNMENT":[file_name]})
                     self._addRelation(linked_rlt)
                         
