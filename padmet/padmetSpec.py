@@ -419,8 +419,16 @@ class PadmetSpec:
                 gene_node = Node("gene",gene_id)
                 self.dicOfNode[gene_id] = gene_node
             for rxn_id in rxns_associated:
-                linked_rlt = Relation(rxn_id, "is_linked_to", gene_id,{"ASSIGNMENT":[file_name]})
-                self._addRelation(linked_rlt)
+                try:
+                    linked_rlt = [rlt for rlt in self.dicOfRelationIn[rxn_id] if rlt.type == "is_linked_to"
+                    and rlt.id_out == gene_id][0]
+                    try:
+                        linked_rlt.misc["ASSIGNMENT"].append(file_name)
+                    except KeyError:
+                        linked_rlt.misc["ASSIGNMENT"] = [file_name]
+                except KeyError:
+                    linked_rlt = Relation(rxn_id, "is_linked_to", gene_id,{"ASSIGNMENT":[file_name]})
+                    self._addRelation(linked_rlt)
                         
         if verbose: print("Case species:")
         count = 0
