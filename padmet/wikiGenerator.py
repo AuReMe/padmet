@@ -506,7 +506,7 @@ def createWikiPageReaction(padmetSpec, reaction_template, reaction_id, padmetRef
         sources = []
         for rlt in padmetSpec.dicOfRelationIn[reaction_id]:
             if rlt.type == "has_suppData":
-                src = os.path.splitext(padmetSpec.dicOfNode[rlt.id_out].misc["ORIGIN_FILE"][0])[0]
+                src = padmetSpec.dicOfNode[rlt.id_out].misc["ORIGIN_FILE"][0]
                 sources.append("* "+src+"{{#set:source="+src+"}}\n") 
         pageInArray[source_index:source_index] = sources
 
@@ -831,7 +831,7 @@ def createDefaultPage():
     for rxn_id in all_reactions_id:
         rxn_node = padmetSpec.dicOfNode[rxn_id]
         if "SOURCE" in rxn_node.misc.keys():
-            for scr in rxn_node.misc["SOURCE"]:
+            for src in rxn_node.misc["SOURCE"]:
                 all_sources.add(src)
         else:
             for rlt in padmetSpec.dicOfRelationIn[rxn_id]:
