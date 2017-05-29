@@ -269,25 +269,24 @@ def createWikiPageGene(padmetSpec, gene_template, gene_id):
     #Recovering all associations
     rxn_index = pageInArray.index("== Reactions Associated == \n") + 1
     try:
-        rlt_assoc = ((rlt.id_in, rlt.misc.get("ASSIGNMENT",["UNKNOWN"])[0]) for rlt in padmetSpec.dicOfRelationOut[gene_id]
-         if rlt.type == "is_linked_to")
-        all_assoc = {}
-        for r_id, assoc in rlt_assoc:
-            try:
-                all_assoc[assoc].append(r_id)
-            except KeyError:
-                all_assoc[assoc] = [r_id]
-
+        #k=gene_id, v = list of ASSIGNMENT
+        assoc_rlts = [(rlt.id_in, rlt.misc.get("ASSIGNMENT",["UNKNOWN"])) for rlt in padmetSpec.dicOfRelationOut[gene_id]
+        if rlt.type == "is_linked_to"]
+        dict_assign_gene = {}
+        for rxn_id, all_assignments in assoc_rlts:
+            for assign in all_assignments:
+                try:
+                    dict_assign_gene[assign].add(rxn_id)
+                except KeyError:
+                    dict_assign_gene[assign] = [rxn_id]
+            
         #Create a list of string relative to reaction association
         assoc_gene_rxn = []
-        for assoc, list_of_reaction in all_assoc.iteritems():
-            #get the definition of the assoc from assoc_correspondance()
-            #if not in correspondance use the original
-            assoc = assoc_correspondance(assoc)
-            type_of_assoc = "* "+assoc+"\n"
+        for assignment, list_of_rxn in dict_assign_gene.iteritems():
+            type_of_assoc = "* "+assignment+"\n"
+            type_of_assoc = "* '''"+assignment+"''' {{#set:evidence="+assignment+"}}\n"
             assoc_gene_rxn.append(type_of_assoc)
-            assoc_gene_rxn += ["** [[associated to reaction::"+Rname+"]]\n" 
-            for Rname in list_of_reaction]
+            assoc_gene_rxn += ["** [["+rxn_id+"]]\n" for rxn_id in list_of_rxn]
     except KeyError:
         assoc_gene_rxn = ["* NONE\n"]
     #Insert the latter in the pageInArray
@@ -469,26 +468,24 @@ def createWikiPageReaction(padmetSpec, reaction_template, reaction_id, padmetRef
     #recovering genes associated 
     assoc_index = pageInArray.index("== Genes associated with this reaction  ==\n") + 2
     try:
-        rlt_assoc = ((rlt.id_out, rlt.misc.get("ASSIGNMENT",["UNKNOWN"])[0]) for rlt in padmetSpec.dicOfRelationIn[reaction_id]
-         if rlt.type == "is_linked_to")
-        all_assoc = {}
-        for g_id, assoc in rlt_assoc:
-            try:
-                all_assoc[assoc].append(g_id)
-            except KeyError:
-                all_assoc[assoc] = [g_id]
-
+        #k=gene_id, v = list of ASSIGNMENT
+        assoc_rlts = [(rlt.id_out, rlt.misc.get("ASSIGNMENT",["UNKNOWN"])) for rlt in padmetSpec.dicOfRelationIn[reaction_id]
+        if rlt.type == "is_linked_to"]
+        dict_assign_gene = {}
+        for gene_id, all_assignments in assoc_rlts:
+            for assign in all_assignments:
+                try:
+                    dict_assign_gene[assign].add(gene_id)
+                except KeyError:
+                    dict_assign_gene[assign] = [gene_id]
+            
         #Create a list of string relative to reaction association
         assoc_gene_rxn = []
-        for assoc_original, list_of_genes in all_assoc.iteritems():
-            #get the definition of the assoc from assoc_correspondance()
-            #if not in correspondance use the original
-            assoc = assoc_correspondance(assoc_original)
-            type_of_assoc = "* "+assoc+"\n"            
-            
-            type_of_assoc = "* '''"+assoc+"''' {{#set:evidence="+assoc_original+"}}\n"
+        for assignment, list_of_genes in dict_assign_gene.iteritems():
+            type_of_assoc = "* "+assignment+"\n"
+            type_of_assoc = "* '''"+assignment+"''' {{#set:evidence="+assignment+"}}\n"
             assoc_gene_rxn.append(type_of_assoc)
-            assoc_gene_rxn += ["** [["+gene_id+"]] {{#set:gene association="+gene_id+" ("+assoc_original+")}}\n" 
+            assoc_gene_rxn += ["** [["+gene_id+"]] {{#set:gene association="+gene_id+" ("+assignment+")}}\n" 
         for gene_id in list_of_genes]
     except KeyError:
         assoc_gene_rxn = ["* NONE\n"]
@@ -497,7 +494,10 @@ def createWikiPageReaction(padmetSpec, reaction_template, reaction_id, padmetRef
     if "SOURCE" in reaction_node.misc.keys():
         source_index = pageInArray.index('== Original source(s) ==\n') + 1
         src = reaction_node.misc["SOURCE"][0]
-        comment = reaction_node.misc["COMMENT"][0]
+        try:
+            comment = reaction_node.misc["COMMENT"][0]
+        except KeyError:
+            comment = "NA"
         sources = ["* "+src+"{{#set:source="+src+"}}\n", 
         "** "+comment+"{{#set:comment="+comment+"}}\n"]
         pageInArray[source_index:source_index] = sources
@@ -831,8 +831,8 @@ def createDefaultPage():
     for rxn_id in all_reactions_id:
         rxn_node = padmetSpec.dicOfNode[rxn_id]
         if "SOURCE" in rxn_node.misc.keys():
-            src = rxn_node.misc["SOURCE"][0]
-            all_sources.add(src)
+            for scr in rxn_node.misc["SOURCE"]:
+                all_sources.add(src)
         else:
             for rlt in padmetSpec.dicOfRelationIn[rxn_id]:
                 if rlt.type == "has_suppData":
