@@ -276,7 +276,7 @@ def createWikiPageGene(padmetSpec, gene_template, gene_id):
         for rxn_id, all_assignments in assoc_rlts:
             for assign in all_assignments:
                 try:
-                    dict_assign_gene[assign].add(rxn_id)
+                    dict_assign_gene[assign].append(rxn_id)
                 except KeyError:
                     dict_assign_gene[assign] = [rxn_id]
             
@@ -475,7 +475,7 @@ def createWikiPageReaction(padmetSpec, reaction_template, reaction_id, padmetRef
         for gene_id, all_assignments in assoc_rlts:
             for assign in all_assignments:
                 try:
-                    dict_assign_gene[assign].add(gene_id)
+                    dict_assign_gene[assign].append(gene_id)
                 except KeyError:
                     dict_assign_gene[assign] = [gene_id]
             
@@ -493,14 +493,14 @@ def createWikiPageReaction(padmetSpec, reaction_template, reaction_id, padmetRef
     #recovering orginal sources used to add this reaction
     if "SOURCE" in reaction_node.misc.keys():
         source_index = pageInArray.index('== Original source(s) ==\n') + 1
-        src = reaction_node.misc["SOURCE"][0]
         try:
             comment = reaction_node.misc["COMMENT"][0]
         except KeyError:
             comment = "NA"
-        sources = ["* "+src+"{{#set:source="+src+"}}\n", 
-        "** "+comment+"{{#set:comment="+comment+"}}\n"]
-        pageInArray[source_index:source_index] = sources
+        for src in reaction_node.misc["SOURCE"]:
+            sources = ["* "+src+"{{#set:source="+src+"}}\n", 
+            "** "+comment+"{{#set:comment="+comment+"}}\n"]
+            pageInArray[source_index:source_index] = sources
     else:
         source_index = pageInArray.index('== Original source(s) ==\n') + 1
         sources = []
