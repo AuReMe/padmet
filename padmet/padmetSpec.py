@@ -381,6 +381,11 @@ class PadmetSpec:
                         print("Error: idRef %s not found" %idRef)
             if nextStep:
                 #Reaction was found in current network
+                #update SOURCE in misc
+                try:
+                    self.dicOfNode[idRef].misc["SOURCE"].append(file_name)
+                except KeyError:
+                    self.dicOfNode[idRef].misc["SOURCE"] = [file_name]
                 #Extracting all data to create the supplementary data node
                 #Using sbmlPlugin to recovere the formula from the sbml
                 formula = sbmlPlugin.extractFormula(reactionSBML)

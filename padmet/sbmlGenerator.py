@@ -138,8 +138,8 @@ def padmet_to_sbml(padmet_file, output, obj_fct = None, sbml_lvl = 2, sbml_versi
             check(compart.setName("cytosol"),'set compartment name cytosol')
         elif v == "e":
             check(compart.setName("extracellular"),'set compartment name extracellular')
-        elif v == "e":
-            check(compart.setName("extracellular"),'set compartment name extracellular')
+        elif v == "p":
+            check(compart.setName("periplasm"),'set compartment name extracellular')
         elif v != k:
             check(compart.setName(v),'set compartment id %s' %v)
 
