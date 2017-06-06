@@ -496,10 +496,13 @@ def createWikiPageReaction(padmetSpec, reaction_template, reaction_id, padmetRef
         try:
             comment = reaction_node.misc["COMMENT"][0]
         except KeyError:
-            comment = "NA"
+            comment = None
         for src in reaction_node.misc["SOURCE"]:
-            sources = ["* "+src+"{{#set:source="+src+"}}\n", 
-            "** "+comment+"{{#set:comment="+comment+"}}\n"]
+            if comment:
+                sources = ["* "+src+"{{#set:source="+src+"}}\n", 
+                "** "+comment+"{{#set:comment="+comment+"}}\n"]
+            else:
+                sources = ["* "+src+"{{#set:source="+src+"}}\n"]
             pageInArray[source_index:source_index] = sources
     else:
         source_index = pageInArray.index('== Original source(s) ==\n') + 1

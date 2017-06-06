@@ -18,7 +18,7 @@ def parseNotes(element):
             <html:p>CHEBI: 60983</html:p>
         </html:body>
      </notes>
-    output: {'BIOCYC': ['Alkylphosphonates'],'CHEBI':['60983']}
+    output: {'BIOCYC': |Alkylphosphonates|,'CHEBI':'60983'}
     value is a list in case diff lines for the same type of info
 
     @param element: an element from libsbml
@@ -36,16 +36,32 @@ def parseNotes(element):
             end = line.index("<",start)
             line = line[start:end]
             #line = BIOCYC: |Alkylphosphonates|
-            line = line.split(":")
+            key, val = line.split(":")
             #line = [BIOCYC,|Alkylphosphonates|]
-            line[0] = re.sub(" ","_",line[0])
-            line[1] = re.sub("\s|\|","",line[1])
-            if len(line[1]) != 0:
-                line[1] = line[1].split(",")
-                notesDict[line[0]] = line[1]
+            key = re.sub(" ","_",key)
+            if len(val) != 0 and val.count(" ") != len(val):
+                notesDict[key] = val
         except ValueError:
             continue
     return notesDict
+
+def parseGeneAssoc(GeneAssocStr):
+    """
+    Given a grammar of 'and', 'or' and '(' ')'. Extracts genes ids to a list.
+    (geneX and geneY) or geneW' => [geneX,geneY,geneW]
+    @param GeneAssocStr: the string containing genes ids
+    @type GeneAssocStr: str
+    @return: the list of unique ids
+    @rtype: list
+    """
+    #sub '(',')',' ' by ''   sub "and" by "or"
+    resultat = re.sub("\(|\)|\s","",GeneAssocStr).replace("and","or")
+    #create a set by spliting 'or' then convert to list, set for unique genes
+    if len(resultat) != 0:
+        resultat = list(set(resultat.split("or")))
+    else:
+        resultat = []
+    return resultat
 
 def extractFormula(elementR):
     """
@@ -73,24 +89,6 @@ def extractFormula(elementR):
         formula += " => "
     formula += " + ".join(products)
     return formula
-
-def parseGeneAssoc(GeneAssocStr):
-    """
-    Given a grammar of 'and', 'or' and '(' ')'. Extracts genes ids to a list.
-    (geneX and geneY) or geneW' => [geneX,geneY,geneW]
-    @param GeneAssocStr: the string containing genes ids
-    @type GeneAssocStr: str
-    @return: the list of unique ids
-    @rtype: list
-    """
-    #sub '(',')',' ' by ''   sub "and" by "or"
-    resultat = re.sub("\(|\)|\s","",GeneAssocStr).replace("and","or")
-    #create a set by spliting 'or' then convert to list, set for unique genes
-    if len(resultat) != 0:
-        resultat = list(set(resultat.split("or")))
-    else:
-        resultat = []
-    return resultat
 
 def convert_to_coded_id(uncoded, _type = None, compart = None):
     """

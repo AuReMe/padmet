@@ -139,7 +139,7 @@ def padmet_to_sbml(padmet_file, output, obj_fct = None, sbml_lvl = 2, sbml_versi
         elif v == "e":
             check(compart.setName("extracellular"),'set compartment name extracellular')
         elif v == "p":
-            check(compart.setName("periplasm"),'set compartment name extracellular')
+            check(compart.setName("periplasm"),'set compartment name periplasm')
         elif v != k:
             check(compart.setName(v),'set compartment id %s' %v)
 
@@ -169,21 +169,6 @@ def padmet_to_sbml(padmet_file, output, obj_fct = None, sbml_lvl = 2, sbml_versi
         #generator of tuple (product_id,stoichiometry,compart)        
         produced = ((rlt.id_out, rlt.misc["STOICHIOMETRY"][0], rlt.misc.get("COMPARTMENT",[None])[0]) 
         for rlt in padmet.dicOfRelationIn.get(rId, None) if rlt.type == "produces")
-        #set the reversibility 
-        #IMPORTANT ! Only if in info section, DB_ref/db = 'BIGG' The reversibility used is from the first sbml used to create the padmetSpec, recovere suppData relation.
-        #if no suppData use the reversibility of the database ref
-        """
-        try:
-            if padmet.info['DB_ref']['db'] == "BIGG":
-                suppData_node = [rlt.id_out for rlt in padmet.dicOfRelationIn[rId] if rlt.type == "has_suppData"]
-                suppData_node = padmet.dicOfNode[suppData_node[0]]
-                direction = suppData_node.misc["REVERSIBLE"][0]
-                if direction == "True":
-                    reversible = True
-                else:
-                    reversible = False
-        except KeyError:
-        """
         direction = rNode.misc["DIRECTION"][0]
         if direction == "LEFT-TO-RIGHT":
             reversible = False
@@ -266,16 +251,20 @@ def padmet_to_sbml(padmet_file, output, obj_fct = None, sbml_lvl = 2, sbml_versi
             if rlt.type == "is_linked_to"])
             if len(linked_genes) != 0:
                 if verbose: print rId, "is linked to", len(linked_genes), "genes."
-                original_linked_genes = " OR ".join([padmet.dicOfNode[rlt.id_out].misc.get("GENE_ASSOCIATION", [])[0] 
+                #Try to recover linked genes expressions from suppData
+                linked_genes_from_suppData = " OR ".join([padmet.dicOfNode[rlt.id_out].misc.get("GENE_ASSOCIATION", [])[0] 
                 for rlt in padmet.dicOfRelationIn.get(rId, [])
                 if rlt.type == "has_suppData"])
                 
-                linked_genes = " or ".join(linked_genes)
                 notes = "<body xmlns=\"http://www.w3.org/1999/xhtml\">"
-                notes += "<p>"+"GENE_ASSOCIATION:" + linked_genes + "</p>"
-                notes += "<p>"+"ORIGINAL_GENE_ASSOCIATION:" + original_linked_genes + "</p>"
+                if linked_genes_from_suppData:
+                    notes += "<p>"+"GENE_ASSOCIATION:" + linked_genes_from_suppData + "</p>"
+                else:
+                    linked_genes = " or ".join(linked_genes)
+                    notes += "<p>"+"GENE_ASSOCIATION:" + linked_genes + "</p>"
+
                 notes += "</body>"
-                check(reaction.setNotes(notes), 'set stoichiometry %s' %notes)
+                check(reaction.setNotes(notes), 'set notes %s' %notes)
         except IndexError:
             pass
 
@@ -393,6 +382,6 @@ def compounds_to_sbml(compounds_file, output, padmetRef_file = None, padmetSpec_
         check(s, 'create species')
         check(s.setId(sId_encoded), 'set species id')
         check(s.setName(sName), 'set species name')
-        check(s.setCompartment(sbmlPlugin.convert_to_coded_id(sCompart)), 'set species name')
+        check(s.setCompartment(sbmlPlugin.convert_to_coded_id(sCompart)), 'set species compartment')
     
     return writeSBMLToFile(document, output)
