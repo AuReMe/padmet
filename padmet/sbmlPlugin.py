@@ -40,7 +40,7 @@ def parseNotes(element):
             #line = [BIOCYC,|Alkylphosphonates|]
             key = re.sub(" ","_",key)
             if len(val) != 0 and val.count(" ") != len(val):
-                notesDict[key] = val
+                notesDict[key] = [val]
         except ValueError:
             continue
     return notesDict
