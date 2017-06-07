@@ -266,7 +266,7 @@ class PadmetRef:
                 if verbose: print("already in padmetRef")
             except KeyError:
                 specie_name = specie.getName()
-                if len(specie_name) != 0:
+                if specie_name:
                     specie_node = Node("compound", specie_id, {"COMMON_NAME": [specie_name]})
                 else:
                     specie_node = Node("compound", specie_id)
@@ -286,7 +286,7 @@ class PadmetRef:
                     reaction_dir = "REVERSIBLE"
                 else:
                     reaction_dir = "LEFT-TO-RIGHT"
-                if len(reaction_name) != 0:
+                if reaction_name:
                     reaction_node = Node("reaction", reaction_id, {"COMMON_NAME": [reaction_name], "DIRECTION": [reaction_dir]})
                 else:
                     reaction_node = Node("reaction", reaction_id, {"DIRECTION": [reaction_dir]})
