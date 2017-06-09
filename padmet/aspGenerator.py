@@ -212,4 +212,27 @@ def padmet_to_asp(padmet_file, output, verbose = False):
             for sub_pathway_id in is_in_pathway:
                 line = asp_synt("is_a",[pathway_id, sub_pathway_id])
                 line += "\n"
-                f.write(line)    
+                f.write(line)
+
+def padmet_to_aspDE(padmet_file, output, seeds, targets, verbose = False):
+    """
+    Convert PADMet to ASP following these predicats:
+    reversible(reaction_id, reaction_direction). reaction_direction in[LEFT-TO-RIGHT,REVERSIBLE]
+    ec_number(reaction_id, ec(x,x,x)).
+    catalysed_by(reaction_id, enzyme_id).
+    uniprotID(enzyme_id, uniprot_id). #if has has_xref and db = "UNIPROT"
+    in_pathway(reaction_id, pathway_id).
+    reactant(reaction_id, compound_id, stoechio_value).
+    product(reaction_id, compound_id, stoechio_value).
+
+    @param padmet_file: the path to padmet file to convert
+    @param output: the path to the output to create
+    @param verbose: print informations
+    @type padmet_file: str
+    @type output: str
+    @type verbose: bool
+    @return: _
+    @rtype: None
+    """
+
+    padmet = PadmetSpec(padmet_file)

@@ -252,7 +252,7 @@ def padmet_to_sbml(padmet_file, output, obj_fct = None, sbml_lvl = 2, sbml_versi
             if len(linked_genes) != 0:
                 if verbose: print rId, "is linked to", len(linked_genes), "genes."
                 #Try to recover linked genes expressions from suppData
-                linked_genes_from_suppData = " OR ".join([padmet.dicOfNode[rlt.id_out].misc.get("GENE_ASSOCIATION", [])[0] 
+                linked_genes_from_suppData = " or ".join([padmet.dicOfNode[rlt.id_out].misc.get("GENE_ASSOCIATION", [])[0] 
                 for rlt in padmet.dicOfRelationIn.get(rId, [])
                 if rlt.type == "has_suppData"])
                 
