@@ -383,7 +383,8 @@ class PadmetSpec:
                 #Reaction was found in current network
                 #update SOURCE in misc
                 try:
-                    self.dicOfNode[idRef].misc["SOURCE"].append(file_name)
+                    if file_name not in self.dicOfNode[idRef].misc["SOURCE"]:
+                        self.dicOfNode[idRef].misc["SOURCE"].append(file_name)
                 except KeyError:
                     self.dicOfNode[idRef].misc["SOURCE"] = [file_name]
                 #Extracting all data to create the supplementary data node
