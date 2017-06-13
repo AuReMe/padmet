@@ -286,7 +286,7 @@ def createWikiPageGene(padmetSpec, gene_template, gene_id):
             type_of_assoc = "* "+assignment+"\n"
             type_of_assoc = "* '''"+assignment+"''' {{#set:evidence="+assignment+"}}\n"
             assoc_gene_rxn.append(type_of_assoc)
-            assoc_gene_rxn += ["** [["+rxn_id+"]]{{#set:associated to reaction="+r_id+"}}\n" for rxn_id in list_of_rxn]
+            assoc_gene_rxn += ["** [["+rxn_id+"]]{{#set:associated to reaction="+rxn_id+"}}\n" for rxn_id in list_of_rxn]
     except KeyError:
         assoc_gene_rxn = ["* NONE\n"]
     #Insert the latter in the pageInArray
