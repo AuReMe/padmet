@@ -981,8 +981,6 @@ class PadmetSpec:
             for rlt in relationsOut:
                 #print(rlt.toString())
                 self._delRelation(rlt)
-                if (rlt.type in ["consumes","produces"]): 
-                    self.delNode(rlt.id_in)
         except TypeError:
             pass
         return True
