@@ -1,9 +1,8 @@
 ---
 title:  padmet package - Documentation
 author: Meziane AITE
-date: 2017-04-20
-version: 2.4
-geometry: margin=2cm
+date: 2017-06-19
+version: 2.5
 ---
 \newpage
 
