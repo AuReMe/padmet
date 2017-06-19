@@ -1,6 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
+This file is part of padmet.
+
+padmet is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+padmet is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with padmet. If not, see <http://www.gnu.org/licenses/>.
+
 @author: Meziane AITE, meziane.aite@inria.fr
 Description:
 PadmetSpec is an object representing the metabolic network of a species(organism)
@@ -968,19 +983,19 @@ class PadmetSpec:
         try:
             # Recover the relations where the node is "in".
             relationsIn = [rlt for rlt in self.dicOfRelationIn.get(node_id, None)]
-            for rlt in relationsIn:
-                #print(rlt.toString())
-                self._delRelation(rlt)
-                if (rlt.type in ["has_xref","has_name","has_suppData"]):
-                    self.delNode(rlt.id_out)
+            for rltIn in relationsIn:
+                #print(rltIn.toString())
+                self._delRelation(rltIn)
+                if (rltIn.type in ["has_xref","has_name","has_suppData"]):
+                    self.delNode(rltIn.id_out)
         except TypeError:
             pass
         try:
             # Recover the relations where the node is "out"
             relationsOut = [rlt for rlt in self.dicOfRelationOut.get(node_id, None)]
-            for rlt in relationsOut:
-                #print(rlt.toString())
-                self._delRelation(rlt)
+            for rltOut in relationsOut:
+                #print(rltOut.toString())
+                self._delRelation(rltOut)
         except TypeError:
             pass
         return True
