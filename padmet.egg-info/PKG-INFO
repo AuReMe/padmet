@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: padmet
-Version: 2.4.22
+Version: 2.5.0
 Summary: Test padmet package
 Home-page: http://gitlab.inria.fr/DYLISS/padmet
 Author: Meziane AITE
@@ -9,9 +9,8 @@ License: UNKNOWN
 Description: ---
         title:  padmet package - Documentation
         author: Meziane AITE
-        date: 2017-04-20
-        version: 2.4
-        geometry: margin=2cm
+        date: 2017-06-19
+        version: 2.5
         ---
         \newpage
         

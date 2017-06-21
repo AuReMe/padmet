@@ -37,7 +37,7 @@ setup(
     author="Meziane AITE",
     author_email="meziane.aite@inria.fr",
  
-    description="Test padmet package",
+    description="Padmet package for metabolic network",
  
     long_description=open('README.md').read(),
  

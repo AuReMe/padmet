@@ -30,3 +30,10 @@ test_register:
 test_install:
 	python setup.py sdist upload -r pypitest
 	pip install -U -i https://testpypi.python.org/pypi padmet
+
+real_register:
+	python setup.py register
+
+real_install:
+	python setup.py sdist upload
+	pip install padmet
