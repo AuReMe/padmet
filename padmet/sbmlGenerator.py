@@ -138,6 +138,9 @@ def padmet_to_sbml(padmet_file, output, obj_fct = None, sbml_lvl = 2, sbml_versi
         #check(s.setMetaId(metaId), 'set species MetaId %s' %metaId)
         if name is not None:
             check(s.setName(name), 'set species Name %s' %name)
+        else:
+            check(s.setName(name), 'set species Name %s' %species_id)
+
         if compart is not None:
             compart_encoded = sbmlPlugin.convert_to_coded_id(compart)
             compart_dict[compart_encoded] = compart
