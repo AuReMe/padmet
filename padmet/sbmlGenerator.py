@@ -24,6 +24,7 @@ usign the libsbml package
 from padmetSpec import PadmetSpec
 from padmetRef import PadmetRef
 import sbmlPlugin
+import os
 try:
     from libsbml import *
 except:
@@ -72,6 +73,8 @@ def padmet_to_sbml(padmet_file, output, obj_fct = None, sbml_lvl = 2, sbml_versi
     #create an empty sbml model
     document = SBMLDocument(sbml_lvl, sbml_version)
     model = document.createModel()
+    model_id = os.path.splitext(os.path.basename(output))[0]
+    model.id = model_id
     #load padmet
     padmet = PadmetSpec(padmet_file)
 
