@@ -984,7 +984,7 @@ class PadmetSpec:
             # Recover the relations where the node is "in".
             relationsIn = [rlt for rlt in self.dicOfRelationIn.get(node_id, None)]
             for rltIn in relationsIn:
-                #print(rltIn.toString())
+                print(rltIn.toString())
                 self._delRelation(rltIn)
                 if (rltIn.type in ["has_xref","has_name","has_suppData"]):
                     self.delNode(rltIn.id_out)
@@ -994,7 +994,7 @@ class PadmetSpec:
             # Recover the relations where the node is "out"
             relationsOut = [rlt for rlt in self.dicOfRelationOut.get(node_id, None)]
             for rltOut in relationsOut:
-                #print(rltOut.toString())
+                print(rltOut.toString())
                 self._delRelation(rltOut)
         except TypeError:
             pass
@@ -1080,6 +1080,7 @@ class PadmetSpec:
             for rlt in self.dicOfRelationIn[idIn]:
                 if relation.compare(rlt):
                     self.dicOfRelationIn[idIn].remove(rlt)
+                    if len(self.dicOfRelationIn[idIn]) == 0: self.dicOfRelationIn.pop(idIn)
                     delete = True
                     break
         except KeyError: pass
@@ -1087,6 +1088,7 @@ class PadmetSpec:
             for rlt in self.dicOfRelationOut[idOut]:
                 if relation.compare(rlt):
                     self.dicOfRelationOut[idOut].remove(rlt)
+                    if len(self.dicOfRelationOut[idOut]) == 0: self.dicOfRelationOut.pop(idOut)
                     delete = True
                     break
         except KeyError: pass
@@ -1105,7 +1107,8 @@ class PadmetSpec:
         """
         idIn = relation.id_in
         idOut = relation.id_out
-        rlt_to_compare = self.dicOfRelationIn.get(idIn,[])
+
+        rlt_to_compare = list(self.dicOfRelationIn.get(idIn,[]))
         rlt_to_compare += self.dicOfRelationOut.get(idOut,[])
         for rlt in rlt_to_compare:
             if relation.compare(rlt):
@@ -1113,7 +1116,7 @@ class PadmetSpec:
         try:
             self.dicOfRelationIn[idIn].append(relation)    
         except KeyError:
-            self.dicOfRelationIn[idIn] = [relation]    
+            self.dicOfRelationIn[idIn] = [relation]
         try:
             self.dicOfRelationOut[idOut].append(relation)
         except KeyError:
