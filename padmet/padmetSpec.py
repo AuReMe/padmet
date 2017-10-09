@@ -533,7 +533,7 @@ class PadmetSpec:
         Header = "Reactions (metacyc_id)", "Reactions (common_name)", "EC-Number",
                       "Formula (metacyc_id)", "Formula (common_name)", "Found in the network"
         @param node_id: id of the pathway
-        @param padmetRef_ile: pathname of the padmet ref file
+        @param padmetRef_file: pathname of the padmet ref file
         @param output: pathname of the output to create
         @param sbml: if true, create a sbml file of this pathway
         @return: _
@@ -1197,3 +1197,113 @@ class PadmetSpec:
                 self._addRelation(new_relation)
 
         return (new_id, new_node)
+
+#==============================================================================
+# manipulating de novo node:     
+#==============================================================================
+    
+    def ko(self, genes, verbose = False):
+        """
+        remove all reactions associated to a given gene or list of genes
+        @param genes: one gene or list of genes to remove
+        @param verbose: print more info
+        @type gene: str or list
+        @type verbose: Bool    
+        @return: None
+        @rtype: None
+        """
+        if type(genes) is str:
+            genes = [genes]
+        if verbose: print('%s gene(s) to KO' %(len(genes)))
+        all_rxn_to_del = set()
+        for g_id in genes:
+            if not g_id in [g for g in self.dicOfNode.keys()]:
+                raise ValueError('%s not found' %g_id)
+            reactions_to_del = [rlt.id_in for rlt in self.dicOfRelationOut[g_id] if rlt.type == "is_linked_to"]
+            if verbose: print('%s reactions associated to %s' %(len(reactions_to_del),g_id))
+            for rxn_id in reactions_to_del:
+                if verbose: print("\t%s" %(rxn_id))
+            [all_rxn_to_del.add(r) for r in reactions_to_del]
+        if verbose: print("%s unique reaction(s)" %len(all_rxn_to_del))
+        for rxn_id in all_rxn_to_del:
+            if verbose: print('removing %s' %rxn_id)
+            self.delNode(rxn_id)
+            
+    def get_growth_medium(self, boundary_compart = "C-BOUNDARY"):
+        """
+        return set of metabolites corresponding to the growth medium 
+        """
+        growth_medium = set([rlt.id_out for rlt in self.getAllRelation() 
+        if rlt.type in ["consumes","produces"] and rlt.misc.get('COMPARTMENT',[])[0] == 'C-BOUNDARY'])
+        return growth_medium
+    
+    def change_growth_medium(self, new_growth_medium = None, padmetRef_file = None, rxn_prefix = ["TransportSeed", "ExchangeSeed"], boundary_compart = "C-BOUNDARY", verbose = False):
+        """
+        if new_growth_medium is None: jsute remove the growth medium by del reactions starting with rxn_prefix
+        else: remove and change by the new growth_medium, a list of compounds.
+        @param new_growth_medium: list of metabolties ids for the new media
+        @param padmetRef_file: pathname of the padmet ref file
+        @param rxn_prefix: list of prefix corresponding to reactions of exchanges (specific to growth medium)
+        @param boundary_compart: ID of the boundary compartment, compound in this compart will have BoundaryCondition True in sbml
+        @param verbose: print more info
+        @type new_growth_medium: list 
+        @type padmetRef_file: pathname of the padmet ref file
+        @type rxn_prefix: list
+        @type boundary_compart: str
+        @type verbose: Bool    
+        @return: None
+        @rtype: None
+        """
+        if padmetRef_file is not None:
+            padmetRef = PadmetRef(padmetRef_file)
+        #get all rxn starting with rxn_prefix
+        all_rxn_to_del = [node_id for node_id in self.dicOfNode.keys() if any(node_id.startswith(pref) for pref in rxn_prefix)]
+        if len(all_rxn_to_del) == 0:
+            print("No growth medium found")
+        else:
+            for rxn_id in all_rxn_to_del:
+                print("removing %s" %(rxn_id))
+                if rxn_id in self.dicOfNode.keys():
+                    self.delNode(rxn_id)
+            print("%s reactions removed" %(len(all_rxn_to_del)))
+    
+        #creating new reactions create growth medium
+        if new_growth_medium is not None:
+            for seed_id in new_growth_medium:
+                #check if seed in padmetSpec or in padmetRef
+                try:
+                    self.dicOfNode[seed_id]
+                except KeyError:
+                    if verbose: print("%s not in the network" %seed_id)
+                    try:
+                        if padmetRef_file is None: raise KeyError                
+                        if verbose: print("Try to copy from dbref")
+                        self._copyNodeExtend(padmetRef, seed_id)
+                    except KeyError:
+                        if verbose:
+                            print("%s not in the padmetRef" %seed_id)
+                            print("creating a new compound")
+                        #not in padmetRef and self, create compound and transport/exchange rxn
+                        seed_node = Node("compound", seed_id)
+                        self.dicOfNode[seed_id] = seed_node
+                        if verbose:
+                            print("new compound created: id = %s" %seed_id)
+                exchange_rxn_id = "ExchangeSeed_"+seed_id+"_b"
+                if exchange_rxn_id not in self.dicOfNode.keys():
+                    if verbose: print("creating exchange reaction: id = ExchangeSeed_%s_b" %seed_id)
+                    exchange_rxn_node = Node("reaction", exchange_rxn_id, {"DIRECTION":["REVERSIBLE"],"SOURCE":["manual"],"COMMENT":["Added to manage seeds from boundary to extracellular compartment"]})
+                    self.dicOfNode[exchange_rxn_id] = exchange_rxn_node
+                    consumption_rlt = Relation(exchange_rxn_id, "consumes", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":[boundary_compart]})
+                    self._addRelation(consumption_rlt)        
+                    production_rlt = Relation(exchange_rxn_id, "produces", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":["e"]})
+                    self._addRelation(production_rlt)
+        
+                transport_rxn_id = "TransportSeed_"+seed_id+"_e"
+                if transport_rxn_id not in self.dicOfNode.keys():
+                    if verbose: print("creating trasnport reaction: id = TransportSeed_%s_e" %seed_id)
+                    transport_rxn_node = Node("reaction", transport_rxn_id, {"DIRECTION":["LEFT-TO-RIGHT"],"SOURCE":["manual"],"COMMENT":["Added to manage seeds from extracellular to cytosol compartment"]})
+                    self.dicOfNode[transport_rxn_id] = transport_rxn_node
+                    consumption_rlt = Relation(transport_rxn_id, "consumes", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":["e"]})
+                    self._addRelation(consumption_rlt)        
+                    production_rlt = Relation(transport_rxn_id, "produces", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":["c"]})
+                    self._addRelation(production_rlt)
