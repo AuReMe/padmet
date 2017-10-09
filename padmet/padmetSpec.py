@@ -984,7 +984,6 @@ class PadmetSpec:
             # Recover the relations where the node is "in".
             relationsIn = [rlt for rlt in self.dicOfRelationIn.get(node_id, None)]
             for rltIn in relationsIn:
-                print(rltIn.toString())
                 self._delRelation(rltIn)
                 if (rltIn.type in ["has_xref","has_name","has_suppData"]):
                     self.delNode(rltIn.id_out)
@@ -994,7 +993,6 @@ class PadmetSpec:
             # Recover the relations where the node is "out"
             relationsOut = [rlt for rlt in self.dicOfRelationOut.get(node_id, None)]
             for rltOut in relationsOut:
-                print(rltOut.toString())
                 self._delRelation(rltOut)
         except TypeError:
             pass
