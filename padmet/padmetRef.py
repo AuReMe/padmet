@@ -248,7 +248,7 @@ class PadmetRef:
     def initFromSbml(self, sbml_file, verbose = False):
         """
         Initialize a padmetRef from sbml. Copy all species, convert id with sbmlPlugin
-        stock name in COMMON NAME, stock original info in suppData. Copy all reactions,
+        stock name in COMMON NAME. Copy all reactions,
         convert id with sbmlPlugin, stock name in common name, stock compart and stoichio data relative
         to reactants and products in the misc of consumes/produces relations
         @param sbml_file: pathname of the sbml file
@@ -552,74 +552,27 @@ class PadmetRef:
 # manipulating de novo node:     
 #==============================================================================
     
-    def _basicNode(self, _type):
-        """
-        For padmetRef, when creating a new node, a new id is creating. This id
-        start with 'META_' for padmetRef (SPE_ for padmetSpe).
-        This function generate a new id and an empty node with this id.
-        @param _type: the type of the node to create
-        @return: (newId,newNode)
-        @rtype: tuple(str, Node)
-        """
-        #check if the class is define in the policy
-        if _type in self.policy.getClassOfNode():
-            #define a new unique_id:
-            #generator of the int part of ids that contains the species tag
-            max_local_id = self.getMaxLocalID()
-            #localPrefix = self.getLocalPrefix()
-            new_id = "META_"+str(max_local_id + 1)
-            new_node = Node(_type, new_id)
-            return(new_id, new_node)
-        else:
-            raise TypeError("the type given is not define in the policy")
-
-
-    def getMaxLocalID(self):
-        """
-        For padmetRef, when creating a new node, a new id is creating. This id
-        start with 'META_' for padmetRef (SPE_ for padmetSpec) + an incremented int.
-        This function extracts the max int (or max local id)
-        @return: the max local id
-        @rtype: int
-        """
-        try:
-            #localPrefix = self.getLocalPrefix()
-            max_local_id = max([int(node_id.replace(("META_"),"")) 
-            for node_id in self.dicOfNode.iterkeys() 
-            if node_id.startswith("META_")])
-        except ValueError:
-            max_local_id  = 0
-        return max_local_id
-            
-    def createNode(self, _type, dicOfMisc, listOfRelation = None):
+    def createNode(self, _type, _id, dicOfMisc = {}, listOfRelation = None):
         """
         Creation of new node to add in the network.
-        use ._basicNode first then completes the node with more informations
         @param _type: type of node (gene, reaction...)
+        @param _id: id of the node
         @param dicOfMisc: dictionnary of miscellaneous data
-        @param listOfRelation: list of list of data needed to create a relation. (id_in,type,id_out,misc)
+        @param listOfRelation: list of relation
         @type _type: str
+        @type _id: str
         @type dicOfMisc: dict
-        @type listOfRelation: def = None, List.
-        @return: (new_id,new_node)
-        @rtype: tuple(str, Node)
+        @type listOfRelation: default = None else: list(Relation(s))
+        @return: new_node
+        @rtype: Node
         """
-        (new_id, new_node) = self._basicNode(_type)
         #add the new node in the tgdbp
-        new_node.misc = dicOfMisc
-        self._addNode(new_node)
+        if _id in self.dicOfNode.keys():
+            raise ValueError("%s is already used, unable to create Node" %(_id))
+        new_node = Node(_type, _id, dicOfMisc)
+        self.dicOfNode[_id] = new_node
         if listOfRelation is not None:
-            for data in listOfRelation:
-                try:
-                    #'_self' in a relation is where to put the id of the current new node (if needed)
-                    self_index = data.index("_self")
-                    data[self_index] = new_id
-                except ValueError:
-                    pass
-                try:
-                    new_relation = Relation(data[0],data[1],data[2],data[3])
-                except IndexError:
-                    new_relation = Relation(data[0],data[1],data[2])
-                self._addRelation(new_relation)
+            for rlt in listOfRelation:
+                self._addRelation(rlt)
 
-        return (new_id, new_node)
+        return new_node
