@@ -439,6 +439,8 @@ class PadmetSpec:
                     reconstructionData.update({"CATEGORY":[source_category]})
                 reconstructionData_rlt = Relation(rxn_idRef,"has_reconstructionData",reconstructionData_id)
                 self.createNode("reconstructionData", reconstructionData_id, reconstructionData, [reconstructionData_rlt])
+                if verbose: print("Creating reconstructionData %s" %reconstructionData_id)                
+
                 #parses gene_association and create gene node or update already existing genes
                 if "GENE_ASSOCIATION" in notes.keys():
                     #Using sbmlPlugin to recover all genes associated to the reaction
@@ -904,8 +906,11 @@ class PadmetSpec:
         # If true, the node does not exist and was susccesffuly added.
         if self._addNode(node):
             try:
+                """
                 relations_in = (rlt for rlt in padmet.dicOfRelationIn.get(node_id, None)
-                if rlt.type != "catalyses") 
+                if rlt.type != "catalyses")
+                """
+                relations_in = (rlt for rlt in padmet.dicOfRelationIn.get(node_id, None))
                 # For each relation, we add it with addRelation(), then
                 # call _copyNodeExtend() for the id 'out'.
                 for rlt in relations_in:
@@ -962,8 +967,11 @@ class PadmetSpec:
 
             try:
                 # Recover all relations where the node is out.
+                """
                 relations_out = (rlt for rlt in padmet.dicOfRelationOut.get(node_id, None)
                 if rlt.type != "catalyses")
+                """
+                relations_out = (rlt for rlt in padmet.dicOfRelationOut.get(node_id, None))
                 # For each relation, we add it with addRelation, then call
                 # _copyNodeExtend() for the id 'in'
                 for rlt in relations_out:

@@ -518,10 +518,79 @@ class PadmetRef:
         else:
             return False
             
+    def delNode(self, node_id):
+        """
+        Allows to delete a node, the relations associated to the node, and for 
+        some relations, delete the associated node. 
+        For relations where the node to del is 'in': 
+            if rlt type in ['has_xref','has_name','has_suppData']: delNode out
+        For relations where the node to del is 'out':
+            if rlt type in ['consumes','produces']
+        @param node_id: id of node to delete
+        @type node_id: str
+        @return: True if node successfully deleted, False if node not in dicOfNode
+        @rtype: Bool
+        """
+        # Delete the node from dicOfNode.
+        try:
+            self.dicOfNode.pop(node_id)
+        except KeyError:
+            print("The id %s doesnt exist. Unable to delete" %node_id)
+            return False
+            
+        # If exist delete the relations 'in' and 'out'
+        try:
+            # Recover the relations where the node is "in".
+            relationsIn = [rlt for rlt in self.dicOfRelationIn.get(node_id, None)]
+            for rltIn in relationsIn:
+                self._delRelation(rltIn)
+                if (rltIn.type in ["has_xref","has_name","has_suppData", "reconstructionData"]):
+                    self.delNode(rltIn.id_out)
+        except TypeError:
+            pass
+        try:
+            # Recover the relations where the node is "out"
+            relationsOut = [rlt for rlt in self.dicOfRelationOut.get(node_id, None)]
+            for rltOut in relationsOut:
+                self._delRelation(rltOut)
+        except TypeError:
+            pass
+        return True
            
 #==============================================================================
 # For Relations:     
 #==============================================================================
+
+    def _delRelation(self, relation):
+        """
+        Delete a relation from dicOfRelationIn and out
+        @param relation: the relation to delete
+        @type relation: Relation
+        @return: True if succesfully deleted
+        @rtype: Bool
+        """
+        delete = False
+        idIn = relation.id_in
+        idOut = relation.id_out
+        try:
+            for rlt in self.dicOfRelationIn[idIn]:
+                if relation.compare(rlt):
+                    self.dicOfRelationIn[idIn].remove(rlt)
+                    if len(self.dicOfRelationIn[idIn]) == 0: self.dicOfRelationIn.pop(idIn)
+                    delete = True
+                    break
+        except KeyError: pass
+        try:
+            for rlt in self.dicOfRelationOut[idOut]:
+                if relation.compare(rlt):
+                    self.dicOfRelationOut[idOut].remove(rlt)
+                    if len(self.dicOfRelationOut[idOut]) == 0: self.dicOfRelationOut.pop(idOut)
+                    delete = True
+                    break
+        except KeyError: pass
+        if not delete:
+            print("Unable to delete this relation, doesn't exist.")
+        return delete
 
     def _addRelation(self,relation):
         """
