@@ -282,7 +282,7 @@ class PadmetRef:
             except KeyError:
                 specie_name = specie.getName()
                 if specie_name:
-                    specie_node = Node("compound", specie_id, {"COMMON_NAME": [specie_name]})
+                    specie_node = Node("compound", specie_id, {"COMMON-NAME": [specie_name]})
                 else:
                     specie_node = Node("compound", specie_id)
                 self.dicOfNode[specie_id] = specie_node
@@ -302,7 +302,7 @@ class PadmetRef:
                 else:
                     reaction_dir = "LEFT-TO-RIGHT"
                 if reaction_name:
-                    reaction_node = Node("reaction", reaction_id, {"COMMON_NAME": [reaction_name], "DIRECTION": [reaction_dir]})
+                    reaction_node = Node("reaction", reaction_id, {"COMMON-NAME": [reaction_name], "DIRECTION": [reaction_dir]})
                 else:
                     reaction_node = Node("reaction", reaction_id, {"DIRECTION": [reaction_dir]})
                 self.dicOfNode[reaction_id] = reaction_node
@@ -408,7 +408,7 @@ class PadmetRef:
                 metacyc_id = node.id
 
                 try:
-                    common_name = node.misc["COMMON_NAME"]
+                    common_name = node.misc["COMMON-NAME"]
                 except KeyError:
                     common_name = []
 
@@ -453,7 +453,7 @@ class PadmetRef:
                 metacyc_id = node.id
 
                 try:
-                    common_name = node.misc["COMMON_NAME"]
+                    common_name = node.misc["COMMON-NAME"]
                 except KeyError:
                     common_name = []
 
@@ -465,7 +465,7 @@ class PadmetRef:
                 synonyms = ";".join(common_name+names)
 
                 try:
-                    ec = node.misc["EC_NUMBER"]
+                    ec = node.misc["EC-NUMBER"]
                 except KeyError:
                     SMILES = []
                 
@@ -544,7 +544,7 @@ class PadmetRef:
             relationsIn = [rlt for rlt in self.dicOfRelationIn.get(node_id, None)]
             for rltIn in relationsIn:
                 self._delRelation(rltIn)
-                if (rltIn.type in ["has_xref","has_name","has_suppData", "reconstructionData"]):
+                if (rltIn.type in ["has_xref","has_name","has_suppData", "has_reconstructionData"]):
                     self.delNode(rltIn.id_out)
         except TypeError:
             pass
