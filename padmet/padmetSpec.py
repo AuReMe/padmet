@@ -392,6 +392,7 @@ class PadmetSpec:
                         reactant_id = dicOfAssoc[reactant.getSpecies()]
                     else:
                         reactant_id = sbmlPlugin.convert_from_coded_id(reactant.getSpecies())[0]
+                    #print(reactant_id)
                     reactant_compart = model.getElementBySId(reactant.getSpecies()).getCompartment()
                     if reactant_compart is None:
                         if verbose: print("\t\t%s has no compart, set to 'c'" %reactant_id)
@@ -406,11 +407,10 @@ class PadmetSpec:
                             if verbose: print("\t\tCreating new compound: %s" %reactant_id)
                             reactant_cname = listOfSpecies.getElementBySId(reactant.getSpecies()).getName()
                             if reactant_cname:
-                                self.createNode("compound", reactant_id, {"COMMON-NAME":[reactant_cname]}, [consumes_rlt])
+                                self.createNode("compound", reactant_id, {"COMMON-NAME":[reactant_cname]})
                             else:
-                                self.createNode("compound", reactant_id, None, [consumes_rlt])
-                    else:
-                        self._addRelation(consumes_rlt)
+                                self.createNode("compound", reactant_id)
+                    self._addRelation(consumes_rlt)
 
                 products = reactionSBML.getListOfProducts()
                 for product in products:
@@ -418,7 +418,7 @@ class PadmetSpec:
                         product_id = dicOfAssoc[product.getSpecies()]
                     else:
                         product_id = sbmlPlugin.convert_from_coded_id(product.getSpecies())[0]
-
+                    #print(product_id)
                     product_compart = model.getElementBySId(product.getSpecies()).getCompartment()
                     if product_compart is None:
                         if verbose: print("\t\t%s has no compart, set to 'c'" %product)
@@ -433,11 +433,10 @@ class PadmetSpec:
                             if verbose: print("\t\tCreating new compound: %s" %product_id)
                             product_cname = listOfSpecies.getElementBySId(product.getSpecies()).getName()
                             if product_cname:
-                                self.createNode("compound", product_id, {"COMMON-NAME":[product_cname]}, [produces_rlt])
+                                self.createNode("compound", product_id, {"COMMON-NAME":[product_cname]})
                             else:
-                                self.createNode("compound", product_id, None, [produces_rlt])
-                    else:
-                        self._addRelation(produces_rlt)
+                                self.createNode("compound", product_id)
+                    self._addRelation(produces_rlt)
                 rxn_added = True
 
             if rxn_added:
@@ -1204,6 +1203,26 @@ class PadmetSpec:
 # manipulating de novo node:     
 #==============================================================================
     
+    def change_compart(self,old_compart, new_compart, verbose = False):
+        rxns_updated = set()
+        for rlt in [rlt for rlt in self.getAllRelation() if rlt.type in ["consumes","produces"] and rlt.misc["COMPARTMENT"][0] == old_compart]:
+            rxns_updated.add(rlt.id_in)
+            rlt.misc.update({"COMPARTMENT":[new_compart]})
+        if verbose: print("%s reactions updated" %(len(rxns_updated)))
+
+    def get_all_compart(self):
+        all_compart = set([rlt.misc["COMPARTMENT"][0] for rlt in self.getAllRelation() if rlt.type in ["consumes","produces"]])
+        return all_compart
+    
+    def delCompart(self, compart, verbose = False):
+        rxns_to_del = set()
+        for rlt in [rlt for rlt in self.getAllRelation() if rlt.type in ["consumes","produces"] and rlt.misc["COMPARTMENT"][0] == compart]:
+            rxns_to_del.add(rlt.id_in)
+        for rxn_id in rxns_to_del:
+            self.delNode(rxn_id)
+        if verbose: print("%s reactions deleted" %(len(rxns_to_del)))
+        
+        
     def ko(self, genes, verbose = False):
         """
         remove all reactions associated to a given gene or list of genes
@@ -1237,11 +1256,13 @@ class PadmetSpec:
         """
         growth_medium = set([rlt.id_out for rlt in self.getAllRelation() 
         if rlt.type in ["consumes","produces"] and rlt.misc.get('COMPARTMENT',[])[0] == 'C-BOUNDARY'])
-        return growth_medium
+        if growth_medium:
+            return growth_medium
+        else: return None
     
-    def change_growth_medium(self, new_growth_medium = None, padmetRef_file = None, rxn_prefix = ["TransportSeed", "ExchangeSeed"], boundary_compart = "C-BOUNDARY", verbose = False):
+    def set_growth_medium(self, new_growth_medium = None, padmetRef_file = None, rxn_prefix = ["TransportSeed", "ExchangeSeed"], boundary_compart = "C-BOUNDARY", verbose = False):
         """
-        if new_growth_medium is None: jsute remove the growth medium by del reactions starting with rxn_prefix
+        if new_growth_medium is None: just remove the growth medium by del reactions starting with rxn_prefix
         else: remove and change by the new growth_medium, a list of compounds.
         @param new_growth_medium: list of metabolties ids for the new media
         @param padmetRef_file: pathname of the padmet ref file

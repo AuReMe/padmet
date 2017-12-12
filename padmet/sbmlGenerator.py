@@ -125,7 +125,7 @@ def padmet_to_sbml(padmet_file, output, obj_fct = None, sbml_lvl = 2, sbml_versi
         
         #encode compart id for sbml
         #try to get the common_name, if non value return None
-        name = padmet.dicOfNode[species_id].misc.get("COMMON_NAME",[species_id])[0]
+        name = padmet.dicOfNode[species_id].misc.get("COMMON-NAME",[species_id])[0]
         #update dicts
         species_dict[species_id_encoded] = {"species_id":species_id, "compart":compart, "name":name}
         
@@ -177,7 +177,7 @@ def padmet_to_sbml(padmet_file, output, obj_fct = None, sbml_lvl = 2, sbml_versi
     for rNode in reactions:
         rId = rNode.id
         rId_encoded = sbmlPlugin.convert_to_coded_id(rId,"R")
-        rName = rNode.misc.get("COMMON_NAME",[rId])[0]
+        rName = rNode.misc.get("COMMON-NAME",[rId])[0]
 
         #generator of tuple (reactant_id,stoichiometry,compart)
         try:
