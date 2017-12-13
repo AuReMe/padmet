@@ -358,7 +358,7 @@ class PadmetSpec:
                         except KeyError:
                             all_cpds = set([r.getSpecies() for r in reactionSBML.getListOfReactants()] + [p.getSpecies() for p in reactionSBML.getListOfProducts()])
                             if len([True for cpd_id in all_cpds if cpd_id in dicOfAssoc.keys()]) == len(all_cpds):
-                                if verbose: print("\t%s can be created from compounds mapping")
+                                if verbose: print("\t%s can be created from compounds mapping" %rxn_idOrigin)
                                 rxn_can_be_created = True
                             else:
                                 if verbose: print("\t%s not in mapping file" %rxn_idRef)
@@ -477,6 +477,8 @@ class PadmetSpec:
                     if verbose: print("\tCreating reconstructionData %s" %reconstructionData_id)                
 
                 #parses gene_association and create gene node or update already existing genes
+                #Using sbmlPlugin to recover the note section from the sbml
+                notes = sbmlPlugin.parseNotes(reactionSBML)
                 if "GENE_ASSOCIATION" in notes.keys():
                     #Using sbmlPlugin to recover all genes associated to the reaction
                     listOfGenes = sbmlPlugin.parseGeneAssoc(notes["GENE_ASSOCIATION"][0])
@@ -523,11 +525,9 @@ class PadmetSpec:
                     match_rlt.misc["SOURCE:ASSIGNMENT"].extend(rlt.misc["SOURCE:ASSIGNMENT"])
                     print("extend %s" %rlt.id_in)
                 except (IndexError, KeyError) as e:
-                    rez = self._addRelation(rlt)
-                    if rez: print("adding %s" %(rlt.toString()))
+                    self._addRelation(rlt)
             else:
-                rez = self._addRelation(rlt)
-                #if rez: print("adding %s" %(rlt.toString()))
+                self._addRelation(rlt)
 
     def generateFile(self, output):
         """
