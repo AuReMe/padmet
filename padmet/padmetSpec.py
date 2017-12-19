@@ -514,16 +514,13 @@ class PadmetSpec:
             try:
                 self.dicOfNode[k]
             except KeyError:
-                print(k)
                 self.dicOfNode[k] = v
                 
         for rlt in padmet.getAllRelation():
             if rlt.type == "is_linked_to":
-                print("is_linked_to")
                 try:
                     match_rlt = [i for i in self.dicOfRelationIn[rlt.id_in] if i.id_out == rlt.id_out][0]
                     match_rlt.misc["SOURCE:ASSIGNMENT"].extend(rlt.misc["SOURCE:ASSIGNMENT"])
-                    print("extend %s" %rlt.id_in)
                 except (IndexError, KeyError) as e:
                     self._addRelation(rlt)
             else:
@@ -1022,8 +1019,9 @@ class PadmetSpec:
         @rtype: Bool
         """
         # Delete the node from dicOfNode.
+        a = PadmetSpec("/home/maite/Forge/docker/aureme_workspace/tiso_reborn/networks/draft.padmet") 
         try:
-            self.dicOfNode.pop(node_id)
+            a.dicOfNode.pop(node_id)
         except KeyError:
             print("The id %s doesnt exist. Unable to delete" %node_id)
             return False
@@ -1031,18 +1029,34 @@ class PadmetSpec:
         # If exist delete the relations 'in' and 'out'
         try:
             # Recover the relations where the node is "in".
-            relationsIn = [rlt for rlt in self.dicOfRelationIn.get(node_id, None)]
+            relationsIn = [rlt for rlt in a.dicOfRelationIn.get(node_id, None)]
             for rltIn in relationsIn:
-                self._delRelation(rltIn)
-                if (rltIn.type in ["has_xref","has_name","has_suppData", "has_reconstructionData"]):
-                    self.delNode(rltIn.id_out)
+                print(rltIn.toString())
+                a._delRelation(rltIn)
+                try:
+                    id_out_rlts_in = [rlt for rlt in a.dicOfRelationIn.get(rltIn.id_out, None)]
+                except TypeError:
+                    try:
+                        id_out_rlts_out = [rlt for rlt in a.dicOfRelationOut.get(rltIn.id_out, None)]
+                    except TypeError:
+                        #print("%s linked to nothing" %rltIn.id_out)
+                        a.delNode(rltIn.id_out)
         except TypeError:
             pass
         try:
             # Recover the relations where the node is "out"
-            relationsOut = [rlt for rlt in self.dicOfRelationOut.get(node_id, None)]
+            relationsOut = [rlt for rlt in a.dicOfRelationOut.get(node_id, None)]
             for rltOut in relationsOut:
-                self._delRelation(rltOut)
+                a._delRelation(rltOut)
+                try:
+                    id_in_rlts_in = [rlt for rlt in a.dicOfRelationIn.get(rltOut.id_in, None)]
+                except TypeError:
+                    try:
+                        id_in_rlts_out = [rlt for rlt in a.dicOfRelationOut.get(rltOut.id_in, None)]
+                    except TypeError:
+                        #print("%s linked to nothing" %rltOut.id_in)
+                        a.delNode(rltOut.id_in)
+
         except TypeError:
             pass
         return True
@@ -1250,17 +1264,34 @@ class PadmetSpec:
             if verbose: print('removing %s' %rxn_id)
             self.delNode(rxn_id)
             
-    def get_growth_medium(self, boundary_compart = "C-BOUNDARY"):
+    def get_growth_medium(self, b_compart = "C-BOUNDARY"):
         """
         return set of metabolites corresponding to the growth medium 
         """
         growth_medium = set([rlt.id_out for rlt in self.getAllRelation() 
-        if rlt.type in ["consumes","produces"] and rlt.misc.get('COMPARTMENT',[])[0] == 'C-BOUNDARY'])
+        if rlt.type in ["consumes","produces"] and rlt.misc.get('COMPARTMENT',[])[0] == b_compart])
         if growth_medium:
             return growth_medium
         else: return None
     
-    def set_growth_medium(self, new_growth_medium = None, padmetRef_file = None, rxn_prefix = ["TransportSeed", "ExchangeSeed"], boundary_compart = "C-BOUNDARY", verbose = False):
+    def remove_growth_medium(self, verbose = False):
+        current_growth_medium = self.get_growth_medium()
+        if current_growth_medium:
+            if verbose: print("current growth medium: %s" %(list(current_growth_medium)))
+            for seed_id in current_growth_medium:
+                ex_rxn = "ExchangeSeed_"+seed_id+"_b"
+                if ex_rxn in self.dicOfNode.keys():
+                    if verbose: print("Removing %s" %ex_rxn)
+                    self.delNode(ex_rxn)
+                trans_rxn = "TransportSeed_"+seed_id+"_e"
+                if trans_rxn in self.dicOfNode.keys():
+                    if verbose: print("Removing %s" %trans_rxn)
+                    self.delNode(trans_rxn)
+            print("New growth medium: %s" %(list(self.get_growth_medium())))
+        else:
+            print("No growth medium found")
+
+    def set_growth_medium(self, new_growth_medium = None, padmetRef = None, rxn_prefix = ["TransportSeed", "ExchangeSeed"], b_compart = "C-BOUNDARY", e_compart = "e", c_compart = "c", verbose = False):
         """
         if new_growth_medium is None: just remove the growth medium by del reactions starting with rxn_prefix
         else: remove and change by the new growth_medium, a list of compounds.
@@ -1277,8 +1308,6 @@ class PadmetSpec:
         @return: None
         @rtype: None
         """
-        if padmetRef_file is not None:
-            padmetRef = PadmetRef(padmetRef_file)
         #get all rxn starting with rxn_prefix
         all_rxn_to_del = [node_id for node_id in self.dicOfNode.keys() if any(node_id.startswith(pref) for pref in rxn_prefix)]
         if len(all_rxn_to_del) == 0:
@@ -1299,7 +1328,7 @@ class PadmetSpec:
                 except KeyError:
                     if verbose: print("%s not in the network" %seed_id)
                     try:
-                        if padmetRef_file is None: raise KeyError                
+                        if padmetRef is None: raise KeyError                
                         if verbose: print("Try to copy from dbref")
                         self._copyNodeExtend(padmetRef, seed_id)
                     except KeyError:
@@ -1314,19 +1343,31 @@ class PadmetSpec:
                 exchange_rxn_id = "ExchangeSeed_"+seed_id+"_b"
                 if exchange_rxn_id not in self.dicOfNode.keys():
                     if verbose: print("creating exchange reaction: id = ExchangeSeed_%s_b" %seed_id)
-                    exchange_rxn_node = Node("reaction", exchange_rxn_id, {"DIRECTION":["REVERSIBLE"],"SOURCE":["manual"],"COMMENT":["Added to manage seeds from boundary to extracellular compartment"]})
+                    exchange_rxn_node = Node("reaction", exchange_rxn_id, {"DIRECTION":["REVERSIBLE"]})
                     self.dicOfNode[exchange_rxn_id] = exchange_rxn_node
-                    consumption_rlt = Relation(exchange_rxn_id, "consumes", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":[boundary_compart]})
+                    consumption_rlt = Relation(exchange_rxn_id, "consumes", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":[b_compart]})
                     self._addRelation(consumption_rlt)        
-                    production_rlt = Relation(exchange_rxn_id, "produces", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":["e"]})
+                    production_rlt = Relation(exchange_rxn_id, "produces", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":[e_compart]})
                     self._addRelation(production_rlt)
+                #reconstructionData:
+                reconstructionData_id = exchange_rxn_id+"_reconstructionData_MANUAL"
+                if reconstructionData_id not in self.dicOfNode.keys() and verbose:
+                    reconstructionData = {"COMMENT":["Added to manage seeds from boundary to extracellular compartment"], "CATEGORY":["MANUAL"]}
+                    reconstructionData_rlt = Relation(exchange_rxn_id,"has_reconstructionData",reconstructionData_id)
+                    self.createNode("reconstructionData", reconstructionData_id, reconstructionData, [reconstructionData_rlt])
         
                 transport_rxn_id = "TransportSeed_"+seed_id+"_e"
                 if transport_rxn_id not in self.dicOfNode.keys():
                     if verbose: print("creating trasnport reaction: id = TransportSeed_%s_e" %seed_id)
-                    transport_rxn_node = Node("reaction", transport_rxn_id, {"DIRECTION":["LEFT-TO-RIGHT"],"SOURCE":["manual"],"COMMENT":["Added to manage seeds from extracellular to cytosol compartment"]})
+                    transport_rxn_node = Node("reaction", transport_rxn_id, {"DIRECTION":["LEFT-TO-RIGHT"]})
                     self.dicOfNode[transport_rxn_id] = transport_rxn_node
-                    consumption_rlt = Relation(transport_rxn_id, "consumes", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":["e"]})
+                    consumption_rlt = Relation(transport_rxn_id, "consumes", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":[e_compart]})
                     self._addRelation(consumption_rlt)        
-                    production_rlt = Relation(transport_rxn_id, "produces", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":["c"]})
+                    production_rlt = Relation(transport_rxn_id, "produces", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":[c_compart]})
                     self._addRelation(production_rlt)
+                #reconstructionData:
+                reconstructionData_id = transport_rxn_id+"_reconstructionData_MANUAL"
+                if reconstructionData_id not in self.dicOfNode.keys() and verbose:
+                    reconstructionData = {"COMMENT":["Added to manage seeds from extracellular to cytosol compartment"], "CATEGORY":["MANUAL"]}
+                    reconstructionData_rlt = Relation(transport_rxn_id,"has_reconstructionData",reconstructionData_id)
+                    self.createNode("reconstructionData", reconstructionData_id, reconstructionData, [reconstructionData_rlt])
