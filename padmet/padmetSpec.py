@@ -1020,7 +1020,7 @@ class PadmetSpec:
         """
         # Delete the node from dicOfNode.
         try:
-            a.dicOfNode.pop(node_id)
+            self.dicOfNode.pop(node_id)
         except KeyError:
             print("The id %s doesnt exist. Unable to delete" %node_id)
             return False
@@ -1028,15 +1028,15 @@ class PadmetSpec:
         # If exist delete the relations 'in' and 'out'
         try:
             # Recover the relations where the node is "in".
-            relationsIn = [rlt for rlt in a.dicOfRelationIn.get(node_id, None)]
+            relationsIn = [rlt for rlt in self.dicOfRelationIn.get(node_id, None)]
             for rltIn in relationsIn:
                 print(rltIn.toString())
                 a._delRelation(rltIn)
                 try:
-                    id_out_rlts_in = [rlt for rlt in a.dicOfRelationIn.get(rltIn.id_out, None)]
+                    id_out_rlts_in = [rlt for rlt in self.dicOfRelationIn.get(rltIn.id_out, None)]
                 except TypeError:
                     try:
-                        id_out_rlts_out = [rlt for rlt in a.dicOfRelationOut.get(rltIn.id_out, None)]
+                        id_out_rlts_out = [rlt for rlt in self.dicOfRelationOut.get(rltIn.id_out, None)]
                     except TypeError:
                         #print("%s linked to nothing" %rltIn.id_out)
                         a.delNode(rltIn.id_out)
