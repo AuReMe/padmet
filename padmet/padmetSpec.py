@@ -1019,7 +1019,6 @@ class PadmetSpec:
         @rtype: Bool
         """
         # Delete the node from dicOfNode.
-        a = PadmetSpec("/home/maite/Forge/docker/aureme_workspace/tiso_reborn/networks/draft.padmet") 
         try:
             a.dicOfNode.pop(node_id)
         except KeyError:
@@ -1045,17 +1044,17 @@ class PadmetSpec:
             pass
         try:
             # Recover the relations where the node is "out"
-            relationsOut = [rlt for rlt in a.dicOfRelationOut.get(node_id, None)]
+            relationsOut = [rlt for rlt in self.dicOfRelationOut.get(node_id, None)]
             for rltOut in relationsOut:
-                a._delRelation(rltOut)
+                self._delRelation(rltOut)
                 try:
-                    id_in_rlts_in = [rlt for rlt in a.dicOfRelationIn.get(rltOut.id_in, None)]
+                    id_in_rlts_in = [rlt for rlt in self.dicOfRelationIn.get(rltOut.id_in, None)]
                 except TypeError:
                     try:
-                        id_in_rlts_out = [rlt for rlt in a.dicOfRelationOut.get(rltOut.id_in, None)]
+                        id_in_rlts_out = [rlt for rlt in self.dicOfRelationOut.get(rltOut.id_in, None)]
                     except TypeError:
                         #print("%s linked to nothing" %rltOut.id_in)
-                        a.delNode(rltOut.id_in)
+                        self.delNode(rltOut.id_in)
 
         except TypeError:
             pass
