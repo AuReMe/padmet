@@ -5,6 +5,7 @@ setup.py
 padmet/__init__.py
 padmet/aspGenerator.py
 padmet/node.py
+padmet/old_wikiGenerator.py
 padmet/padmetRef.py
 padmet/padmetSpec.py
 padmet/padmetSpec_v2.py

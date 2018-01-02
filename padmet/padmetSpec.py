@@ -1030,8 +1030,8 @@ class PadmetSpec:
             # Recover the relations where the node is "in".
             relationsIn = [rlt for rlt in self.dicOfRelationIn.get(node_id, None)]
             for rltIn in relationsIn:
-                print(rltIn.toString())
-                a._delRelation(rltIn)
+                #print(rltIn.toString())
+                self._delRelation(rltIn)
                 try:
                     id_out_rlts_in = [rlt for rlt in self.dicOfRelationIn.get(rltIn.id_out, None)]
                 except TypeError:
@@ -1039,7 +1039,7 @@ class PadmetSpec:
                         id_out_rlts_out = [rlt for rlt in self.dicOfRelationOut.get(rltIn.id_out, None)]
                     except TypeError:
                         #print("%s linked to nothing" %rltIn.id_out)
-                        a.delNode(rltIn.id_out)
+                        self.delNode(rltIn.id_out)
         except TypeError:
             pass
         try:
@@ -1310,13 +1310,14 @@ class PadmetSpec:
         #get all rxn starting with rxn_prefix
         all_rxn_to_del = [node_id for node_id in self.dicOfNode.keys() if any(node_id.startswith(pref) for pref in rxn_prefix)]
         if len(all_rxn_to_del) == 0:
-            print("No growth medium found")
+            if verbose: print("No growth medium found")
+            pass
         else:
             for rxn_id in all_rxn_to_del:
-                print("removing %s" %(rxn_id))
+                if verbose: print("removing %s" %(rxn_id))
                 if rxn_id in self.dicOfNode.keys():
                     self.delNode(rxn_id)
-            print("%s reactions removed" %(len(all_rxn_to_del)))
+            if verbose: print("%s reactions removed" %(len(all_rxn_to_del)))
     
         #creating new reactions create growth medium
         if new_growth_medium is not None:

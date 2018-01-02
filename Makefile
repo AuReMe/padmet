@@ -37,3 +37,6 @@ real_register:
 real_install:
 	python setup.py sdist upload
 	pip install padmet
+push:
+	python setup.py sdist upload
+
