@@ -756,7 +756,7 @@ class PadmetSpec:
                 
         with open(all_reactions,'w') as f:
             header = ["dbRef_id", "Common name", "formula (with id)", 
-            "formula (with common name)", "in pathways", "associated genes", "sources"]
+            "formula (with common name)", "in pathways", "associated genes", "categories"]
             header = "\t".join(header)+"\n"
             f.write(header)
 
@@ -811,7 +811,7 @@ class PadmetSpec:
                 sources = []
                 for rlt in self.dicOfRelationIn[rnode_id]:
                     if rlt.type == "has_reconstructionData":
-                        src = self.dicOfNode[rlt.id_out].misc["SOURCE"][0]
+                        src = self.dicOfNode[rlt.id_out].misc["CATEGORY"][0]
                         sources.append(src)
                 sources = ";".join(sources)
 
