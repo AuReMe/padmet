@@ -1348,7 +1348,7 @@ class PadmetSpec:
                             print("new compound created: id = %s" %seed_id)
                 exchange_rxn_id = "ExchangeSeed_"+seed_id
                 if exchange_rxn_id not in self.dicOfNode.keys():
-                    if verbose: print("creating exchange reaction: id = ExchangeSeed_%s_b" %seed_id)
+                    if verbose: print("creating exchange reaction: id = %s" %exchange_rxn_id)
                     exchange_rxn_node = Node("reaction", exchange_rxn_id, {"DIRECTION":["REVERSIBLE"]})
                     self.dicOfNode[exchange_rxn_id] = exchange_rxn_node
                     consumption_rlt = Relation(exchange_rxn_id, "consumes", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":[b_compart]})
@@ -1364,7 +1364,7 @@ class PadmetSpec:
         
                 transport_rxn_id = "TransportSeed_"+seed_id
                 if transport_rxn_id not in self.dicOfNode.keys():
-                    if verbose: print("creating trasnport reaction: id = TransportSeed_%s_e" %seed_id)
+                    if verbose: print("creating trasnport reaction: id = %s" %transport_rxn_id)
                     transport_rxn_node = Node("reaction", transport_rxn_id, {"DIRECTION":["LEFT-TO-RIGHT"]})
                     self.dicOfNode[transport_rxn_id] = transport_rxn_node
                     consumption_rlt = Relation(transport_rxn_id, "consumes", seed_id, {"STOICHIOMETRY":[1.0],"COMPARTMENT":[e_compart]})
