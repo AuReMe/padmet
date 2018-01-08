@@ -425,7 +425,7 @@ class PadmetSpec:
                     if product.boundary_condition:
                         product_compart = "C-BOUNDARY"
                     else:
-                    product_compart = model.getElementBySId(product.getSpecies()).getCompartment()
+                        product_compart = model.getElementBySId(product.getSpecies()).getCompartment()
                         if product_compart is None:
                             if verbose: print("\t\t%s has no compart, set to 'c'" %product)
                             product_compart = "c"
