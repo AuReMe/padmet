@@ -422,7 +422,7 @@ class PadmetSpec:
                     else:
                         product_id = sbmlPlugin.convert_from_coded_id(product.getSpecies())[0]
                     #print(product_id)
-                    if model.getElementBySId(product.getSpecies()):
+                    if model.getElementBySId(product.getSpecies()).boundary_condition:
                         product_compart = "C-BOUNDARY"
                     else:
                         product_compart = model.getElementBySId(product.getSpecies()).getCompartment()
