@@ -3,7 +3,6 @@ README.md
 setup.cfg
 setup.py
 padmet/__init__.py
-padmet/aspGenerator.py
 padmet/node.py
 padmet/padmetRef.py
 padmet/padmetSpec.py

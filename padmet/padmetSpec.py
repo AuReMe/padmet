@@ -393,10 +393,13 @@ class PadmetSpec:
                     else:
                         reactant_id = sbmlPlugin.convert_from_coded_id(reactant.getSpecies())[0]
                     #print(reactant_id)
-                    reactant_compart = model.getElementBySId(reactant.getSpecies()).getCompartment()
-                    if reactant_compart is None:
-                        if verbose: print("\t\t%s has no compart, set to 'c'" %reactant_id)
-                        reactant_compart = "c"
+                    if reactant.boundary_condition:
+                        reactant_compart = "C-BOUNDARY"
+                    else:
+                        reactant_compart = model.getElementBySId(reactant.getSpecies()).getCompartment()
+                        if reactant_compart is None:
+                            if verbose: print("\t\t%s has no compart, set to 'c'" %reactant_id)
+                            reactant_compart = "c"
                     reactant_stoich = reactant.getStoichiometry()
                     consumes_rlt = Relation(rxn_idRef,"consumes",reactant_id, {"STOICHIOMETRY":[reactant_stoich],"COMPARTMENT":[reactant_compart]})
                     #if reactant id not exist, create new compound node, else just add a new relation
@@ -419,10 +422,13 @@ class PadmetSpec:
                     else:
                         product_id = sbmlPlugin.convert_from_coded_id(product.getSpecies())[0]
                     #print(product_id)
+                    if product.boundary_condition:
+                        product_compart = "C-BOUNDARY"
+                    else:
                     product_compart = model.getElementBySId(product.getSpecies()).getCompartment()
-                    if product_compart is None:
-                        if verbose: print("\t\t%s has no compart, set to 'c'" %product)
-                        product_compart = "c"
+                        if product_compart is None:
+                            if verbose: print("\t\t%s has no compart, set to 'c'" %product)
+                            product_compart = "c"
                     product_stoich = product.getStoichiometry()
                     produces_rlt = Relation(rxn_idRef, "produces", product_id, {"STOICHIOMETRY":[product_stoich],"COMPARTMENT":[product_compart]})
 
@@ -1278,11 +1284,11 @@ class PadmetSpec:
         if current_growth_medium:
             if verbose: print("current growth medium: %s" %(list(current_growth_medium)))
             for seed_id in current_growth_medium:
-                ex_rxn = "ExchangeSeed_"+seed_id+"_b"
+                ex_rxn = "ExchangeSeed_"+seed_id
                 if ex_rxn in self.dicOfNode.keys():
                     if verbose: print("Removing %s" %ex_rxn)
                     self.delNode(ex_rxn)
-                trans_rxn = "TransportSeed_"+seed_id+"_e"
+                trans_rxn = "TransportSeed_"+seed_id
                 if trans_rxn in self.dicOfNode.keys():
                     if verbose: print("Removing %s" %trans_rxn)
                     self.delNode(trans_rxn)
@@ -1340,7 +1346,7 @@ class PadmetSpec:
                         self.dicOfNode[seed_id] = seed_node
                         if verbose:
                             print("new compound created: id = %s" %seed_id)
-                exchange_rxn_id = "ExchangeSeed_"+seed_id+"_b"
+                exchange_rxn_id = "ExchangeSeed_"+seed_id
                 if exchange_rxn_id not in self.dicOfNode.keys():
                     if verbose: print("creating exchange reaction: id = ExchangeSeed_%s_b" %seed_id)
                     exchange_rxn_node = Node("reaction", exchange_rxn_id, {"DIRECTION":["REVERSIBLE"]})
@@ -1356,7 +1362,7 @@ class PadmetSpec:
                     reconstructionData_rlt = Relation(exchange_rxn_id,"has_reconstructionData",reconstructionData_id)
                     self.createNode("reconstructionData", reconstructionData_id, reconstructionData, [reconstructionData_rlt])
         
-                transport_rxn_id = "TransportSeed_"+seed_id+"_e"
+                transport_rxn_id = "TransportSeed_"+seed_id
                 if transport_rxn_id not in self.dicOfNode.keys():
                     if verbose: print("creating trasnport reaction: id = TransportSeed_%s_e" %seed_id)
                     transport_rxn_node = Node("reaction", transport_rxn_id, {"DIRECTION":["LEFT-TO-RIGHT"]})
