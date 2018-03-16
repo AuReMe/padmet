@@ -1358,7 +1358,7 @@ class PadmetSpec:
                 #reconstructionData:
                 reconstructionData_id = exchange_rxn_id+"_reconstructionData_MANUAL"
                 if reconstructionData_id not in self.dicOfNode.keys() and verbose:
-                    reconstructionData = {"COMMENT":["Added to manage seeds from boundary to extracellular compartment"], "CATEGORY":["MANUAL"]}
+                    reconstructionData = {"SOURCE":["IMPORT_FROM_MEDIUM"], "COMMENT":["Added to manage seeds from boundary to extracellular compartment"], "CATEGORY":["MANUAL"]}
                     reconstructionData_rlt = Relation(exchange_rxn_id,"has_reconstructionData",reconstructionData_id)
                     self.createNode("reconstructionData", reconstructionData_id, reconstructionData, [reconstructionData_rlt])
         
@@ -1374,6 +1374,6 @@ class PadmetSpec:
                 #reconstructionData:
                 reconstructionData_id = transport_rxn_id+"_reconstructionData_MANUAL"
                 if reconstructionData_id not in self.dicOfNode.keys() and verbose:
-                    reconstructionData = {"COMMENT":["Added to manage seeds from extracellular to cytosol compartment"], "CATEGORY":["MANUAL"]}
+                    reconstructionData = {"SOURCE":["IMPORT_FROM_MEDIUM"], "COMMENT":["Added to manage seeds from extracellular to cytosol compartment"], "CATEGORY":["MANUAL"]}
                     reconstructionData_rlt = Relation(transport_rxn_id,"has_reconstructionData",reconstructionData_id)
                     self.createNode("reconstructionData", reconstructionData_id, reconstructionData, [reconstructionData_rlt])
