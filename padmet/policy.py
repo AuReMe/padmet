@@ -20,19 +20,25 @@ along with padmet. If not, see <http://www.gnu.org/licenses/>.
 Description:
 Define a policy in padmet object.
 """
+#pylint: disable=old-style-class
+#pylint: disable=invalid-name
 
 class Policy:
     """
     A Policy define the types of relations, nodes in a network.
-    A policy contains 3 attributs:
-        policy_in_array: Is a list of list of arcs (eg: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
-        class_of_node: Is a set of all the type of nodes represented in the network (eg: set(reaction, compound))
-        type_of_arc: Is a dictionnary of all the types of arcs represented in the network (eg: {reaction:[consumes,compounds]})
+    A policy contains 3 attributes:
+        policy_in_array: Is a list of list of arcs
+        (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
+        class_of_node: Is a set of all the type of nodes represented in the network
+        (e.g: set(reaction, compound))
+        type_of_arc: Is a dictionary of all the types of arcs represented in the network
+        (e.g: {reaction:[consumes,compounds]})
     """
 
-    def __init__(self,policy_in_array = None):
+    def __init__(self, policy_in_array=None):
         """
-        @param policy_in_array: Is a list of list of arcs (eg: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
+        @param policy_in_array: Is a list of list of arcs
+        (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
         @type policy_in_array: list
         @return: _
         @rtype: None
@@ -44,11 +50,12 @@ class Policy:
             self.policy_in_array = []
             self.class_of_node = set()
             self.type_of_arc = {}
-            
-    def setPolicyInArray(self,policy_in_array):
+
+    def setPolicyInArray(self, policy_in_array):
         """
         From policy_in_array, set class_of_node and type_of_arc
-        @param policy_in_array: Is a list of list of arcs (eg: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
+        @param policy_in_array: Is a list of list of arcs
+        (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
         @type policy_in_array: list
         @return: _
         @rtype: None
@@ -68,7 +75,7 @@ class Policy:
         @rtype: list
         """
         return self.policy_in_array
-            
+
     def _setClassOfNode(self):
         """
         From self.policy_in_array set class_of_node
@@ -101,19 +108,19 @@ class Policy:
         self.type_of_arc = {}
         if len(self.class_of_node) != 0:
             for _class in self.class_of_node:
-                self.type_of_arc[_class] = [] 
-                
+                self.type_of_arc[_class] = []
+
             for line in self.policy_in_array:
                 arc = line[1:]
                 self.type_of_arc[line[0]].append(arc)
         else:
             raise ValueError("PolicyInArray and/or classOfNode are not defined")
-            
+
     def getTypeOfArc(self):
         """
         return class_of_node
         @return: self.class_of_node
         @rtype: set
         """
-        return(self.type_of_arc)
+        return self.type_of_arc
 
