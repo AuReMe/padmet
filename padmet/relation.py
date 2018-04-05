@@ -20,24 +20,26 @@ along with padmet. If not, see <http://www.gnu.org/licenses/>.
 Description:
 Define the class Relation used in padmet.
 """
+#pylint: disable=old-style-class
+#pylint: disable=invalid-name
 
 class Relation:
     """
     A Relation represent a link between two elements (node) in a metabolic network
-    eg: RXN-1 consumes CPD-1
-    A Relation contains 4 attributs:
-        _type: The type of the relation (eg: 'consumes' or 'produces')
-        id_in: the identifier of the node corresponding to the subject of the relation (eg: 'RXN-1)
-        id_out: the identifier of the node corresponding to the object of the relation (eg: 'CPD-1)
-        _misc: A dictionnary of miscellaneous data, k = tag of the data, v = list of values
-        (eg: {'STOICHIOMETRY':[1.0]})
+    e.g: RXN-1 consumes CPD-1
+    A Relation contains 4 attributes:
+        _type: The type of the relation (e.g: 'consumes' or 'produces')
+        id_in: the identifier of the node corresponding to the subject of the relation (e.g: 'RXN-1)
+        id_out: the identifier of the node corresponding to the object of the relation (e.g: 'CPD-1)
+        _misc: A dictionary of miscellaneous data, k = tag of the data, v = list of values
+        (e.g: {'STOICHIOMETRY':[1.0]})
     """
-    def __init__(self, id_in, _type, id_out, misc = None):
+    def __init__(self, id_in, _type, id_out, misc=None):
         """
-        @param _type: The type of the relation (eg: 'consumes' or 'produces')
+        @param _type: The type of the relation (e.g: 'consumes' or 'produces')
         @param id_in: the identifier of the node corresponding to the subject of the relation ('RXN-1)
         @param id_out: the identifier of the node corresponding to the object of the relation ('CPD-1)
-        @param _misc: A dictionnary of miscellaneous data (eg: {'STOICHIOMETRY':[1.0]})
+        @param _misc: A dictionary of miscellaneous data (e.g: {'STOICHIOMETRY':[1.0]})
         @type _type, _id: str
         @type misc: dict
         @return: _
@@ -58,15 +60,15 @@ class Relation:
         sep = "\t"
         line = sep.join([self.id_in, self.type, self.id_out])
         if len(self.misc) != 0:
-            for k,n in self.misc.iteritems():
+            for k, n in self.misc.iteritems():
                 if len(n) == 1:
-                    line += sep + sep.join([str(k),str(n[0])])
+                    line += sep + sep.join([str(k), str(n[0])])
                 else:
                     for i in range(len(n)):
-                        line += sep + sep.join([str(k),str(n[i])])
+                        line += sep + sep.join([str(k), str(n[i])])
         return line
-    
-    def compare(self,relation):
+
+    def compare(self, relation):
         """
         compare 2 relations. return True or False
         @param relation: the relation to compare
