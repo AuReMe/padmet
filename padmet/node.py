@@ -20,21 +20,22 @@ along with padmet. If not, see <http://www.gnu.org/licenses/>.
 Description:
 Defines the class Node used in padmet.
 """
-
+#pylint: disable=too-few-public-methods
+#pylint: disable=invalid-name
 class Node:
     """
-    A Node represent an element in a metabolic network (eg: compound, reaction)
-    A Node contains 3 attributs:
-        _type: The type of the node (eg: 'reaction' or 'pathway')
-        _id: the identifier of the node (eg: 'rxn-45)
-        _misc: A dictionnary of miscellaneous data, k = tag of the data, v = list of values
-        (eg: {'DIRECTION':[REVERSIBLE]})
+    A Node represent an element in a metabolic network (e.g: compound, reaction)
+    A Node contains 3 attributes:
+        _type: The type of the node (e.g: 'reaction' or 'pathway')
+        _id: the identifier of the node (e.g: 'rxn-45)
+        _misc: A dictionary of miscellaneous data, k = tag of the data, v = list of values
+        (e.g: {'DIRECTION':[REVERSIBLE]})
     """
-    def __init__(self, _type, _id, misc = None):
+    def __init__(self, _type, _id, misc=None):
         """
         @param _type: The type of the node ('reaction','pathway')
         @param _id: the identifier of the node ('rxn-45)
-        @param _misc: A dictionnary of miscellaneous data ({'DIRECTION':[REVERSIBLE]})
+        @param _misc: A dictionary of miscellaneous data ({'DIRECTION':[REVERSIBLE]})
         @type _type, _id: str
         @type misc: dict
         @return: _
@@ -44,7 +45,7 @@ class Node:
         self.id = _id
         #if misc is None so misc = {}
         self.misc = misc or {}
-    
+
     def toString(self):
         """
         This function is used to stock the information relative to the node
@@ -55,10 +56,10 @@ class Node:
         sep = "\t"
         line = sep.join([self.type, self.id])
         if len(self.misc) != 0:
-            for k,n in self.misc.iteritems():
+            for k, n in self.misc.iteritems():
                 if len(n) == 1:
-                    line += sep + sep.join([str(k),str(n[0])])
+                    line += sep + sep.join([str(k), str(n[0])])
                 else:
                     for i in range(len(n)):
-                        line += sep + sep.join([str(k),str(n[i])])
+                        line += sep + sep.join([str(k), str(n[i])])
         return line
