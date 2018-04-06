@@ -27,7 +27,7 @@ class Policy:
     """
     A Policy define the types of relations, nodes in a network.
     A policy contains 3 attributes:
-        policy_in_array: Is a list of list of arcs
+        policy_in_array: Is a list of list of relations
         (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
         class_of_node: Is a set of all the type of nodes represented in the network
         (e.g: set(reaction, compound))
@@ -37,11 +37,12 @@ class Policy:
 
     def __init__(self, policy_in_array=None):
         """
-        @param policy_in_array: Is a list of list of arcs
-        (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
-        @type policy_in_array: list
-        @return: _
-        @rtype: None
+        Parameters
+        ----------
+        policy_in_array: list
+            Is a list of list of relations
+            (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
+            (the default value is None)
         """
         if policy_in_array is not None:
             self.setPolicyInArray(policy_in_array)
@@ -54,11 +55,12 @@ class Policy:
     def setPolicyInArray(self, policy_in_array):
         """
         From policy_in_array, set class_of_node and type_of_arc
-        @param policy_in_array: Is a list of list of arcs
-        (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
-        @type policy_in_array: list
-        @return: _
-        @rtype: None
+        
+        Parameters
+        ----------
+        policy_in_array: list
+            Is a list of list of arcs
+            (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
         """
         for relation in policy_in_array:
             if len(relation) < 3:
@@ -70,19 +72,17 @@ class Policy:
 
     def getPolicyInArray(self):
         """
-        return policy_in_array
-        @return: self.policy_in_array
-        @rtype: list
+        Returns
+        -------
+        list
+            return policy_in_array
         """
         return self.policy_in_array
 
     def _setClassOfNode(self):
         """
         From self.policy_in_array set class_of_node
-        @return: _
-        @rtype: None
         """
-
         self.class_of_node = set()
         if len(self.policy_in_array) != 0:
             for line in self.policy_in_array:
@@ -93,17 +93,16 @@ class Policy:
 
     def getClassOfNode(self):
         """
-        return class_of_node
-        @return: self.class_of_node
-        @rtype: set
+        Returns
+        -------
+        set
+            return class_of_node
         """
         return self.class_of_node
 
     def _setTypeOfArc(self):
         """
         From self.policy_in_array and self.class_of_node set type_of_arc
-        @return: _
-        @rtype: None
         """
         self.type_of_arc = {}
         if len(self.class_of_node) != 0:
@@ -118,9 +117,10 @@ class Policy:
 
     def getTypeOfArc(self):
         """
-        return class_of_node
-        @return: self.class_of_node
-        @rtype: set
+        Returns
+        -------
+        dict
+            return type_of_arc
         """
         return self.type_of_arc
 

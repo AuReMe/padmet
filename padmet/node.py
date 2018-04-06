@@ -22,24 +22,27 @@ Defines the class Node used in padmet.
 """
 #pylint: disable=too-few-public-methods
 #pylint: disable=invalid-name
+#pylint: disable=old-style-class
 class Node:
     """
     A Node represent an element in a metabolic network (e.g: compound, reaction)
     A Node contains 3 attributes:
-        _type: The type of the node (e.g: 'reaction' or 'pathway')
-        _id: the identifier of the node (e.g: 'rxn-45)
-        _misc: A dictionary of miscellaneous data, k = tag of the data, v = list of values
+        type: The type of the node (e.g: 'reaction' or 'pathway')
+        id: the identifier of the node (e.g: 'rxn-45)
+        misc: A dictionary of miscellaneous data, k = tag of the data, v = list of values
         (e.g: {'DIRECTION':[REVERSIBLE]})
     """
     def __init__(self, _type, _id, misc=None):
         """
-        @param _type: The type of the node ('reaction','pathway')
-        @param _id: the identifier of the node ('rxn-45)
-        @param _misc: A dictionary of miscellaneous data ({'DIRECTION':[REVERSIBLE]})
-        @type _type, _id: str
-        @type misc: dict
-        @return: _
-        @rtype: None
+        Parameters
+        ----------
+        _type: str
+            The type of the node ('reaction','pathway')
+        _id: str
+            the identifier of the node ('rxn-45)
+        misc: dict
+            A dictionary of miscellaneous data ({'DIRECTION':[REVERSIBLE]})
+            (the default value is None)
         """
         self.type = _type
         self.id = _id
@@ -50,8 +53,11 @@ class Node:
         """
         This function is used to stock the information relative to the node
         in a padmet file.
-        @return: string with all data sep by tab' ex: reaction\tRXN0..
-        @rtype: str
+
+        Returns
+        -------
+        str
+            string with all data sep by tab' ex: reaction\tRXN0..
         """
         sep = "\t"
         line = sep.join([self.type, self.id])

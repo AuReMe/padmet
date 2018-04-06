@@ -36,14 +36,16 @@ class Relation:
     """
     def __init__(self, id_in, _type, id_out, misc=None):
         """
-        @param _type: The type of the relation (e.g: 'consumes' or 'produces')
-        @param id_in: the identifier of the node corresponding to the subject of the relation ('RXN-1)
-        @param id_out: the identifier of the node corresponding to the object of the relation ('CPD-1)
-        @param _misc: A dictionary of miscellaneous data (e.g: {'STOICHIOMETRY':[1.0]})
-        @type _type, _id: str
-        @type misc: dict
-        @return: _
-        @rtype: None
+        Parameters
+        ----------
+        id_in: str
+            the identifier of the node corresponding to the subject of the relation ('RXN-1)
+        _type: str
+            The type of the relation (e.g: 'consumes' or 'produces')
+        id_out: str
+            the identifier of the node corresponding to the object of the relation ('CPD-1)
+        _misc: dict
+            A dictionary of miscellaneous data (e.g: {'STOICHIOMETRY':[1.0]})
         """
         self.id_in = id_in
         self.type = _type
@@ -54,8 +56,11 @@ class Relation:
         """
         This function is used to stock the information relative to the node
         in a padmet file.
-        @return: string with all data sep by tab' ex: reaction\tRXN0..
-        @rtype: str
+
+        Returns
+        -------
+        str
+            string with all data sep by tab' ex: RXN0\tconsumes\tCPD-A..
         """
         sep = "\t"
         line = sep.join([self.id_in, self.type, self.id_out])
@@ -70,11 +75,17 @@ class Relation:
 
     def compare(self, relation):
         """
-        compare 2 relations. return True or False
-        @param relation: the relation to compare
-        @type relation: Relation
-        @return: True,False
-        @rtype: bool
+        compare 2 relations. First check if ids and type are the same, then check
+        the misc dictionary.
+        Parameters
+        ----------
+        relation: padmet.Relation
+            the relation to compare
+
+        Returns
+        -------
+        bool
+            Return True if relation are the same, False if not        
         """
         if set([relation.id_in, relation.type, relation.id_out]) == set([self.id_in, self.type, self.id_out]):
             if relation.misc == self.misc:
