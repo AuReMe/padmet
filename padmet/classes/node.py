@@ -21,8 +21,6 @@ Description:
 Defines the class Node used in padmet.
 """
 #pylint: disable=too-few-public-methods
-#pylint: disable=invalid-name
-#pylint: disable=old-style-class
 class Node:
     """
     A Node represent an element in a metabolic network (e.g: compound, reaction)

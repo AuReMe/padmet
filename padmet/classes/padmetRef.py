@@ -20,17 +20,12 @@ along with padmet. If not, see <http://www.gnu.org/licenses/>.
 Description:
 PadmetRef is an object representing a DATABASE of metabolic network.
 """
-from policy import Policy
-from node import Node
-from relation import Relation
-from sbmlPlugin import convert_from_coded_id
-
-try:
-    from libsbml import *
-except:
-    print("package libsbml needed, use this cmd:\n pip install "
-          + "python-libsbml")
-    exit()
+from . import Policy
+from . import Node
+from . import Relation
+from ..utils.sbmlPlugin import convert_from_coded_id
+import libsbml
+__all__ = ['PadmetRef']
 
 class PadmetRef:
     """
@@ -257,7 +252,7 @@ class PadmetRef:
         """
         #using libSbml to read sbml_file
         if verbose: print ("loading sbml file: %s" %sbml_file)
-        reader = SBMLReader()
+        reader = libsbml.SBMLReader()
         document = reader.readSBML(sbml_file)
         for i in range(document.getNumErrors()):
             print(document.getError(i).getMessage())

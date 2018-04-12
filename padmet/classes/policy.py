@@ -20,9 +20,6 @@ along with padmet. If not, see <http://www.gnu.org/licenses/>.
 Description:
 Define a policy in padmet object.
 """
-#pylint: disable=old-style-class
-#pylint: disable=invalid-name
-
 class Policy:
     """
     A Policy define the types of relations, nodes in a network.

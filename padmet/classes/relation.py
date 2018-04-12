@@ -20,8 +20,6 @@ along with padmet. If not, see <http://www.gnu.org/licenses/>.
 Description:
 Define the class Relation used in padmet.
 """
-#pylint: disable=old-style-class
-#pylint: disable=invalid-name
 
 class Relation:
     """
@@ -31,7 +29,7 @@ class Relation:
         _type: The type of the relation (e.g: 'consumes' or 'produces')
         id_in: the identifier of the node corresponding to the subject of the relation (e.g: 'RXN-1)
         id_out: the identifier of the node corresponding to the object of the relation (e.g: 'CPD-1)
-        _misc: A dictionary of miscellaneous data, k = tag of the data, v = list of values
+        misc: A dictionary of miscellaneous data, k = tag of the data, v = list of values
         (e.g: {'STOICHIOMETRY':[1.0]})
     """
     def __init__(self, id_in, _type, id_out, misc=None):
