@@ -1,0 +1,575 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>padmet package &mdash; padmet 2.6.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="padmet 2.6.7 documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> padmet
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.6.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">padmet package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-padmet.node">padmet.node module</a></li>
+<li><a class="reference internal" href="#padmet-padmetref-module">padmet.padmetRef module</a></li>
+<li><a class="reference internal" href="#padmet-padmetspec-module">padmet.padmetSpec module</a></li>
+<li><a class="reference internal" href="#module-padmet.policy">padmet.policy module</a></li>
+<li><a class="reference internal" href="#module-padmet.relation">padmet.relation module</a></li>
+<li><a class="reference internal" href="#module-padmet.sbmlPlugin">padmet.sbmlPlugin module</a></li>
+<li><a class="reference internal" href="#module-padmet">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">padmet</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>padmet package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/padmet.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+/* nice headers on first paragraph of info/warning boxes */
+.admonition .first {
+    margin: -12px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    color: #fff;
+    line-height: 1;
+    display: block;
+}
+.admonition.warning .first {
+    background: #f0b37e;
+}
+.admonition.note .first {
+    background: #6ab0de;
+}
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="padmet-package">
+<h1>padmet package<a class="headerlink" href="#padmet-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-padmet.node">
+<span id="padmet-node-module"></span><h2>padmet.node module<a class="headerlink" href="#module-padmet.node" title="Permalink to this headline">¶</a></h2>
+<p>This file is part of padmet.</p>
+<p>padmet is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>padmet is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with padmet. If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+<p>&#64;author: Meziane AITE, <a class="reference external" href="mailto:meziane&#46;aite&#37;&#52;&#48;inria&#46;fr">meziane<span>&#46;</span>aite<span>&#64;</span>inria<span>&#46;</span>fr</a>
+Description:
+Defines the class Node used in padmet.</p>
+<dl class="class">
+<dt id="padmet.node.Node">
+<em class="property">class </em><code class="descclassname">padmet.node.</code><code class="descname">Node</code><span class="sig-paren">(</span><em>_type</em>, <em>_id</em>, <em>misc=None</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.node.Node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A Node represent an element in a metabolic network (eg: compound, reaction)
+A Node contains 3 attributs:</p>
+<blockquote>
+<div>_type: The type of the node (eg: ‘reaction’ or ‘pathway’)
+_id: the identifier of the node (eg: ‘rxn-45)
+_misc: A dictionnary of miscellaneous data, k = tag of the data, v = list of values
+(eg: {‘DIRECTION’:[REVERSIBLE]})</div></blockquote>
+<dl class="method">
+<dt id="padmet.node.Node.toString">
+<code class="descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#padmet.node.Node.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to stock the information relative to the node
+in a padmet file.
+&#64;return: string with all data sep by tab’ ex: reaction  RXN0..
+&#64;rtype: str</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="padmet-padmetref-module">
+<h2>padmet.padmetRef module<a class="headerlink" href="#padmet-padmetref-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="padmet-padmetspec-module">
+<h2>padmet.padmetSpec module<a class="headerlink" href="#padmet-padmetspec-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-padmet.policy">
+<span id="padmet-policy-module"></span><h2>padmet.policy module<a class="headerlink" href="#module-padmet.policy" title="Permalink to this headline">¶</a></h2>
+<p>This file is part of padmet.</p>
+<p>padmet is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>padmet is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with padmet. If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+<p>&#64;author: Meziane AITE, <a class="reference external" href="mailto:meziane&#46;aite&#37;&#52;&#48;inria&#46;fr">meziane<span>&#46;</span>aite<span>&#64;</span>inria<span>&#46;</span>fr</a>
+Description:
+Define a policy in padmet object.</p>
+<dl class="class">
+<dt id="padmet.policy.Policy">
+<em class="property">class </em><code class="descclassname">padmet.policy.</code><code class="descname">Policy</code><span class="sig-paren">(</span><em>policy_in_array=None</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.policy.Policy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A Policy define the types of relations, nodes in a network.
+A policy contains 3 attributs:</p>
+<blockquote>
+<div>policy_in_array: Is a list of list of arcs (eg: [[‘reaction’,’consumes’,’compounds’],[‘reaction’,’produces’,’compounds’]])
+class_of_node: Is a set of all the type of nodes represented in the network (eg: set(reaction, compound))
+type_of_arc: Is a dictionnary of all the types of arcs represented in the network (eg: {reaction:[consumes,compounds]})</div></blockquote>
+<dl class="method">
+<dt id="padmet.policy.Policy.getClassOfNode">
+<code class="descname">getClassOfNode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#padmet.policy.Policy.getClassOfNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>return class_of_node
+&#64;return: self.class_of_node
+&#64;rtype: set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="padmet.policy.Policy.getPolicyInArray">
+<code class="descname">getPolicyInArray</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#padmet.policy.Policy.getPolicyInArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>return policy_in_array
+&#64;return: self.policy_in_array
+&#64;rtype: list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="padmet.policy.Policy.getTypeOfArc">
+<code class="descname">getTypeOfArc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#padmet.policy.Policy.getTypeOfArc" title="Permalink to this definition">¶</a></dt>
+<dd><p>return class_of_node
+&#64;return: self.class_of_node
+&#64;rtype: set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="padmet.policy.Policy.setPolicyInArray">
+<code class="descname">setPolicyInArray</code><span class="sig-paren">(</span><em>policy_in_array</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.policy.Policy.setPolicyInArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>From policy_in_array, set class_of_node and type_of_arc
+&#64;param policy_in_array: Is a list of list of arcs (eg: [[‘reaction’,’consumes’,’compounds’],[‘reaction’,’produces’,’compounds’]])
+&#64;type policy_in_array: list
+&#64;return: _
+&#64;rtype: None</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-padmet.relation">
+<span id="padmet-relation-module"></span><h2>padmet.relation module<a class="headerlink" href="#module-padmet.relation" title="Permalink to this headline">¶</a></h2>
+<p>This file is part of padmet.</p>
+<p>padmet is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>padmet is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with padmet. If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+<p>&#64;author: Meziane AITE, <a class="reference external" href="mailto:meziane&#46;aite&#37;&#52;&#48;inria&#46;fr">meziane<span>&#46;</span>aite<span>&#64;</span>inria<span>&#46;</span>fr</a>
+Description:
+Define the class Relation used in padmet.</p>
+<dl class="class">
+<dt id="padmet.relation.Relation">
+<em class="property">class </em><code class="descclassname">padmet.relation.</code><code class="descname">Relation</code><span class="sig-paren">(</span><em>id_in</em>, <em>_type</em>, <em>id_out</em>, <em>misc=None</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.relation.Relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A Relation represent a link between two elements (node) in a metabolic network
+eg: RXN-1 consumes CPD-1
+A Relation contains 4 attributs:</p>
+<blockquote>
+<div>_type: The type of the relation (eg: ‘consumes’ or ‘produces’)
+id_in: the identifier of the node corresponding to the subject of the relation (eg: ‘RXN-1)
+id_out: the identifier of the node corresponding to the object of the relation (eg: ‘CPD-1)
+_misc: A dictionnary of miscellaneous data, k = tag of the data, v = list of values
+(eg: {‘STOICHIOMETRY’:[1.0]})</div></blockquote>
+<dl class="method">
+<dt id="padmet.relation.Relation.compare">
+<code class="descname">compare</code><span class="sig-paren">(</span><em>relation</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.relation.Relation.compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>compare 2 relations. return True or False
+&#64;param relation: the relation to compare
+&#64;type relation: Relation
+&#64;return: True,False
+&#64;rtype: bool</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="padmet.relation.Relation.toString">
+<code class="descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#padmet.relation.Relation.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to stock the information relative to the node
+in a padmet file.
+&#64;return: string with all data sep by tab’ ex: reaction  RXN0..
+&#64;rtype: str</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-padmet.sbmlPlugin">
+<span id="padmet-sbmlplugin-module"></span><h2>padmet.sbmlPlugin module<a class="headerlink" href="#module-padmet.sbmlPlugin" title="Permalink to this headline">¶</a></h2>
+<p>This file is part of padmet.</p>
+<p>padmet is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>padmet is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with padmet. If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+<p>&#64;author: Meziane AITE, <a class="reference external" href="mailto:meziane&#46;aite&#37;&#52;&#48;inria&#46;fr">meziane<span>&#46;</span>aite<span>&#64;</span>inria<span>&#46;</span>fr</a>
+Description:
+This module contains some functions used for sbml file in addition to libsbml</p>
+<dl class="function">
+<dt id="padmet.sbmlPlugin.ascii_replace">
+<code class="descclassname">padmet.sbmlPlugin.</code><code class="descname">ascii_replace</code><span class="sig-paren">(</span><em>match</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.sbmlPlugin.ascii_replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>recover banned char from the integer ordinal in the reg.match</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="padmet.sbmlPlugin.convert_from_coded_id">
+<code class="descclassname">padmet.sbmlPlugin.</code><code class="descname">convert_from_coded_id</code><span class="sig-paren">(</span><em>coded</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.sbmlPlugin.convert_from_coded_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>convert an id from sbml format to the original id. try to extract the type of
+the id and the compart using strong regular expression
+&#64;param coded: the encoded id
+&#64;type coded: str
+&#64;return: (the uncoded id, type=None, compart=None)
+&#64;rtype: tuple</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="padmet.sbmlPlugin.convert_to_coded_id">
+<code class="descclassname">padmet.sbmlPlugin.</code><code class="descname">convert_to_coded_id</code><span class="sig-paren">(</span><em>uncoded</em>, <em>_type=None</em>, <em>compart=None</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.sbmlPlugin.convert_to_coded_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>convert an id to sbml valid format. First add type of id “R” for reaction
+“M” for compound at the start and the compart at the end.
+_type+”_”+uncoded+”_”+compart
+then remplace not allowed char by interger ordinal
+&#64;param uncoded: the original id to code
+&#64;param _type: the type of the id (ex: ‘R’ or ‘M’)
+&#64;param _compart: the compartiment of the id (ex: ‘c’ or ‘e’)
+&#64;type uncoded, _type, _compart: str
+&#64;return: the coded id
+&#64;rtype: str</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="padmet.sbmlPlugin.decode_bigg">
+<code class="descclassname">padmet.sbmlPlugin.</code><code class="descname">decode_bigg</code><span class="sig-paren">(</span><em>identifier</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.sbmlPlugin.decode_bigg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean BiGG dirty identifiers from SBML
+#TODO obsolete, to delete ?
+<code class="docutils literal notranslate"><span class="pre">identifier.lstrip('M_').rstrip('_e').rstrip('_b').rstrip('_c').replace('DASH',</span> <span class="pre">'')</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li>Remove ‘__DASH__’ pattern</li>
+<li>Remove ‘<a href="#id5"><span class="problematic" id="id6">M_</span></a>’ or ‘<a href="#id7"><span class="problematic" id="id8">R_</span></a>’ prefix</li>
+<li>Remove ‘_x’ suffix of compartment info</li>
+</ul>
+</div></blockquote>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">We assume that any compartment is composed of:
+- 1 character ONLY
+- the unique character IS NOT a digit</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>arg1</strong> (<em>&lt;str&gt;</em>) – encoded id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Return (decoded id,compart) None in case of failure (bad prefix)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">&lt;str&gt; or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="padmet.sbmlPlugin.extractFormula">
+<code class="descclassname">padmet.sbmlPlugin.</code><code class="descname">extractFormula</code><span class="sig-paren">(</span><em>elementR</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.sbmlPlugin.extractFormula" title="Permalink to this definition">¶</a></dt>
+<dd><p>From an SBML reaction_element will return the formula in a string
+ex: ‘1.0 FRUCTOSELYSINE_p =&gt; 1.0 FRUCTOSELYSINE_c’
+&#64;param elementR: a reaction from libsbml.element
+&#64;type eleemntR: lisbsml.element
+&#64;return: the formule
+&#64;rtype: str</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="padmet.sbmlPlugin.parseGeneAssoc">
+<code class="descclassname">padmet.sbmlPlugin.</code><code class="descname">parseGeneAssoc</code><span class="sig-paren">(</span><em>GeneAssocStr</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.sbmlPlugin.parseGeneAssoc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a grammar of ‘and’, ‘or’ and ‘(‘ ‘)’. Extracts genes ids to a list.
+(geneX and geneY) or geneW’ =&gt; [geneX,geneY,geneW]
+&#64;param GeneAssocStr: the string containing genes ids
+&#64;type GeneAssocStr: str
+&#64;return: the list of unique ids
+&#64;rtype: list</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="padmet.sbmlPlugin.parseNotes">
+<code class="descclassname">padmet.sbmlPlugin.</code><code class="descname">parseNotes</code><span class="sig-paren">(</span><em>element</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.sbmlPlugin.parseNotes" title="Permalink to this definition">¶</a></dt>
+<dd><p>From an SBML element (ex: species or reaction) will return all the section
+note in a dictionnary.
+ex:
+&lt;notes&gt;</p>
+<blockquote>
+<div><blockquote>
+<div><dl class="docutils">
+<dt>&lt;html:body&gt;</dt>
+<dd>&lt;html:p&gt;BIOCYC: <a href="#id1"><span class="problematic" id="id2">|</span></a>Alkylphosphonates|&lt;/html:p&gt;
+&lt;html:p&gt;CHEBI: 60983&lt;/html:p&gt;</dd>
+</dl>
+<p>&lt;/html:body&gt;</p>
+</div></blockquote>
+<p>&lt;/notes&gt;</p>
+</div></blockquote>
+<p>output: {‘BIOCYC’: <a href="#id3"><span class="problematic" id="id4">|Alkylphosphonates|</span></a>,’CHEBI’:‘60983’}
+value is a list in case diff lines for the same type of info</p>
+<p>&#64;param element: an element from libsbml
+&#64;type element: libsbml.element
+&#64;return: the dictionnary of note
+&#64;rtype: dict</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-padmet">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-padmet" title="Permalink to this headline">¶</a></h2>
+<p>This file is part of padmet.</p>
+<p>padmet is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>padmet is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with padmet. If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Meziane AITE.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'2.6.7',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

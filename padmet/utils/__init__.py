@@ -15,6 +15,4 @@ You should have received a copy of the GNU General Public License
 along with padmet. If not, see <http://www.gnu.org/licenses/>.
 """
 #Do not delete this file
-__version__ = "3.0.0"
-import classes
-import utils
+
