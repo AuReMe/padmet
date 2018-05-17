@@ -1294,7 +1294,7 @@ class PadmetSpec:
         else:
             return None
 
-    def remove_growth_medium(self, verbose=False):
+    def remove_growth_medium(self, b_compart="C-BOUNDARY", verbose=False):
         """
         #TODO
         """
@@ -1303,17 +1303,15 @@ class PadmetSpec:
             if verbose:
                 print("current growth medium: %s" %(list(current_growth_medium)))
             for seed_id in current_growth_medium:
-                ex_rxn = "ExchangeSeed-"+seed_id
-                if ex_rxn in self.dicOfNode.keys():
+                rxns = set([rlt.id_in for rlt in self.dicOfRelationOut[seed_id]
+                            if rlt.type in ['consumes','produces'] and rlt.misc['COMPARTMENT'][0] == b_compart])
+                for rxn_id in rxns:
                     if verbose:
-                        print("Removing %s" %ex_rxn)
-                    self.delNode(ex_rxn)
-                trans_rxn = "TransportSeed-"+seed_id
-                if trans_rxn in self.dicOfNode.keys():
-                    if verbose:
-                        print("Removing %s" %trans_rxn)
-                    self.delNode(trans_rxn)
-            print("New growth medium: %s" %(list(self.get_growth_medium())))
+                        print("Removing %s" %rxn_id)
+                        self.delNode(rxn_id)
+            new_g_m = self.get_growth_medium()
+            if not new_g_m: new_g_m = list()
+            print("New growth medium: %s" %(new_g_m))
         else:
             print("No growth medium found")
 
@@ -1337,8 +1335,8 @@ class PadmetSpec:
         @rtype: None
         """
         #get all rxn starting with rxn_prefix
-        all_rxn_to_del = [node_id for node_id in self.dicOfNode.keys()
-                          if any(node_id.startswith(pref) for pref in rxn_prefix)]
+        all_rxn_to_del = set([rlt.id_in for rlt in self.getAllRelation()
+                             if rlt.type in ["consumes", "produces"] and rlt.misc.get('COMPARTMENT', [])[0] == b_compart])
         if len(all_rxn_to_del) == 0:
             if verbose:
                 print("No growth medium found")
