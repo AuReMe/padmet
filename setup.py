@@ -8,9 +8,6 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-# Custom import
-import padmet
-
 ################################################################################
 
 class PyTest(TestCommand):
@@ -30,7 +27,7 @@ class PyTest(TestCommand):
 setup(
  
     name='padmet',
-    version=padmet.__version__,
+    version="3.0.1",
  
     packages=find_packages(),
  
@@ -54,7 +51,7 @@ setup(
         "License :: OSI Approved",
         "Natural Language :: French",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
 )

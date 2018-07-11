@@ -63,7 +63,7 @@ class Relation:
         sep = "\t"
         line = sep.join([self.id_in, self.type, self.id_out])
         if len(self.misc) != 0:
-            for k, n in self.misc.iteritems():
+            for k, n in self.misc.items():
                 if len(n) == 1:
                     line += sep + sep.join([str(k), str(n[0])])
                 else:
