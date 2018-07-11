@@ -452,7 +452,7 @@ class PadmetSpec:
                 #creating SuppData and reconstructionData Nodes
                 #First, suppData:
                 suppData_id = rxn_idRef+"_SuppData_"+source_id.upper()
-                if suppData_id not in self.dicOfNode.keys() and verbose:
+                if suppData_id not in self.dicOfNode.keys():
                     #Extracting all data to create the supplementary data node
                     #Using sbmlPlugin to recover the formula from the sbml
                     formula = sbmlPlugin.extractFormula(reactionSBML)
@@ -474,7 +474,7 @@ class PadmetSpec:
 
                 #reconstructionData:
                 reconstructionData_id = rxn_idRef+"_reconstructionData_"+source_id.upper()
-                if reconstructionData_id not in self.dicOfNode.keys() and verbose:
+                if reconstructionData_id not in self.dicOfNode.keys():
                     reconstructionData = {"SOURCE":[source_id.upper()]}
                     if source_tool:
                         reconstructionData.update({"TOOL":[source_tool.upper()]})
