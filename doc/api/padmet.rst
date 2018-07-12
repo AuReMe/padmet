@@ -4,50 +4,50 @@ padmet package
 Submodules
 ----------
 
-padmet.node module
-------------------
+padmet.classes.node module
+--------------------------
 
-.. automodule:: padmet.node
+.. automodule:: padmet.classes.node
     :members:
     :undoc-members:
     :show-inheritance:
 
-padmet.padmetRef module
------------------------
+padmet.classes.padmetRef module
+-------------------------------
 
-.. automodule:: padmet.padmetRef
+.. automodule:: padmet.classes.padmetRef
     :members:
     :undoc-members:
     :show-inheritance:
 
-padmet.padmetSpec module
-------------------------
+padmet.classes.padmetSpec module
+--------------------------------
 
-.. automodule:: padmet.padmetSpec
+.. automodule:: padmet.classes.padmetSpec
     :members:
     :undoc-members:
     :show-inheritance:
 
-padmet.policy module
---------------------
+padmet.classes.policy module
+----------------------------
 
-.. automodule:: padmet.policy
+.. automodule:: padmet.classes.policy
     :members:
     :undoc-members:
     :show-inheritance:
 
-padmet.relation module
-----------------------
+padmet.classes.relation module
+------------------------------
 
-.. automodule:: padmet.relation
+.. automodule:: padmet.classes.relation
     :members:
     :undoc-members:
     :show-inheritance:
 
-padmet.sbmlPlugin module
-------------------------
+padmet.utils.sbmlPlugin module
+------------------------------
 
-.. automodule:: padmet.sbmlPlugin
+.. automodule:: padmet.utils.sbmlPlugin
     :members:
     :undoc-members:
     :show-inheritance:
