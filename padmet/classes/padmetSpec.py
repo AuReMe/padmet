@@ -157,7 +157,7 @@ class PadmetSpec:
         @return: _
         @rtype: None
         """
-        with open(padmet_file, 'r') as f:
+        with open(padmet_file, 'r', encoding='utf8') as f:
             padmet_in_array = [line for line in f.read().splitlines() if len(line) != 0]
 
         self.policy = Policy()
@@ -288,7 +288,7 @@ class PadmetSpec:
         if mapping_file is not None:
             if verbose:
                 print("Parsing %s" %mapping_file)
-            with open(mapping_file, 'r') as f: #open the file
+            with open(mapping_file, 'r', encoding='utf8') as f: #open the file
                 dicOfAssoc = dict([line.split("\t") for line in f.read().splitlines()
                                    if not line.startswith("#")])
 
@@ -548,7 +548,7 @@ class PadmetSpec:
         dicKeys.sort()
         orderedTuplOfRelation = tuple(sorted(self.getAllRelation(),
                                              key=lambda x: x.id_in, reverse=False))
-        with open(output, 'w') as f:
+        with open(output, 'w', encoding='utf8') as f:
             if len(self.info) != 0:
                 f.write("Data Base informations\n")
                 f.write("\n")
@@ -617,7 +617,7 @@ class PadmetSpec:
             print("0 reactions associated to this pathway in the network")
             return
 
-        with open(output, 'w') as f:
+        with open(output, 'w', encoding='utf8') as f:
             #Define header
             header = ["Reactions (metacyc_id)", "Reactions (common_name)", "EC-Number",
                       "Formula (metacyc_id)", "Formula (common_name)", "Found in the network"]
@@ -717,7 +717,7 @@ class PadmetSpec:
         nb_genes = len(genes)
 
         if padmetRef_file is not None:
-            with open(all_pathways, 'w') as f:
+            with open(all_pathways, 'w', encoding='utf8') as f:
                 header = ["dbRef_id", "Common name", "Number of reaction found",
                           "Total number of reaction", "Ratio (Reaction found / Total)"]
                 header = "\t".join(header)+"\n"
@@ -756,7 +756,7 @@ class PadmetSpec:
                         pass
                     count += 1
 
-        with open(all_reactions, 'w') as f:
+        with open(all_reactions, 'w', encoding='utf8') as f:
             header = ["dbRef_id", "Common name", "formula (with id)",
                       "formula (with common name)", "in pathways", "associated genes", "categories"]
             header = "\t".join(header)+"\n"
@@ -821,7 +821,7 @@ class PadmetSpec:
                 line = line+"\n"
                 f.write(line)
 
-        with open(all_metabolites, 'w') as f:
+        with open(all_metabolites, 'w', encoding='utf8') as f:
             header = ["dbRef_id", "Common name", "Produced (p), Consumed (c), Both (cp)"]
             header = "\t".join(header)+"\n"
             f.write(header)
@@ -863,7 +863,7 @@ class PadmetSpec:
                 line = line+"\n"
                 f.write(line)
 
-        with open(all_genes, 'w') as f:
+        with open(all_genes, 'w', encoding='utf8') as f:
             header = ["id", "Common name", "linked reactions"]
             header = "\t".join(header)+"\n"
             f.write(header)

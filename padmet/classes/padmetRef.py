@@ -152,7 +152,7 @@ class PadmetRef:
         @return: _
         @rtype: None
         """
-        with open(padmet_file, 'r') as f:        
+        with open(padmet_file, 'r', encoding='utf8') as f:
             padmet_in_array = [line for line in f.read().splitlines() if len(line) != 0]
 
         self.policy = Policy()        
@@ -333,7 +333,7 @@ class PadmetRef:
         dicKeys = list(self.dicOfNode.keys())
         dicKeys.sort()
         orderedRelation = tuple(sorted(self.getAllRelation(), key=lambda x: x.id_in, reverse=False))
-        with open(output, 'w') as f:
+        with open(output, 'w', encoding='utf8') as f:
             if len(self.info) != 0:
                 f.write("Data Base informations\n")
                 for k,data in self.info.items():
@@ -393,7 +393,7 @@ class PadmetRef:
         
         if verbose: print("Metabolites...")
         count = 0
-        with open(all_metabolites,'w') as f:
+        with open(all_metabolites,'w', encoding='utf8') as f:
             header = "\t".join(["METACYC", "SYNONYMS","XREF"])+"\n"
             f.write(header)
             for node in metabolites_nodes:
@@ -438,7 +438,7 @@ class PadmetRef:
 
         if verbose: print("Reactions...")
         count = 0
-        with open(all_reactions,'w') as f:
+        with open(all_reactions,'w', encoding='utf8') as f:
             header = "\t".join(["METACYC", "SYNONYMS","XREF", "REAGS", "PRODS", "REV"])+"\n"
             f.write(header)
             for node in reactions_nodes:
