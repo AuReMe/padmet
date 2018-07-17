@@ -383,7 +383,7 @@ class PadmetSpec:
                                 if verbose: print(("\t%s not in PadmetRef and can't be created" %rxn_idRef))
 
             if rxn_can_be_created:
-                print("\tCreating new reaction %s" %rxn_idRef)
+                if verbose: print("\tCreating new reaction %s" %rxn_idRef)
                 if rxn_cname:
                     self.createNode("reaction", rxn_idRef, {"DIRECTION":[reaction_dir], "COMMON-NAME":[rxn_cname]})
                 else:
