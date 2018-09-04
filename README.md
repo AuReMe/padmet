@@ -1,31 +1,35 @@
 ---
 title:  padmet package - Documentation
 author: Meziane AITE
-date: 2017-06-19
-version: 2.5
+date: 2018-07-12
+version: 3.0.1
 ---
-\newpage
-
 ################################################################################
 
 ## Description
-@padmet Version: 2.5
+@padmet Version: 3.0.1
+
 author: meziane aite (meziane.aite@inria.fr)
-Python 2.7
+
+Python 3
 
 Description:
+
 The PADMet package allows conciliating genomics and metabolic network information used to produce a genome-scale constraint-based metabolic model within a database that traces all the reconstruction process steps. It allows representing the metabolic model in the form of a Wiki containing all the used/traced information. Other standard outputs are made available with the package. 
-The main concept underlying PADMet-Package is to provide solutions that ensure the consistency, the internal standardization and the reconciliation of the information used within any workflow that combines several tools involving metabolic networks reconstruction or analysis. The PADMet package is at the core of the AuReMe workflow, dedicated to the primary reconstruction of genome-scale metabolic networks from raw data. It allows the study of organisms for which few experimental data are available. Its main feature is to undergo the reconstruction of the metabolic network by combining several
-heterogeneous knowledge and data sources, including the information reported by several scaffold metabolic networks for cousin species.
+
+The main concept underlying PADMet-Package is to provide solutions that ensure the consistency, the internal standardization and the reconciliation of the information used within any workflow that combines several tools involving metabolic networks reconstruction or analysis. The PADMet package is at the core of the AuReMe workflow, dedicated to the primary reconstruction of genome-scale metabolic networks from raw data. It allows the study of organisms for which few experimental data are available. Its main feature is to undergo the reconstruction of the metabolic network by combining several heterogeneous knowledge and data sources, including the information reported by several scaffold metabolic networks for cousin species.
 
 
 ## Installation
 
 From pip:
+
 	pip install padmet
 
 From git:
+
 	git clone https://gitlab.inria.fr/maite/padmet.git
+
 	make install (from git/padmet)
 
 
@@ -53,7 +57,9 @@ From git:
         └── wikiGenerator.py
 
 ## Documentation
+
 node.py:
+
 	Description:
 	Define the class Node used in padmet.
 
@@ -85,8 +91,9 @@ node.py:
 		@rtype: str
 		"""
 relation.py
-Description:
-Define the class Relation used in padmet.
+
+	Description:
+	Define the class Relation used in padmet.
 
 	class Relation:
 	    """
@@ -129,8 +136,9 @@ Define the class Relation used in padmet.
 		"""
 
 policy.py
-Description:
-Define a policy in padmet object.
+
+	Description:
+	Define a policy in padmet object.
 
 	class Policy:
 	    """
@@ -194,8 +202,9 @@ Define a policy in padmet object.
 		"""
 
 padmetRef.py
-Description:
-PadmetRef is an object representing a DATABASE of metabolic network.
+
+	Description:
+	PadmetRef is an object representing a DATABASE of metabolic network.
 
 	class PadmetRef:
 	    """
@@ -362,9 +371,10 @@ PadmetRef is an object representing a DATABASE of metabolic network.
 		"""
 
 padmetSpec.py
-Description:
-PadmetSpec is an object representing the metabolic network of a species(organism)
-based on a reference database PadmetRef.
+
+	Description:
+	PadmetSpec is an object representing the metabolic network of a species(organism)
+	based on a reference database PadmetRef.
 
 	class PadmetSpec:
 	    """
@@ -634,8 +644,9 @@ based on a reference database PadmetRef.
 		"""
 
 aspGenerator.py
-Description:
-This module contains functions to convert a padmet file to predicats for ASP
+
+	Description:
+	This module contains functions to convert a padmet file to predicats for ASP
 
 	asp_synt(pred, list_args):
 	    """
@@ -698,9 +709,10 @@ This module contains functions to convert a padmet file to predicats for ASP
 	    """    
 
 sbmlGenerator.py
-Description:
-The module sbmlGenerator contains functions to generate sbml files from padmet and txt
-usign the libsbml package
+
+	Description:
+	The module sbmlGenerator contains functions to generate sbml files from padmet and txt
+	usign the libsbml package.
 
 	check(value, message):
 	    """If 'value' is None, prints an error message constructed using
@@ -766,9 +778,9 @@ usign the libsbml package
 	    """
 
 sbmlPlugin.py
-Description:
-This module contains some functions used for sbml file in addition to libsbml
-"""
+
+	Description:
+	This module contains some functions used for sbml file in addition to libsbml
 
 	parseNotes(element):
 	    """
@@ -859,10 +871,11 @@ This module contains some functions used for sbml file in addition to libsbml
 	    """
 
 wikiGenerator.py
-Description:
-Contains all necessary function to generate wikiPages from a padmet file and update 
-a wiki online. Require WikiManager module (with wikiMate,Vendor)
-"""
+
+	Description:
+	Contains all necessary function to generate wikiPages from a padmet file and update 
+	a wiki online. Require WikiManager module (with wikiMate,Vendor).
+
 	create_all_wikiPages(padmetRef_file, padmetSpec_file, output_dir, verbose = False):
 	    """
 	    Main function to generete wikiPages for a padmet. The padmetRef is used to add extra

@@ -60,7 +60,7 @@ class Node:
         sep = "\t"
         line = sep.join([self.type, self.id])
         if len(self.misc) != 0:
-            for k, n in self.misc.iteritems():
+            for k, n in self.misc.items():
                 if len(n) == 1:
                     line += sep + sep.join([str(k), str(n[0])])
                 else:

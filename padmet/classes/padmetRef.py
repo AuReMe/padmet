@@ -133,10 +133,10 @@ class PadmetRef:
         @rtype: set
         """
         all_relation = set()
-        for list_rlt in self.dicOfRelationIn.itervalues():
+        for list_rlt in self.dicOfRelationIn.values():
             for rlt in list_rlt:
                 all_relation.add(rlt)
-        for list_rlt in self.dicOfRelationIn.itervalues():
+        for list_rlt in self.dicOfRelationIn.values():
             for rlt in list_rlt:
                 all_relation.add(rlt)
         return all_relation
@@ -152,7 +152,7 @@ class PadmetRef:
         @return: _
         @rtype: None
         """
-        with open(padmet_file, 'r') as f:        
+        with open(padmet_file, 'r', encoding='utf8') as f:
             padmet_in_array = [line for line in f.read().splitlines() if len(line) != 0]
 
         self.policy = Policy()        
@@ -251,7 +251,7 @@ class PadmetRef:
         @type sbml_file: str
         """
         #using libSbml to read sbml_file
-        if verbose: print ("loading sbml file: %s" %sbml_file)
+        if verbose: print("loading sbml file: %s" %sbml_file)
         reader = libsbml.SBMLReader()
         document = reader.readSBML(sbml_file)
         for i in range(document.getNumErrors()):
@@ -264,7 +264,7 @@ class PadmetRef:
         nbSpecies = len(listOfSpecies)
         if verbose:
             print("nb species: %s" %nbSpecies)
-            print("nb reactions: %s" %nbReactions) 
+            print("nb reactions: %s" %nbReactions)
             
         if verbose: print("creating species")
         for specie in listOfSpecies:
@@ -330,15 +330,15 @@ class PadmetRef:
         """
         # Order the dictionary of node by unique id and the tuple of relation
         # by the node in id.
-        dicKeys = self.dicOfNode.keys()
+        dicKeys = list(self.dicOfNode.keys())
         dicKeys.sort()
         orderedRelation = tuple(sorted(self.getAllRelation(), key=lambda x: x.id_in, reverse=False))
-        with open(output, 'w') as f:
+        with open(output, 'w', encoding='utf8') as f:
             if len(self.info) != 0:
                 f.write("Data Base informations\n")
-                for k,data in self.info.iteritems():
+                for k,data in self.info.items():
                     f.write(k+":\n")
-                    for k,v in data.iteritems():
+                    for k,v in data.items():
                        f.write("\t"+k+":"+v+"\n")
                 f.write("\n")
             # It writes the policy of the TGDBP file.
@@ -388,12 +388,12 @@ class PadmetRef:
         
         #Recovering reactions
         if verbose: print("Recovering reactions")
-        reactions_nodes = [node for node in self.dicOfNode.itervalues()
+        reactions_nodes = [node for node in self.dicOfNode.values()
         if node.type == "reaction"]
         
         if verbose: print("Metabolites...")
         count = 0
-        with open(all_metabolites,'w') as f:
+        with open(all_metabolites,'w', encoding='utf8') as f:
             header = "\t".join(["METACYC", "SYNONYMS","XREF"])+"\n"
             f.write(header)
             for node in metabolites_nodes:
@@ -438,7 +438,7 @@ class PadmetRef:
 
         if verbose: print("Reactions...")
         count = 0
-        with open(all_reactions,'w') as f:
+        with open(all_reactions,'w', encoding='utf8') as f:
             header = "\t".join(["METACYC", "SYNONYMS","XREF", "REAGS", "PRODS", "REV"])+"\n"
             f.write(header)
             for node in reactions_nodes:
@@ -507,7 +507,7 @@ class PadmetRef:
         @return: True if added, False if no.        
         @rtype: Bool
         """
-        if node.id not in self.dicOfNode.keys():
+        if node.id not in list(self.dicOfNode.keys()):
             self.dicOfNode[node.id] = node
             return True
         else:
@@ -631,7 +631,7 @@ class PadmetRef:
         @rtype: Node
         """
         #add the new node in the tgdbp
-        if _id in self.dicOfNode.keys():
+        if _id in list(self.dicOfNode.keys()):
             raise ValueError("%s is already used, unable to create Node" %(_id))
         new_node = Node(_type, _id, dicOfMisc)
         self.dicOfNode[_id] = new_node

@@ -8,9 +8,6 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-# Custom import
-import padmet
-
 ################################################################################
 
 class PyTest(TestCommand):
@@ -30,7 +27,7 @@ class PyTest(TestCommand):
 setup(
  
     name='padmet',
-    version=padmet.__version__,
+    version="3.0.1",
  
     packages=find_packages(),
  
@@ -39,7 +36,7 @@ setup(
  
     description="Padmet package for metabolic network",
  
-    long_description=open('README.md').read(),
+    long_description=open('README.md', encoding='utf8').read(),
  
     
     install_requires= ["docopt==0.6.2","python-libsbml==5.16.0","cobra==0.10.1","biopython==1.70"],
@@ -54,7 +51,7 @@ setup(
         "License :: OSI Approved",
         "Natural Language :: French",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
 )
