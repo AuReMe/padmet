@@ -25,6 +25,7 @@ from . import Policy
 from . import Node
 from . import Relation
 from . import PadmetRef
+from io import open
 from ..utils import sbmlPlugin
 import libsbml
 import os

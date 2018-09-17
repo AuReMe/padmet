@@ -23,6 +23,7 @@ PadmetRef is an object representing a DATABASE of metabolic network.
 from . import Policy
 from . import Node
 from . import Relation
+from io import open
 from ..utils.sbmlPlugin import convert_from_coded_id
 import libsbml
 __all__ = ['PadmetRef']
