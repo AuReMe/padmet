@@ -32,15 +32,16 @@ class Node:
     """
     def __init__(self, _type, _id, misc=None):
         """
-        Parameters
-        ----------
-        _type: str
-            The type of the node ('reaction','pathway')
-        _id: str
-            the identifier of the node ('rxn-45)
-        misc: dict
-            A dictionary of miscellaneous data ({'DIRECTION':[REVERSIBLE]})
-            (the default value is None)
+        :type _type: str
+        :param url: The type of the node ('reaction','pathway')
+
+        :type _id: str
+        :param _id: the identifier of the node ('rxn-45)
+
+        :type misc: dict
+        :param misc: A dictionary of miscellaneous data ({'DIRECTION':[REVERSIBLE]})
+                     (the default value is None)
+
         """
         self.type = _type
         self.id = _id
@@ -52,10 +53,8 @@ class Node:
         This function is used to stock the information relative to the node
         in a padmet file.
 
-        Returns
-        -------
-        str
-            string with all data sep by tab' ex: reaction\tRXN0..
+        :rtype :str
+        :return: String with all data sep by tab' ex: reaction\tRXN0..
         """
         sep = "\t"
         line = sep.join([self.type, self.id])

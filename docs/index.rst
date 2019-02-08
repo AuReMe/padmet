@@ -8,6 +8,7 @@ Welcome to padmet's documentation!
 
 .. toctree::
    :maxdepth: 3
+   :glob:
 
    padmet
 
