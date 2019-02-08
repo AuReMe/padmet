@@ -11,6 +11,9 @@ Welcome to padmet's documentation!
    :caption: Contents:
 
    padmet
+   modules
+   padmet.classes
+   padmet.utils
 
 
 Indices and tables
