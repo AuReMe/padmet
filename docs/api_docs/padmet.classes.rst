@@ -5,6 +5,6 @@ API documentation for padmet.classes
 node
 --------------------------
 
-.. automodule:: padmet.classes.node
+.. autoclass::  padmet.classes.node.Node
     :members:
     :undoc-members:
