@@ -1,0 +1,391 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>padmet.utils package &mdash; padmet  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="padmet.classes package" href="padmet.classes.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> padmet
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="padmet.html">padmet package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="padmet.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="padmet.classes.html">padmet.classes package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">padmet.utils package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-padmet.utils.sbmlPlugin">padmet.utils.sbmlPlugin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-padmet.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="padmet.html#module-padmet">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">padmet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="padmet.html">padmet package</a> &raquo;</li>
+        
+      <li>padmet.utils package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/padmet.utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="padmet-utils-package">
+<h1>padmet.utils package<a class="headerlink" href="#padmet-utils-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-padmet.utils.sbmlPlugin">
+<span id="padmet-utils-sbmlplugin-module"></span><h2>padmet.utils.sbmlPlugin module<a class="headerlink" href="#module-padmet.utils.sbmlPlugin" title="Permalink to this headline">¶</a></h2>
+<p>This file is part of padmet.</p>
+<p>padmet is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>padmet is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with padmet. If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+<p>&#64;author: Meziane AITE, <a class="reference external" href="mailto:meziane&#46;aite&#37;&#52;&#48;inria&#46;fr">meziane<span>&#46;</span>aite<span>&#64;</span>inria<span>&#46;</span>fr</a>
+Description:
+This module contains some functions used for sbml file in addition to libsbml</p>
+<dl class="function">
+<dt id="padmet.utils.sbmlPlugin.ascii_replace">
+<code class="descclassname">padmet.utils.sbmlPlugin.</code><code class="descname">ascii_replace</code><span class="sig-paren">(</span><em>match</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.utils.sbmlPlugin.ascii_replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>recover banned char from the integer ordinal in the reg.match</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="padmet.utils.sbmlPlugin.convert_from_coded_id">
+<code class="descclassname">padmet.utils.sbmlPlugin.</code><code class="descname">convert_from_coded_id</code><span class="sig-paren">(</span><em>coded</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.utils.sbmlPlugin.convert_from_coded_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>convert an id from sbml format to the original id. try to extract the type of
+the id and the compart using strong regular expression
+ex: M_METABOLITE__45__12_c =&gt; (‘METABOLITE-12’, ‘M’, ‘c’)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>coded</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the encoded id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>str</em> – the uncoded id</li>
+<li><em>str, None</em> – type of ID (ex: ‘M’ or ‘R’)</li>
+<li><em>str, None</em> – compart of the id</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="padmet.utils.sbmlPlugin.convert_to_coded_id">
+<code class="descclassname">padmet.utils.sbmlPlugin.</code><code class="descname">convert_to_coded_id</code><span class="sig-paren">(</span><em>uncoded</em>, <em>_type=None</em>, <em>compart=None</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.utils.sbmlPlugin.convert_to_coded_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>convert an id to sbml valid format. First add type of id “R” for reaction
+“M” for compound at the start and the compart at the end.
+_type+”_”+uncoded+”_”+compart
+then replace not allowed char by integer ordinal
+:param uncoded: the original id to code
+:type uncoded: str
+:param _type: the type of the id (ex: ‘R’ or ‘M’)
+:type _type: str
+:param compart: the compartment of the id (ex: ‘c’ or ‘e’)
+:type compart: str</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the coded id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="padmet.utils.sbmlPlugin.extractFormula">
+<code class="descclassname">padmet.utils.sbmlPlugin.</code><code class="descname">extractFormula</code><span class="sig-paren">(</span><em>elementR</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.utils.sbmlPlugin.extractFormula" title="Permalink to this definition">¶</a></dt>
+<dd><p>From an SBML reaction_element will return the formula in a string
+ex: ‘1.0 FRUCTOSELYSINE_p =&gt; 1.0 FRUCTOSELYSINE_c’
+:param elementR: a reaction from libsbml.element
+:type elementR: libsbml.element</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the formula</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="padmet.utils.sbmlPlugin.parseGeneAssoc">
+<code class="descclassname">padmet.utils.sbmlPlugin.</code><code class="descname">parseGeneAssoc</code><span class="sig-paren">(</span><em>GeneAssocStr</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.utils.sbmlPlugin.parseGeneAssoc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a grammar of ‘and’, ‘or’ and ‘(‘ ‘)’. Extracts genes ids to a list.
+(geneX and geneY) or geneW’ =&gt; [geneX,geneY,geneW]
+:param GeneAssocStr: the string containing genes ids
+:type GeneAssocStr: str</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the list of unique ids</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="padmet.utils.sbmlPlugin.parseNotes">
+<code class="descclassname">padmet.utils.sbmlPlugin.</code><code class="descname">parseNotes</code><span class="sig-paren">(</span><em>element</em><span class="sig-paren">)</span><a class="headerlink" href="#padmet.utils.sbmlPlugin.parseNotes" title="Permalink to this definition">¶</a></dt>
+<dd><p>From an SBML element (ex: species or reaction) will return all the section
+note in a dictionary.
+ex:
+&lt;notes&gt;</p>
+<blockquote>
+<div><blockquote>
+<div><dl class="docutils">
+<dt>&lt;html:body&gt;</dt>
+<dd>&lt;html:p&gt;BIOCYC: <a href="#id1"><span class="problematic" id="id2">|</span></a>Alkylphosphonates|&lt;/html:p&gt;
+&lt;html:p&gt;CHEBI: 60983&lt;/html:p&gt;</dd>
+</dl>
+<p>&lt;/html:body&gt;</p>
+</div></blockquote>
+<p>&lt;/notes&gt;</p>
+</div></blockquote>
+<p>output: {‘BIOCYC’: <a href="#id3"><span class="problematic" id="id4">|Alkylphosphonates|</span></a>,’CHEBI’:‘60983’}
+value is a list in case diff lines for the same type of info</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>element</strong> (<em>libsbml.element</em>) – an element from libsbml</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the dictionary of note</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-padmet.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-padmet.utils" title="Permalink to this headline">¶</a></h2>
+<p>This file is part of padmet.</p>
+<p>padmet is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>padmet is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with padmet. If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="padmet.classes.html" class="btn btn-neutral" title="padmet.classes package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Meziane AITE
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
