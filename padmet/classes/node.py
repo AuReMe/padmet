@@ -33,7 +33,7 @@ class Node:
     def __init__(self, _type, _id, misc=None):
         """
         :type _type: str
-        :param url: The type of the node ('reaction','pathway')
+        :param _type: TESTThe type of the node ('reaction','pathway')
 
         :type _id: str
         :param _id: the identifier of the node ('rxn-45)
