@@ -12,8 +12,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
+import os
+import sys
+sys.path.append('../')
 # sys.path.insert(0, os.path.abspath('.'))
 
 
@@ -74,6 +75,13 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+# List of autodoc directive flags that should be automatically applied to all
+# autodoc directives
+autodoc_default_flags = ['members', 'undoc-members']
+
+# Include the __init__ method's doc string in addition to the class doc string
+# in the documentation.
+autoclass_content = 'both'
 
 # -- Options for HTML output -------------------------------------------------
 
