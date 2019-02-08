@@ -53,7 +53,7 @@ class Node:
         This function is used to stock the information relative to the node
         in a padmet file.
 
-        :rtype :str
+        :rtype: str
         :return: String with all data sep by tab' ex: reaction\tRXN0..
         """
         sep = "\t"

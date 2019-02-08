@@ -14,13 +14,13 @@
 #
 import os
 import sys
-sys.path.append('../')
-# sys.path.insert(0, os.path.abspath('.'))
-
+sys.path.append("/home/maite/Aureme_project/padmet")
+sys.path.remove("/home/maite/Aureme/padmet")
+print(sys.path)
 
 # -- Project information -----------------------------------------------------
 
-project = 'padmet'
+project = 'toto'
 copyright = '2019, Meziane AITE'
 author = 'Meziane AITE'
 
@@ -85,7 +85,7 @@ autoclass_content = 'both'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'default'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
