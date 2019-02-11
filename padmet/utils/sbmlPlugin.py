@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 #pylint: disable=anomalous-backslash-in-string
 import re
+import libsbml
 
 def parseNotes(element):
     """
