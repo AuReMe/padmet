@@ -77,7 +77,7 @@ autodoc_default_flags = ['members', 'undoc-members']
 # Include the __init__ method's doc string in addition to the class doc string
 # in the documentation.
 autoclass_content = 'both'
-
+autodoc_mock_imports = ["libsbml"]
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
