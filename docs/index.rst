@@ -25,6 +25,16 @@ Anyone interested in contributing or tweaking the library is more then welcome
 to do so. To start, simply fork the `Git repository`_ on Github and start playing with
 it. Then, issue pull requests.
 
+Quick start
+=================
+
+.. toctree::
+    :maxdepth: 2
+    :glob:
+
+    quick_start
+
+
 API Documentation
 =================
 
@@ -36,6 +46,16 @@ Classes API
     :glob:
 
     api_docs/padmet.classes
+
+Utils API
+~~~~~~~~~~~~
+
+.. toctree::
+    :maxdepth: 2
+    :glob:
+
+    api_docs/padmet.utils
+
 
 Getting help
 ============

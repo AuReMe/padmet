@@ -1,10 +1,10 @@
 ===============================================
-API documentation for padmet.classes
+API documentation for padmet.utils
 ===============================================
 
-node
+sbmlPlugin
 --------------------------
 
-.. automodule::  padmet.classes.node
+.. automodule::  padmet.utils.sbmlPlugin
     :members:
     :undoc-members:

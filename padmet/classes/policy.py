@@ -8,15 +8,15 @@ class Policy:
 
         policy_in_array: Is a list of list of relations
 
-        (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
+        e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']]
 
         class_of_node: Is a set of all the type of nodes represented in the network
 
-        (e.g: set(reaction, compound))
+        e.g: set(['reaction', 'compound'])
 
         type_of_arc: Is a dictionary of all the types of arcs represented in the network
 
-        (e.g: {reaction:[consumes,compounds]})
+        (e.g: {'reaction':['consumes','compounds']})
     """
 
     def __init__(self, policy_in_array=None):
@@ -25,7 +25,9 @@ class Policy:
         ----------
         policy_in_array: list
             Is a list of list of relations
-            (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
+
+            e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']]
+
             (the default value is None)
         """
         if policy_in_array is not None:
@@ -43,8 +45,7 @@ class Policy:
         Parameters
         ----------
         policy_in_array: list
-            Is a list of list of arcs
-            (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
+            Is a list of list of arcs. e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']]
         """
         for relation in policy_in_array:
             if len(relation) < 3:
