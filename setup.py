@@ -39,11 +39,11 @@ setup(
     long_description=open('README.md', encoding='utf8').read(),
  
     
-    install_requires= ["docopt==0.6.2","python-libsbml==5.16.0","cobra==0.13.4","biopython==1.70", "numpy==1.15.1"],
+    install_requires= ["docopt==0.6.2","python-libsbml==5.16.0","cobra==0.14.0","biopython==1.70"],
  
     include_package_data=True,
  
-    url='http://gitlab.inria.fr/DYLISS/padmet',
+    url='https://github.com/AuReMe/padmet',
  
     classifiers=[
         "Programming Language :: Python",
