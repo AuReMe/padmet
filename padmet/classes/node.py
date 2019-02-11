@@ -1,47 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-This file is part of padmet.
-
-padmet is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-padmet is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with padmet. If not, see <http://www.gnu.org/licenses/>.
-
-@author: Meziane AITE, meziane.aite@inria.fr
-Description:
-Defines the class Node used in padmet.
-"""
 #pylint: disable=too-few-public-methods
 class Node:
     """
-    A Node represent an element in a metabolic network (e.g: compound, reaction)
-    A Node contains 3 attributes:
-        type: The type of the node (e.g: 'reaction' or 'pathway')
-        id: the identifier of the node (e.g: 'rxn-45)
-        misc: A dictionary of miscellaneous data, k = tag of the data, v = list of values
-        (e.g: {'DIRECTION':[REVERSIBLE]})
+    A Node represent an element in a metabolic network
+    
+    e.g: compound, reaction.
     """
     def __init__(self, _type, _id, misc=None):
         """
-        :type _type: str
-        :param _type: TESTThe type of the node ('reaction','pathway')
-
-        :type _id: str
-        :param _id: the identifier of the node ('rxn-45)
-
-        :type misc: dict
-        :param misc: A dictionary of miscellaneous data ({'DIRECTION':[REVERSIBLE]})
-                     (the default value is None)
-
+        Parameters
+        ----------
+        _type: str
+            The type of the node ('reaction','pathway')
+        _id: str
+            the identifier of the node ('rxn-45)
+        misc: dict
+            A dictionary of miscellaneous data ({'DIRECTION':[REVERSIBLE]})
+            (the default value is None)
         """
         self.type = _type
         self.id = _id
@@ -53,8 +29,10 @@ class Node:
         This function is used to stock the information relative to the node
         in a padmet file.
 
-        :rtype: str
-        :return: String with all data sep by tab' ex: reaction\tRXN0..
+        Returns
+        -------
+        str
+            string with all data sep by tab' ex: reaction\tRXN0..
         """
         sep = "\t"
         line = sep.join([self.type, self.id])

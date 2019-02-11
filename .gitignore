@@ -1,3 +1,4 @@
 *.pyc
 dist/
 padmet.egg-info/
+docs/_build/*
