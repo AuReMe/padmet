@@ -14,12 +14,7 @@
 #
 import os
 import sys
-"""
-sys.path.append("/home/maite/Aureme_project/padmet")
-sys.path.remove("/home/maite/Aureme/padmet")
-"""
 sys.path.insert(0, os.path.abspath('..'))
-print(sys.path)
 
 # -- Project information -----------------------------------------------------
 
