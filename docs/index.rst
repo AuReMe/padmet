@@ -47,14 +47,6 @@ Classes API
 
     api_docs/padmet.classes
 
-Utils API
-~~~~~~~~~~~~
-
-.. toctree::
-    :maxdepth: 2
-    :glob:
-
-    api_docs/padmet.utils
 
 
 Getting help
