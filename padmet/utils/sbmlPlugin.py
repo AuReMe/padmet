@@ -60,11 +60,13 @@ def parseGeneAssoc(GeneAssocStr):
     list:
         the list of unique ids
     """
-    #sub '(',')',' ' by ''   sub "and" by "or"
-    resultat = re.sub('\(|\)|\s', "", GeneAssocStr).replace("and", "or")
-    #create a set by splitting 'or' then convert to list, set for unique genes
+    #remplace ' and ' or ' or ' by a tag '_FORSPLIT_'
+    GeneAssocStr_tmp = re.sub(' and | or ', '_FORSPLIT_', GeneAssocStr)
+    #remove '(' or ')' or ' '
+    resultat = re.sub('\(|\)|\s', "", GeneAssocStr_tmp)
+    #create a set by splitting '_FORSPLIT_' then convert to list, set for unique genes
     if len(resultat) != 0:
-        resultat = list(set(resultat.split("or")))
+        resultat = list(set(resultat.split("_FORSPLIT_")))
     else:
         resultat = []
     return resultat
