@@ -1,25 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-This file is part of padmet.
-
-padmet is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-padmet is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with padmet. If not, see <http://www.gnu.org/licenses/>.
-
-@author: Meziane AITE, meziane.aite@inria.fr
-Description:
-PadmetRef is an object representing a DATABASE of metabolic network.
-"""
 from . import Policy
 from . import Node
 from . import Relation
@@ -30,19 +10,28 @@ __all__ = ['PadmetRef']
 class PadmetRef:
     """
     PadmetRef is an object representing a DATABASE of metabolic network.
-    Contains <Policy>, <Node> and <Relation>
-    The policy defines the way Node and Relation are associated
+    
+    Contains <Policy>, <Node> and <Relation>:
+    
+    The policy defines the way Node and Relation are associated.
+
     A node is an Object that contains information about an element of the network 
     (can be a pathway, reaction...).
+
     A realtion defines how two nodes are connected. In a relation there is 
-    a node "in" and a node "out". (reactionX'in' consumes metaboliteX'out')
+    a node "in" and a node "out". (reactionX'in' consumes metaboliteX'out').
+
     PadmetRef contains 3 attributs: 
-        dicOfNode: a dictionary of node: key=Node's unique id / value = <Node>
-        dicOfRelationIn: a dictionnary of relation with: key= nodeIN id / value = list of <relation>
-        dicOfRelationOut: a dictionnary of relation with: key= nodeOut id / value = list of <relation>
-        policy: a <policy>
+        dicOfNode: a dictionary of node: key=Node's unique id / value = <Node>.
+
+        dicOfRelationIn: a dictionnary of relation with: key= nodeIN id / value = list of <relation>.
+
+        dicOfRelationOut: a dictionnary of relation with: key= nodeOut id / value = list of <relation>.
+
+        policy: a <policy>.
+
         info: a dictionnary of informations about the network, the database used...
-        This dictionnary is always represented in the header of a padmet file
+        This dictionnary is always represented in the header of a padmet file.
     """
     def __init__(self, padmetRef_file = None):
         """

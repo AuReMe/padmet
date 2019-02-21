@@ -1,36 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-This file is part of padmet.
-
-padmet is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-padmet is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with padmet. If not, see <http://www.gnu.org/licenses/>.
-
-@author: Meziane AITE, meziane.aite@inria.fr
-Description:
-Define the class Relation used in padmet.
-"""
-
 class Relation:
     """
-    A Relation represent a link between two elements (node) in a metabolic network
+    A Relation represent a link between two elements (node) in a metabolic network.
+
     e.g: RXN-1 consumes CPD-1
+
     A Relation contains 4 attributes:
+
         _type: The type of the relation (e.g: 'consumes' or 'produces')
+
         id_in: the identifier of the node corresponding to the subject of the relation (e.g: 'RXN-1)
+
         id_out: the identifier of the node corresponding to the object of the relation (e.g: 'CPD-1)
+
         misc: A dictionary of miscellaneous data, k = tag of the data, v = list of values
+
         (e.g: {'STOICHIOMETRY':[1.0]})
+
     """
     def __init__(self, id_in, _type, id_out, misc=None):
         """

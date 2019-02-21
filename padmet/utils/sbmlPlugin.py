@@ -1,25 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-This file is part of padmet.
-
-padmet is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-padmet is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with padmet. If not, see <http://www.gnu.org/licenses/>.
-
-@author: Meziane AITE, meziane.aite@inria.fr
-Description:
-This module contains some functions used for sbml file in addition to libsbml
-"""
 #pylint: disable=anomalous-backslash-in-string
 import re
 
@@ -80,11 +60,13 @@ def parseGeneAssoc(GeneAssocStr):
     list:
         the list of unique ids
     """
-    #sub '(',')',' ' by ''   sub "and" by "or"
-    resultat = re.sub('\(|\)|\s', "", GeneAssocStr).replace("and", "or")
-    #create a set by splitting 'or' then convert to list, set for unique genes
+    #remplace ' and ' or ' or ' by a tag '_FORSPLIT_'
+    GeneAssocStr_tmp = re.sub(' and | or ', '_FORSPLIT_', GeneAssocStr)
+    #remove '(' or ')' or ' '
+    resultat = re.sub('\(|\)|\s', "", GeneAssocStr_tmp)
+    #create a set by splitting '_FORSPLIT_' then convert to list, set for unique genes
     if len(resultat) != 0:
-        resultat = list(set(resultat.split("or")))
+        resultat = list(set(resultat.split("_FORSPLIT_")))
     else:
         resultat = []
     return resultat

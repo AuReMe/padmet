@@ -1,35 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-This file is part of padmet.
-
-padmet is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-padmet is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with padmet. If not, see <http://www.gnu.org/licenses/>.
-
-@author: Meziane AITE, meziane.aite@inria.fr
-Description:
-Define a policy in padmet object.
-"""
 class Policy:
     """
-    A Policy define the types of relations, nodes in a network.
+    A Policy define the types of relations and nodes of a network.
+
     A policy contains 3 attributes:
+
         policy_in_array: Is a list of list of relations
-        (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
+
+        e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']]
+
         class_of_node: Is a set of all the type of nodes represented in the network
-        (e.g: set(reaction, compound))
+
+        e.g: set(['reaction', 'compound'])
+
         type_of_arc: Is a dictionary of all the types of arcs represented in the network
-        (e.g: {reaction:[consumes,compounds]})
+
+        (e.g: {'reaction':['consumes','compounds']})
     """
 
     def __init__(self, policy_in_array=None):
@@ -38,7 +25,9 @@ class Policy:
         ----------
         policy_in_array: list
             Is a list of list of relations
-            (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
+
+            e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']]
+
             (the default value is None)
         """
         if policy_in_array is not None:
@@ -56,8 +45,7 @@ class Policy:
         Parameters
         ----------
         policy_in_array: list
-            Is a list of list of arcs
-            (e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']])
+            Is a list of list of arcs. e.g: [['reaction','consumes','compounds'],['reaction','produces','compounds']]
         """
         for relation in policy_in_array:
             if len(relation) < 3:
