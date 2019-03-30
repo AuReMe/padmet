@@ -155,6 +155,14 @@ def convert_from_coded_id(coded, pattern = "__", compart_in_id = False, reaction
     ----------
     coded: str
         the encoded id
+    pattern: str
+        pattern used to delimit interger ordinal
+    compart_in_id: bool
+        if true: the last _* is not mean to be the compart is part of the id
+    reaciton_tag: str
+        First letter used to tag a reaction
+    species_tag: str
+        First letter used to tag a species
 
     Returns
     -------
@@ -209,6 +217,21 @@ def convert_from_coded_id(coded, pattern = "__", compart_in_id = False, reaction
 
 def get_all_decoded_version(element_id, _type):
     """
+    Use convert_from_coded function to convert a element_id (reaction or species)
+    _type use define if element is a 'reaction' or un 'species'.
+    Try different decoding combination based on old and new sbml id encoding.
+
+    Parameters
+    ----------
+    element_id: str
+        the encoded id
+    _type: str
+        _type is 'reaction' or 'species'
+
+    Returns
+    -------
+    list:
+        list of encoded id
     """    
     all_element_id_decoded = list()
     #1st attemp: decoded id with classic encoding convention. cf sbmlplugin.convert_from_coded_id
