@@ -145,7 +145,7 @@ def ascii_replace(match):
     """
     return chr(int(match.group(1)))
 
-def convert_from_coded_id(coded):
+def convert_from_coded_id(coded, pattern = "__", compart_in_id = False, reaction_tag = "R", species_tag = "M"):
     """
     convert an id from sbml format to the original id. try to extract the type of
     the id and the compart using strong regular expression
@@ -155,6 +155,14 @@ def convert_from_coded_id(coded):
     ----------
     coded: str
         the encoded id
+    pattern: str
+        pattern used to delimit interger ordinal
+    compart_in_id: bool
+        if true: the last _* is not mean to be the compart is part of the id
+    reaciton_tag: str
+        First letter used to tag a reaction
+    species_tag: str
+        First letter used to tag a species
 
     Returns
     -------
@@ -171,18 +179,20 @@ def convert_from_coded_id(coded):
     if coded.startswith("_"):
         coded = coded[1:]
     #reg ex to find the ascii used to replace not allowed char
-    codepat = re.compile('__(\d+)__')
+    ascii_pattern = '{0}(\d+){0}'.format(pattern)
+    codepat = re.compile(ascii_pattern)
     #replace ascii by the not allowed char of sbml
     coded = codepat.sub(ascii_replace, coded)
-
-    reg_expr = re.compile('(?P<_type>^[MR]_)(?P<_id>.*)(?P<compart>_.*)')
+    str_reg = '(?P<_type>^[{0}{1}]_)(?P<_id>.*)(?P<compart>_.*)'.format(species_tag, reaction_tag)
+    reg_expr = re.compile(str_reg)
     search_result = reg_expr.search(coded)
     if search_result is not None:
         compart = search_result.group('compart').replace("_", "")
         _type = search_result.group('_type').replace("_", "")
         uncoded = search_result.group('_id')
     else:
-        reg_expr = re.compile('(?P<_type>^[MR]_)(?P<_id>.*)')
+        str_reg = '(?P<_type>^[{0}{1}]_)(?P<_id>.*)'.format(species_tag, reaction_tag)
+        reg_expr = re.compile(str_reg)
         search_result = reg_expr.search(coded)
         if search_result is not None:
             compart = None
@@ -200,7 +210,59 @@ def convert_from_coded_id(coded):
                 _type = None
                 compart = None
 
-    if _type == "R" and compart is not None:
+    if compart and compart_in_id:
         uncoded += "_" + compart
 
     return (uncoded, _type, compart)
+
+def get_all_decoded_version(element_id, _type):
+    """
+    Use convert_from_coded function to convert a element_id (reaction or species)
+    _type use define if element is a 'reaction' or un 'species'.
+    Try different decoding combination based on old and new sbml id encoding.
+
+    Parameters
+    ----------
+    element_id: str
+        the encoded id
+    _type: str
+        _type is 'reaction' or 'species'
+
+    Returns
+    -------
+    list:
+        list of encoded id
+    """    
+    all_element_id_decoded = list()
+    #1st attemp: decoded id with classic encoding convention. cf sbmlplugin.convert_from_coded_id
+    all_element_id_decoded.append(convert_from_coded_id(element_id)[0])
+    if _type == "species":
+        #2st attemp: decoded id with classic non-conventionnal encoding. cf sbmlplugin.convert_from_coded_id
+        if convert_from_coded_id(element_id, compart_in_id = True)[0] not in all_element_id_decoded:
+            all_element_id_decoded.append(convert_from_coded_id(element_id, compart_in_id = True)[0])
+        if convert_from_coded_id(element_id, pattern = "_", species_tag = "S")[0] not in all_element_id_decoded:
+            all_element_id_decoded.append(convert_from_coded_id(element_id, pattern = "_", species_tag = "S")[0])
+    elif _type == "reaction":
+        #1st attemp: decoded id with classic encoding convention. cf sbmlplugin.convert_from_coded_id
+        all_element_id_decoded.append(convert_from_coded_id(element_id)[0])
+        #2st attemp: decoded id with classic non-conventionnal encoding. cf sbmlplugin.convert_from_coded_id
+        if convert_from_coded_id(element_id, compart_in_id = True)[0] not in all_element_id_decoded:
+            all_element_id_decoded.append(convert_from_coded_id(element_id, compart_in_id = True)[0])
+    return all_element_id_decoded
+
+def test():
+    #test convert_from_coded_id
+    coded = "R_RXN__45__11921"
+    assert convert_from_coded_id(coded) == ("RXN-11921", "R", None)
+
+    coded = "R_R00332_c"
+    assert convert_from_coded_id(coded) == ("R00332", "R", "c")
+
+    coded = "S_N6_45__40_L_45_1_44_3_45_Dicarboxypropyl_41__45_L_45_lysine_c"
+    assert convert_from_coded_id(coded, pattern="_" , species_tag="S") == ("N6-(L-1,3-Dicarboxypropyl)-L-lysine", "S", "c")
+
+    coded = "S__40_2R_41__45_2_45_Hydroxy_45_3_45__40_phosphonooxy_41__45_propanal_c"
+    assert convert_from_coded_id(coded, pattern="_" , species_tag="S") == ("(2R)-2-Hydroxy-3-(phosphonooxy)-propanal", "S", "c")
+
+    coded = "M_citr_L_m"
+    assert convert_from_coded_id(coded) == ("citr_L", "M", "m")
