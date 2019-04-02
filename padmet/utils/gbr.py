@@ -42,7 +42,7 @@ Note that there is no real error handling for parenthesis.
 """
 import re
 from enum import Enum
-from collections import ChainMap, defaultdict
+from collections import ChainMap
 
 
 # Constants
@@ -64,6 +64,8 @@ def precedence(op1, op2):
 
 
 class Type(Enum):
+    """
+    """
     Letter = "[a-zA-Z0-9_\.:-]"
     Op = "[" + OP_AND + OP_OR + "]"
     Opening = "\("
@@ -73,11 +75,15 @@ class Type(Enum):
 
 
 class Command(Enum):
+    """
+    """
     Stack = -1
     Finish = -2
 
 
 class Error(Enum):
+    """
+    """
     UnexpectedLetter = "unexpected letter"
     UnexpectedOp = "unexpected operator"
     UnexpectedOpening = "unexpected opening parenthesis"
