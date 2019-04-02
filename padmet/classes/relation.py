@@ -19,6 +19,7 @@ class Relation:
         (e.g: {'STOICHIOMETRY':[1.0]})
 
     """
+
     def __init__(self, id_in, _type, id_out, misc=None):
         """
         Parameters
@@ -72,8 +73,9 @@ class Relation:
         bool
             Return True if relation are the same, False if not        
         """
-        if set([relation.id_in, relation.type, relation.id_out]) == set([self.id_in, self.type, self.id_out]):
+        if set([relation.id_in, relation.type, relation.id_out]) == set(
+            [self.id_in, self.type, self.id_out]
+        ):
             if relation.misc == self.misc:
                 return True
         return False
-                        

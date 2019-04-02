@@ -33,7 +33,7 @@ class Policy:
         if policy_in_array is not None:
             self.setPolicyInArray(policy_in_array)
         else:
-            #set an empty policy
+            # set an empty policy
             self.policy_in_array = []
             self.class_of_node = set()
             self.type_of_arc = {}
@@ -49,8 +49,11 @@ class Policy:
         """
         for relation in policy_in_array:
             if len(relation) < 3:
-                raise ValueError("Array given to set the PolicyInArray is uncorrect: \
-                " + str(relation))
+                raise ValueError(
+                    "Array given to set the PolicyInArray is uncorrect: \
+                "
+                    + str(relation)
+                )
         self.policy_in_array = policy_in_array
         self._setClassOfNode()
         self._setTypeOfArc()
@@ -108,4 +111,3 @@ class Policy:
             return type_of_arc
         """
         return self.type_of_arc
-

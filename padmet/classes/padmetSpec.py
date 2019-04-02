@@ -7,8 +7,9 @@ from . import PadmetRef
 from ..utils import sbmlPlugin
 import libsbml
 import os
-__all__ = ['PadmetSpec']
-#pylint: disable=superfluous-parens
+
+__all__ = ["PadmetSpec"]
+# pylint: disable=superfluous-parens
 
 
 class PadmetSpec:
@@ -29,6 +30,7 @@ class PadmetSpec:
         info: a dictionary of informations about the network, the database used...
         This dictionary is always represented in the header of a padmet file
     """
+
     def __init__(self, padmetSpec_file=None):
         """
         if None, initializes an empty <PadmetSpec>
@@ -45,9 +47,10 @@ class PadmetSpec:
             self.dicOfNode = {}
             self.policy = Policy()
             self.info = {}
-#==============================================================================
-# Constructor / getter
-#==============================================================================
+
+    # ==============================================================================
+    # Constructor / getter
+    # ==============================================================================
 
     def setInfo(self, source):
         """
@@ -83,7 +86,6 @@ class PadmetSpec:
             self.dicOfNode = source
         else:
             self.dicOfNode = source.dicOfNode
-
 
     def setdicOfRelationIn(self, source):
         """
@@ -125,7 +127,6 @@ class PadmetSpec:
                 all_relation.add(rlt)
         return all_relation
 
-
     def loadGraph(self, padmet_file):
         """
         Allow to recover all the information of the padmet file.
@@ -136,7 +137,7 @@ class PadmetSpec:
         @return: _
         @rtype: None
         """
-        with open(padmet_file, 'r', encoding='utf8') as f:
+        with open(padmet_file, "r", encoding="utf8") as f:
             padmet_in_array = [line for line in f.read().splitlines() if len(line) != 0]
 
         self.policy = Policy()
@@ -149,16 +150,16 @@ class PadmetSpec:
             info_index = padmet_in_array.index("Data Base informations")
         except ValueError:
             info_index = None
-        #Index where start policy
+        # Index where start policy
         policy_index = padmet_in_array.index("Policy")
-        #Index where start Nodes
+        # Index where start Nodes
         node_index = padmet_in_array.index("Nodes")
-        #Index where start Relations
+        # Index where start Relations
         relation_index = padmet_in_array.index("Relations")
 
         #
         if info_index is not None:
-            info_section = padmet_in_array[info_index+1:policy_index]
+            info_section = padmet_in_array[info_index + 1 : policy_index]
             #
             for line in info_section:
                 if "\t" not in line:
@@ -170,35 +171,41 @@ class PadmetSpec:
                     self.info[current_data][line[0]] = line[1]
 
         #
-        policy_in_array = [line.split("\t") for line in padmet_in_array[policy_index+1:node_index]]
+        policy_in_array = [
+            line.split("\t") for line in padmet_in_array[policy_index + 1 : node_index]
+        ]
         self.setPolicy(policy_in_array)
 
-
         # generator of data to input in Node()
-        node_section = (line.split("\t") for line in padmet_in_array[node_index+1:relation_index])
+        node_section = (
+            line.split("\t")
+            for line in padmet_in_array[node_index + 1 : relation_index]
+        )
         #
         for data in node_section:
-            #Create a new Node object (cf node.py)
+            # Create a new Node object (cf node.py)
             node_type = data[0]
             node_id = data[1]
             node_misc = {}
             if len(data) > 2:
                 i = 2
-                #add the misc data in a dict
-                while (i+1) < len(data):
-                    #in case diff information for the same key
+                # add the misc data in a dict
+                while (i + 1) < len(data):
+                    # in case diff information for the same key
                     try:
-                        node_misc[data[i]].append(data[i+1])
+                        node_misc[data[i]].append(data[i + 1])
                     except KeyError:
-                        node_misc[data[i]] = [data[i+1]]
+                        node_misc[data[i]] = [data[i + 1]]
                     i += 2
             node = Node(node_type, node_id, node_misc)
-            #add the node into the dictionary
+            # add the node into the dictionary
             self.dicOfNode[node.id] = node
 
         # generator of data to input in Relation()
-        relation_section = (line.split("\t") for line in padmet_in_array[relation_index+1:])
-        #instantiate a new Relation object (cf relation.py)
+        relation_section = (
+            line.split("\t") for line in padmet_in_array[relation_index + 1 :]
+        )
+        # instantiate a new Relation object (cf relation.py)
         for data in relation_section:
             rlt_id_in = data[0]
             rlt_type = data[1]
@@ -206,12 +213,12 @@ class PadmetSpec:
             rlt_misc = {}
             if len(data) > 3:
                 i = 3
-                while (i+1) < len(data):
-                    #in case diff information for the same key
+                while (i + 1) < len(data):
+                    # in case diff information for the same key
                     try:
-                        rlt_misc[data[i]].append(data[i+1])
+                        rlt_misc[data[i]].append(data[i + 1])
                     except KeyError:
-                        rlt_misc[data[i]] = [data[i+1]]
+                        rlt_misc[data[i]] = [data[i + 1]]
                     i += 2
 
             relation = Relation(rlt_id_in, rlt_type, rlt_id_out, rlt_misc)
@@ -224,8 +231,17 @@ class PadmetSpec:
             except KeyError:
                 self.dicOfRelationOut[rlt_id_out] = [relation]
 
-    def updateFromSbml(self, sbml_file, padmetRef=None, mapping_file=None, verbose=False,
-                       force=False, source_tool=None, source_category=None, source_id=None):
+    def updateFromSbml(
+        self,
+        sbml_file,
+        padmetRef=None,
+        mapping_file=None,
+        verbose=False,
+        force=False,
+        source_tool=None,
+        source_category=None,
+        source_id=None,
+    ):
         """
         Copy data from sbml to padmet. If the id of the sbml are
         different with the padmetRef, need to add a dictionary of associations
@@ -248,9 +264,9 @@ class PadmetSpec:
         file_name = os.path.splitext(file_name)[0]
         if not source_id:
             source_id = file_name.upper()
-        #using libSbml to read sbml_file
+        # using libSbml to read sbml_file
         if verbose:
-            print("loading sbml file: %s" %sbml_file)
+            print("loading sbml file: %s" % sbml_file)
         reader = libsbml.SBMLReader()
         document = reader.readSBML(sbml_file)
         for i in range(document.getNumErrors()):
@@ -260,16 +276,21 @@ class PadmetSpec:
         listOfReactions = model.getListOfReactions()
         nbReactions = len(listOfReactions)
         if verbose:
-            #print("nb species: %s" %nbSpecies)
-            print(("nb reactions: %s" %nbReactions))
+            # print("nb species: %s" %nbSpecies)
+            print(("nb reactions: %s" % nbReactions))
         dicOfAssoc = {}
-        #reading assocIdOriginRef line by line, one line = "origin_id\tref_id\n"
+        # reading assocIdOriginRef line by line, one line = "origin_id\tref_id\n"
         if mapping_file is not None:
             if verbose:
-                print("Parsing %s" %mapping_file)
-            with open(mapping_file, 'r', encoding='utf8') as f: #open the file
-                dicOfAssoc = dict([line.split("\t") for line in f.read().splitlines()
-                                   if not line.startswith("#")])
+                print("Parsing %s" % mapping_file)
+            with open(mapping_file, "r", encoding="utf8") as f:  # open the file
+                dicOfAssoc = dict(
+                    [
+                        line.split("\t")
+                        for line in f.read().splitlines()
+                        if not line.startswith("#")
+                    ]
+                )
 
         rxn_count = 0
         for reactionSBML in listOfReactions:
@@ -301,7 +322,6 @@ class PadmetSpec:
             else:
                 reaction_dir = "LEFT-TO-RIGHT"
 
-
             if verbose:
                 print("%s/%s %s" % (rxn_count, len(listOfReactions), rxn_idOrigin))
 
@@ -309,7 +329,8 @@ class PadmetSpec:
                 rxn_idRef = sbmlPlugin.convert_from_coded_id(rxn_idOrigin)[0]
                 try:
                     self.dicOfNode[rxn_idRef]
-                    if verbose: print("\t%s already in padmet" %rxn_idRef)
+                    if verbose:
+                        print("\t%s already in padmet" % rxn_idRef)
                     rxn_added = True
                 except KeyError:
                     rxn_can_be_created = True
@@ -320,78 +341,141 @@ class PadmetSpec:
                         rxn_idRef = dicOfAssoc[rxn_idOrigin]
                         try:
                             self.dicOfNode[rxn_idRef]
-                            if verbose: print("\t%s already in padmet" %rxn_idRef)
+                            if verbose:
+                                print("\t%s already in padmet" % rxn_idRef)
                             rxn_added = True
                         except KeyError:
                             if rxn_idRef in list(padmetRef.dicOfNode.keys()):
-                                if verbose: print("\tCopy %s from padmetRef" %rxn_idRef)
+                                if verbose:
+                                    print("\tCopy %s from padmetRef" % rxn_idRef)
                                 self.copyNode(padmetRef, rxn_idRef)
                                 rxn_added = True
                             else:
-                                if verbose: print("\tError: idRef %s not found in padmetRef" %rxn_idRef)
+                                if verbose:
+                                    print(
+                                        "\tError: idRef %s not found in padmetRef"
+                                        % rxn_idRef
+                                    )
                     except KeyError:
                         rxn_idRef = sbmlPlugin.convert_from_coded_id(rxn_idOrigin)[0]
                         try:
                             self.dicOfNode[rxn_idRef]
-                            if verbose: print("\t%s already in padmet" %rxn_idRef)
+                            if verbose:
+                                print("\t%s already in padmet" % rxn_idRef)
                             rxn_added = True
                         except KeyError:
-                            all_cpds = set([r.getSpecies() for r in reactionSBML.getListOfReactants()] +
-                                           [p.getSpecies() for p in reactionSBML.getListOfProducts()])
-                            if len([True for cpd_id in all_cpds if cpd_id in list(dicOfAssoc.keys())]) == len(all_cpds):
-                                if verbose: print("\t%s can be created from compounds mapping" %rxn_idOrigin)
+                            all_cpds = set(
+                                [
+                                    r.getSpecies()
+                                    for r in reactionSBML.getListOfReactants()
+                                ]
+                                + [
+                                    p.getSpecies()
+                                    for p in reactionSBML.getListOfProducts()
+                                ]
+                            )
+                            if len(
+                                [
+                                    True
+                                    for cpd_id in all_cpds
+                                    if cpd_id in list(dicOfAssoc.keys())
+                                ]
+                            ) == len(all_cpds):
+                                if verbose:
+                                    print(
+                                        "\t%s can be created from compounds mapping"
+                                        % rxn_idOrigin
+                                    )
                                 rxn_can_be_created = True
                             else:
-                                if verbose: print("\t%s not in mapping file" %rxn_idRef)
+                                if verbose:
+                                    print("\t%s not in mapping file" % rxn_idRef)
 
                 else:
                     rxn_idRef = sbmlPlugin.convert_from_coded_id(rxn_idOrigin)[0]
                     try:
                         self.dicOfNode[rxn_idRef]
-                        if verbose: print("\t%s already in padmet" %rxn_idRef)
+                        if verbose:
+                            print("\t%s already in padmet" % rxn_idRef)
                         rxn_added = True
                     except KeyError:
                         if rxn_idRef in list(padmetRef.dicOfNode.keys()):
-                            if verbose: print("\tCopy %s from padmetRef" %rxn_idRef)
+                            if verbose:
+                                print("\tCopy %s from padmetRef" % rxn_idRef)
                             self.copyNode(padmetRef, rxn_idRef)
                             rxn_added = True
                         else:
                             if force:
                                 rxn_can_be_created = True
                             else:
-                                if verbose: print(("\t%s not in PadmetRef and can't be created" %rxn_idRef))
+                                if verbose:
+                                    print(
+                                        (
+                                            "\t%s not in PadmetRef and can't be created"
+                                            % rxn_idRef
+                                        )
+                                    )
 
             if rxn_can_be_created:
-                if verbose: print("\tCreating new reaction %s" %rxn_idRef)
+                if verbose:
+                    print("\tCreating new reaction %s" % rxn_idRef)
                 if rxn_cname:
-                    self.createNode("reaction", rxn_idRef, {"DIRECTION":[reaction_dir], "COMMON-NAME":[rxn_cname]})
+                    self.createNode(
+                        "reaction",
+                        rxn_idRef,
+                        {"DIRECTION": [reaction_dir], "COMMON-NAME": [rxn_cname]},
+                    )
                 else:
-                    self.createNode("reaction", rxn_idRef, {"DIRECTION":[reaction_dir]})
+                    self.createNode(
+                        "reaction", rxn_idRef, {"DIRECTION": [reaction_dir]}
+                    )
                 reactants = reactionSBML.getListOfReactants()
                 for reactant in reactants:
                     if mapping_file:
                         reactant_id = dicOfAssoc[reactant.getSpecies()]
                     else:
-                        reactant_id = sbmlPlugin.convert_from_coded_id(reactant.getSpecies())[0]
-                    #print(reactant_id)
+                        reactant_id = sbmlPlugin.convert_from_coded_id(
+                            reactant.getSpecies()
+                        )[0]
+                    # print(reactant_id)
                     if model.getElementBySId(reactant.getSpecies()).boundary_condition:
                         reactant_compart = "C-BOUNDARY"
                     else:
-                        reactant_compart = model.getElementBySId(reactant.getSpecies()).getCompartment()
+                        reactant_compart = model.getElementBySId(
+                            reactant.getSpecies()
+                        ).getCompartment()
                         if reactant_compart is None:
-                            if verbose: print("\t\t%s has no compart, set to 'c'" %reactant_id)
+                            if verbose:
+                                print("\t\t%s has no compart, set to 'c'" % reactant_id)
                             reactant_compart = "c"
                     reactant_stoich = reactant.getStoichiometry()
-                    consumes_rlt = Relation(rxn_idRef, "consumes", reactant_id, {"STOICHIOMETRY":[reactant_stoich], "COMPARTMENT":[reactant_compart]})
-                    #if reactant id not exist, create new compound node, else just add a new relation
+                    consumes_rlt = Relation(
+                        rxn_idRef,
+                        "consumes",
+                        reactant_id,
+                        {
+                            "STOICHIOMETRY": [reactant_stoich],
+                            "COMPARTMENT": [reactant_compart],
+                        },
+                    )
+                    # if reactant id not exist, create new compound node, else just add a new relation
                     if reactant_id not in list(self.dicOfNode.keys()):
-                        if padmetRef is not None and reactant_id in list(padmetRef.dicOfNode.keys()):
+                        if padmetRef is not None and reactant_id in list(
+                            padmetRef.dicOfNode.keys()
+                        ):
                             self._copyNodeExtend(padmetRef, reactant_id)
                         else:
-                            if verbose: print("\t\tCreating new compound: %s" %reactant_id)
-                            reactant_cname = listOfSpecies.getElementBySId(reactant.getSpecies()).getName()
+                            if verbose:
+                                print("\t\tCreating new compound: %s" % reactant_id)
+                            reactant_cname = listOfSpecies.getElementBySId(
+                                reactant.getSpecies()
+                            ).getName()
                             if reactant_cname:
-                                self.createNode("compound", reactant_id, {"COMMON-NAME":[reactant_cname]})
+                                self.createNode(
+                                    "compound",
+                                    reactant_id,
+                                    {"COMMON-NAME": [reactant_cname]},
+                                )
                             else:
                                 self.createNode("compound", reactant_id)
                     self._addRelation(consumes_rlt)
@@ -401,103 +485,167 @@ class PadmetSpec:
                     if mapping_file:
                         product_id = dicOfAssoc[product.getSpecies()]
                     else:
-                        product_id = sbmlPlugin.convert_from_coded_id(product.getSpecies())[0]
-                    #print(product_id)
+                        product_id = sbmlPlugin.convert_from_coded_id(
+                            product.getSpecies()
+                        )[0]
+                    # print(product_id)
                     if model.getElementBySId(product.getSpecies()).boundary_condition:
                         product_compart = "C-BOUNDARY"
                     else:
-                        product_compart = model.getElementBySId(product.getSpecies()).getCompartment()
+                        product_compart = model.getElementBySId(
+                            product.getSpecies()
+                        ).getCompartment()
                         if product_compart is None:
-                            if verbose: print("\t\t%s has no compart, set to 'c'" %product)
+                            if verbose:
+                                print("\t\t%s has no compart, set to 'c'" % product)
                             product_compart = "c"
                     product_stoich = product.getStoichiometry()
-                    produces_rlt = Relation(rxn_idRef, "produces", product_id, {"STOICHIOMETRY":[product_stoich], "COMPARTMENT":[product_compart]})
+                    produces_rlt = Relation(
+                        rxn_idRef,
+                        "produces",
+                        product_id,
+                        {
+                            "STOICHIOMETRY": [product_stoich],
+                            "COMPARTMENT": [product_compart],
+                        },
+                    )
 
                     if product_id not in list(self.dicOfNode.keys()):
-                        if padmetRef is not None and product_id in list(padmetRef.dicOfNode.keys()):
+                        if padmetRef is not None and product_id in list(
+                            padmetRef.dicOfNode.keys()
+                        ):
                             self._copyNodeExtend(padmetRef, product_id)
                         else:
-                            if verbose: print("\t\tCreating new compound: %s" %product_id)
-                            product_cname = listOfSpecies.getElementBySId(product.getSpecies()).getName()
+                            if verbose:
+                                print("\t\tCreating new compound: %s" % product_id)
+                            product_cname = listOfSpecies.getElementBySId(
+                                product.getSpecies()
+                            ).getName()
                             if product_cname:
-                                self.createNode("compound", product_id, {"COMMON-NAME":[product_cname]})
+                                self.createNode(
+                                    "compound",
+                                    product_id,
+                                    {"COMMON-NAME": [product_cname]},
+                                )
                             else:
                                 self.createNode("compound", product_id)
                     self._addRelation(produces_rlt)
                 rxn_added = True
 
             if rxn_added:
-                #Reaction was found in current network or successfully added
-                #creating SuppData and reconstructionData Nodes
-                #First, suppData:
-                suppData_id = rxn_idRef+"_SuppData_"+source_id.upper()
+                # Reaction was found in current network or successfully added
+                # creating SuppData and reconstructionData Nodes
+                # First, suppData:
+                suppData_id = rxn_idRef + "_SuppData_" + source_id.upper()
                 if suppData_id not in list(self.dicOfNode.keys()):
-                    #Extracting all data to create the supplementary data node
-                    #Using sbmlPlugin to recover the formula from the sbml
+                    # Extracting all data to create the supplementary data node
+                    # Using sbmlPlugin to recover the formula from the sbml
                     formula = sbmlPlugin.extractFormula(reactionSBML)
-                    #Using sbmlPlugin to recover the note section from the sbml
+                    # Using sbmlPlugin to recover the note section from the sbml
                     notes = sbmlPlugin.parseNotes(reactionSBML)
-                    #data will be stored in a suppData node
+                    # data will be stored in a suppData node
                     if rxn_cname:
-                        suppData = {"SOURCE":[source_id.upper()], "ORIGIN_ID":[str(rxn_idOrigin)], "NAME":[reactionSBML.getName()],
-                                    "REVERSIBLE":[str(reactionSBML.getReversible())], "FORMULA":[formula]}
+                        suppData = {
+                            "SOURCE": [source_id.upper()],
+                            "ORIGIN_ID": [str(rxn_idOrigin)],
+                            "NAME": [reactionSBML.getName()],
+                            "REVERSIBLE": [str(reactionSBML.getReversible())],
+                            "FORMULA": [formula],
+                        }
                     else:
-                        suppData = {"SOURCE":[source_id.upper()], "ORIGIN_ID":[str(rxn_idOrigin)], "REVERSIBLE":[str(reactionSBML.getReversible())],
-                                    "FORMULA":[formula]}
-                    #add notes to data
+                        suppData = {
+                            "SOURCE": [source_id.upper()],
+                            "ORIGIN_ID": [str(rxn_idOrigin)],
+                            "REVERSIBLE": [str(reactionSBML.getReversible())],
+                            "FORMULA": [formula],
+                        }
+                    # add notes to data
                     suppData.update(notes)
-                    #create the node suppData and the relation has_suppData
+                    # create the node suppData and the relation has_suppData
                     suppData_rlt = Relation(rxn_idRef, "has_suppData", suppData_id)
                     self.createNode("suppData", suppData_id, suppData, [suppData_rlt])
-                if verbose: print("\tCreating suppData %s" %suppData_id)
+                if verbose:
+                    print("\tCreating suppData %s" % suppData_id)
 
-                #reconstructionData:
-                reconstructionData_id = rxn_idRef+"_reconstructionData_"+source_id.upper()
+                # reconstructionData:
+                reconstructionData_id = (
+                    rxn_idRef + "_reconstructionData_" + source_id.upper()
+                )
                 if reconstructionData_id not in list(self.dicOfNode.keys()):
-                    reconstructionData = {"SOURCE":[source_id.upper()]}
+                    reconstructionData = {"SOURCE": [source_id.upper()]}
                     if source_tool:
-                        reconstructionData.update({"TOOL":[source_tool.upper()]})
+                        reconstructionData.update({"TOOL": [source_tool.upper()]})
                     if source_category:
-                        reconstructionData.update({"CATEGORY":[source_category.upper()]})
-                    reconstructionData_rlt = Relation(rxn_idRef, "has_reconstructionData", reconstructionData_id)
-                    self.createNode("reconstructionData", reconstructionData_id, reconstructionData, [reconstructionData_rlt])
-                    if verbose: print("\tCreating reconstructionData %s" %reconstructionData_id)
+                        reconstructionData.update(
+                            {"CATEGORY": [source_category.upper()]}
+                        )
+                    reconstructionData_rlt = Relation(
+                        rxn_idRef, "has_reconstructionData", reconstructionData_id
+                    )
+                    self.createNode(
+                        "reconstructionData",
+                        reconstructionData_id,
+                        reconstructionData,
+                        [reconstructionData_rlt],
+                    )
+                    if verbose:
+                        print(
+                            "\tCreating reconstructionData %s" % reconstructionData_id
+                        )
 
-                #parses gene_association and create gene node or update already existing genes
-                #Using sbmlPlugin to recover the note section from the sbml
+                # parses gene_association and create gene node or update already existing genes
+                # Using sbmlPlugin to recover the note section from the sbml
                 notes = sbmlPlugin.parseNotes(reactionSBML)
                 if "GENE_ASSOCIATION" in list(notes.keys()):
-                    #Using sbmlPlugin to recover all genes associated to the reaction
-                    listOfGenes = sbmlPlugin.parseGeneAssoc(notes["GENE_ASSOCIATION"][0])
+                    # Using sbmlPlugin to recover all genes associated to the reaction
+                    listOfGenes = sbmlPlugin.parseGeneAssoc(
+                        notes["GENE_ASSOCIATION"][0]
+                    )
                     if listOfGenes:
-                        if verbose: print("\tParsing genes:")
+                        if verbose:
+                            print("\tParsing genes:")
                         genes_count = 0
                         nbGenes = len(listOfGenes)
                         for gene_id in listOfGenes:
                             genes_count += 1
-                            if verbose: print(("\t\t%s/%s %s" % (genes_count, nbGenes, gene_id)))
+                            if verbose:
+                                print(
+                                    ("\t\t%s/%s %s" % (genes_count, nbGenes, gene_id))
+                                )
                             try:
-                                #check if gene already in the padmet
+                                # check if gene already in the padmet
                                 self.dicOfNode[gene_id]
                             except KeyError:
                                 self.createNode("gene", gene_id)
-                            #check if rxn already linked to gene x
+                            # check if rxn already linked to gene x
                             try:
-                                linked_rlt = [rlt for rlt in self.dicOfRelationIn[rxn_idRef]
-                                              if rlt.type == "is_linked_to" and rlt.id_out == gene_id][0]
-                                #rxn already linked to gene x, update misc
+                                linked_rlt = [
+                                    rlt
+                                    for rlt in self.dicOfRelationIn[rxn_idRef]
+                                    if rlt.type == "is_linked_to"
+                                    and rlt.id_out == gene_id
+                                ][0]
+                                # rxn already linked to gene x, update misc
                                 try:
-                                    linked_rlt.misc["SOURCE:ASSIGNMENT"].append(source_id.upper())
+                                    linked_rlt.misc["SOURCE:ASSIGNMENT"].append(
+                                        source_id.upper()
+                                    )
                                 except KeyError:
-                                    linked_rlt.misc["SOURCE:ASSIGNMENT"] = [source_id.upper()]
-                            #rxn not linked to gene x
+                                    linked_rlt.misc["SOURCE:ASSIGNMENT"] = [
+                                        source_id.upper()
+                                    ]
+                            # rxn not linked to gene x
                             except IndexError:
-                                linked_rlt = Relation(rxn_idRef, "is_linked_to", gene_id,
-                                                      {"SOURCE:ASSIGNMENT":[source_id.upper()]})
+                                linked_rlt = Relation(
+                                    rxn_idRef,
+                                    "is_linked_to",
+                                    gene_id,
+                                    {"SOURCE:ASSIGNMENT": [source_id.upper()]},
+                                )
                             self._addRelation(linked_rlt)
 
     def updateFromPadmet(self, padmet):
-        #update sillico from exp
+        # update sillico from exp
         for k, v in list(padmet.dicOfNode.items()):
             try:
                 self.dicOfNode[k]
@@ -507,8 +655,14 @@ class PadmetSpec:
         for rlt in padmet.getAllRelation():
             if rlt.type == "is_linked_to":
                 try:
-                    match_rlt = [i for i in self.dicOfRelationIn[rlt.id_in] if i.id_out == rlt.id_out][0]
-                    match_rlt.misc["SOURCE:ASSIGNMENT"].extend(rlt.misc["SOURCE:ASSIGNMENT"])
+                    match_rlt = [
+                        i
+                        for i in self.dicOfRelationIn[rlt.id_in]
+                        if i.id_out == rlt.id_out
+                    ][0]
+                    match_rlt.misc["SOURCE:ASSIGNMENT"].extend(
+                        rlt.misc["SOURCE:ASSIGNMENT"]
+                    )
                 except (IndexError, KeyError) as e:
                     self._addRelation(rlt)
             else:
@@ -525,16 +679,17 @@ class PadmetSpec:
         # by the node in id.
         dicKeys = list(self.dicOfNode.keys())
         dicKeys.sort()
-        orderedTuplOfRelation = tuple(sorted(self.getAllRelation(),
-                                             key=lambda x: x.id_in, reverse=False))
-        with open(output, 'w', encoding='utf8') as f:
+        orderedTuplOfRelation = tuple(
+            sorted(self.getAllRelation(), key=lambda x: x.id_in, reverse=False)
+        )
+        with open(output, "w", encoding="utf8") as f:
             if len(self.info) != 0:
                 f.write("Data Base informations\n")
                 f.write("\n")
                 for k, data in self.info.items():
-                    f.write(k+":\n")
+                    f.write(k + ":\n")
                     for k, v in data.items():
-                        f.write("\t"+k+":"+v+"\n")
+                        f.write("\t" + k + ":" + v + "\n")
                 f.write("\n")
             # It writes the policy of the padmet file.
             f.write("Policy\n")
@@ -550,14 +705,14 @@ class PadmetSpec:
             f.write("\n")
             for nodeId in dicKeys:
                 node = self.dicOfNode[nodeId]
-                line = node.toString()+"\n"
+                line = node.toString() + "\n"
                 f.write(line)
             f.write("\n")
             # It writes the relations of the padmet file.
             f.write("Relations\n")
             f.write("\n")
             for rlt in orderedTuplOfRelation:
-                line = rlt.toString()+"\n"
+                line = rlt.toString() + "\n"
                 f.write(line)
 
     def extract_pathway(self, node_id, padmetRef_file, output, sbml=None):
@@ -573,34 +728,48 @@ class PadmetSpec:
         @return: _
         @rtype: None
         """
-        #Retriving the ID and the node of the pathway.
+        # Retriving the ID and the node of the pathway.
         try:
             node = self.dicOfNode[node_id]
         except KeyError:
-            print("%s not found" %node_id)
+            print("%s not found" % node_id)
             return
         node_type = node.type
         if node_type != "pathway":
-            print("%s is not a pathway" %node_id)
+            print("%s is not a pathway" % node_id)
             return
 
         padmetRef = PadmetRef(padmetRef_file)
-        #Retriving all the reactions associated to the pathway from the padmetRef
-        total_reactions = [padmetRef.dicOfNode[rlt.id_in] for rlt in padmetRef.dicOfRelationOut.get(node_id, None)
-                           if rlt.type == "is_in_pathway" and padmetRef.dicOfNode[rlt.id_in].type == "reaction"]
-        #Retriving the reactions (ID) present in the network
-        found_reactions = [self.dicOfNode[rlt.id_in].id for rlt in self.dicOfRelationOut.get(node_id, None)
-                           if rlt.type == "is_in_pathway" and self.dicOfNode[rlt.id_in].type == "reaction"]
+        # Retriving all the reactions associated to the pathway from the padmetRef
+        total_reactions = [
+            padmetRef.dicOfNode[rlt.id_in]
+            for rlt in padmetRef.dicOfRelationOut.get(node_id, None)
+            if rlt.type == "is_in_pathway"
+            and padmetRef.dicOfNode[rlt.id_in].type == "reaction"
+        ]
+        # Retriving the reactions (ID) present in the network
+        found_reactions = [
+            self.dicOfNode[rlt.id_in].id
+            for rlt in self.dicOfRelationOut.get(node_id, None)
+            if rlt.type == "is_in_pathway"
+            and self.dicOfNode[rlt.id_in].type == "reaction"
+        ]
 
         if len(found_reactions) == 0:
             print("0 reactions associated to this pathway in the network")
             return
 
-        with open(output, 'w', encoding='utf8') as f:
-            #Define header
-            header = ["Reactions (metacyc_id)", "Reactions (common_name)", "EC-Number",
-                      "Formula (metacyc_id)", "Formula (common_name)", "Found in the network"]
-            header = "\t".join(header)+"\n"
+        with open(output, "w", encoding="utf8") as f:
+            # Define header
+            header = [
+                "Reactions (metacyc_id)",
+                "Reactions (common_name)",
+                "EC-Number",
+                "Formula (metacyc_id)",
+                "Formula (common_name)",
+                "Found in the network",
+            ]
+            header = "\t".join(header) + "\n"
             f.write(header)
             for rNode in total_reactions:
                 rId = rNode.id
@@ -626,28 +795,55 @@ class PadmetSpec:
                 elif direction == "LEFT-TO-RIGHT":
                     direction = " => "
 
-                reactants = [rlt.misc["STOICHIOMETRY"][0]+" "+rlt.id_out for rlt in padmetRef.dicOfRelationIn.get(rId, None)
-                             if rlt.type == "consumes"]
-                products = [rlt.misc["STOICHIOMETRY"][0]+" "+rlt.id_out for rlt in padmetRef.dicOfRelationIn.get(rId, None)
-                            if rlt.type == "produces"]
-                metIdFormula = " + ".join(reactants)+direction+" + ".join(products)
+                reactants = [
+                    rlt.misc["STOICHIOMETRY"][0] + " " + rlt.id_out
+                    for rlt in padmetRef.dicOfRelationIn.get(rId, None)
+                    if rlt.type == "consumes"
+                ]
+                products = [
+                    rlt.misc["STOICHIOMETRY"][0] + " " + rlt.id_out
+                    for rlt in padmetRef.dicOfRelationIn.get(rId, None)
+                    if rlt.type == "produces"
+                ]
+                metIdFormula = " + ".join(reactants) + direction + " + ".join(products)
 
                 try:
-                    reactants = [rlt.misc["STOICHIOMETRY"][0]+" "+padmetRef.dicOfNode[rlt.id_out].misc["COMMON-NAME"][0]
-                                 for rlt in padmetRef.dicOfRelationIn.get(rId, None) if rlt.type == "consumes"]
-                    products = [rlt.misc["STOICHIOMETRY"][0]+" "+padmetRef.dicOfNode[rlt.id_out].misc["COMMON-NAME"][0]
-                                for rlt in padmetRef.dicOfRelationIn.get(rId, None) if rlt.type == "produces"]
-                    cnameFormula = " + ".join(reactants)+direction+" + ".join(products)
+                    reactants = [
+                        rlt.misc["STOICHIOMETRY"][0]
+                        + " "
+                        + padmetRef.dicOfNode[rlt.id_out].misc["COMMON-NAME"][0]
+                        for rlt in padmetRef.dicOfRelationIn.get(rId, None)
+                        if rlt.type == "consumes"
+                    ]
+                    products = [
+                        rlt.misc["STOICHIOMETRY"][0]
+                        + " "
+                        + padmetRef.dicOfNode[rlt.id_out].misc["COMMON-NAME"][0]
+                        for rlt in padmetRef.dicOfRelationIn.get(rId, None)
+                        if rlt.type == "produces"
+                    ]
+                    cnameFormula = (
+                        " + ".join(reactants) + direction + " + ".join(products)
+                    )
                 except KeyError:
                     cnameFormula = "Unknown"
 
-                line = "\t".join([metacyc_id, common_name, ec, metIdFormula, cnameFormula, in_network])
-                line = line+"\n"
+                line = "\t".join(
+                    [
+                        metacyc_id,
+                        common_name,
+                        ec,
+                        metIdFormula,
+                        cnameFormula,
+                        in_network,
+                    ]
+                )
+                line = line + "\n"
                 f.write(line)
         if sbml is not None:
-        #generate an sbml for the extracted data
+            # generate an sbml for the extracted data
             print("Generating SBML file...")
-            #TODO
+            # TODO
 
     def network_report(self, output_dir, padmetRef_file=None, verbose=False):
         """
@@ -671,74 +867,120 @@ class PadmetSpec:
         @return: _
         @rtype: None
         """
-        os.system("mkdir -p "+output_dir)
+        os.system("mkdir -p " + output_dir)
         if not output_dir.endswith("/"):
             output_dir += "/"
-        all_pathways = output_dir+"all_pathways.csv"
-        all_reactions = output_dir+"all_reactions.csv"
-        all_metabolites = output_dir+"all_metabolites.csv"
-        all_genes = output_dir+"all_genes.csv"
+        all_pathways = output_dir + "all_pathways.csv"
+        all_reactions = output_dir + "all_reactions.csv"
+        all_metabolites = output_dir + "all_metabolites.csv"
+        all_genes = output_dir + "all_genes.csv"
 
         if padmetRef_file is not None:
             padmetRef = PadmetRef(padmetRef_file)
-            pathways = set([self.dicOfNode[rlt.id_out] for rlt in self.getAllRelation()
-                            if rlt.type == "is_in_pathway" and self.dicOfNode[rlt.id_in].type == "reaction"])
+            pathways = set(
+                [
+                    self.dicOfNode[rlt.id_out]
+                    for rlt in self.getAllRelation()
+                    if rlt.type == "is_in_pathway"
+                    and self.dicOfNode[rlt.id_in].type == "reaction"
+                ]
+            )
             nb_pathways = len(pathways)
 
-        reactions = [node for node in list(self.dicOfNode.values()) if node.type == "reaction"]
+        reactions = [
+            node for node in list(self.dicOfNode.values()) if node.type == "reaction"
+        ]
         nb_reactions = len(reactions)
 
-        metabolites = set([self.dicOfNode[rlt.id_out] for rlt in self.getAllRelation()
-                           if rlt.type in ["consumes", "produces"]])
+        metabolites = set(
+            [
+                self.dicOfNode[rlt.id_out]
+                for rlt in self.getAllRelation()
+                if rlt.type in ["consumes", "produces"]
+            ]
+        )
         nb_metabolites = len(metabolites)
 
         genes = [node for node in list(self.dicOfNode.values()) if node.type == "gene"]
         nb_genes = len(genes)
 
         if padmetRef_file is not None:
-            with open(all_pathways, 'w', encoding='utf8') as f:
-                header = ["dbRef_id", "Common name", "Number of reaction found",
-                          "Total number of reaction", "Ratio (Reaction found / Total)"]
-                header = "\t".join(header)+"\n"
+            with open(all_pathways, "w", encoding="utf8") as f:
+                header = [
+                    "dbRef_id",
+                    "Common name",
+                    "Number of reaction found",
+                    "Total number of reaction",
+                    "Ratio (Reaction found / Total)",
+                ]
+                header = "\t".join(header) + "\n"
                 f.write(header)
 
                 count = 1
                 for pnode in pathways:
                     pnode_id = pnode.id
-                    if verbose: print("Pathway : %s %s/%s" % (pnode_id, count, nb_pathways))
+                    if verbose:
+                        print("Pathway : %s %s/%s" % (pnode_id, count, nb_pathways))
                     # Recover the first common_name
                     try:
                         common_name = pnode.misc["COMMON-NAME"][0]
                     except KeyError:
                         common_name = "Unknown"
 
-                    number_of_reaction_found = len([rlt for rlt in self.dicOfRelationOut[pnode_id]
-                                                    if rlt.type == "is_in_pathway" and self.dicOfNode[rlt.id_in].type == "reaction"])
+                    number_of_reaction_found = len(
+                        [
+                            rlt
+                            for rlt in self.dicOfRelationOut[pnode_id]
+                            if rlt.type == "is_in_pathway"
+                            and self.dicOfNode[rlt.id_in].type == "reaction"
+                        ]
+                    )
 
                     try:
-                        total_number_of_reaction = len([rlt for rlt in padmetRef.dicOfRelationOut[pnode_id]
-                                                        if rlt.type == "is_in_pathway" and padmetRef.dicOfNode[rlt.id_in].type == "reaction"])
+                        total_number_of_reaction = len(
+                            [
+                                rlt
+                                for rlt in padmetRef.dicOfRelationOut[pnode_id]
+                                if rlt.type == "is_in_pathway"
+                                and padmetRef.dicOfNode[rlt.id_in].type == "reaction"
+                            ]
+                        )
                         # If keyError: pathway not in padmetRef, pathway added manually
                     except KeyError:
                         total_number_of_reaction = "NA"
 
                     try:
                         if type(total_number_of_reaction) is int:
-                            ratio = "%.2f" % (float(number_of_reaction_found)/total_number_of_reaction)
+                            ratio = "%.2f" % (
+                                float(number_of_reaction_found)
+                                / total_number_of_reaction
+                            )
                         else:
                             ratio = "NA"
-                        line = [pnode_id, common_name, str(number_of_reaction_found),
-                                str(total_number_of_reaction), str(ratio)]
-                        line = "\t".join(line)+"\n"
+                        line = [
+                            pnode_id,
+                            common_name,
+                            str(number_of_reaction_found),
+                            str(total_number_of_reaction),
+                            str(ratio),
+                        ]
+                        line = "\t".join(line) + "\n"
                         f.write(line)
                     except ZeroDivisionError:
                         pass
                     count += 1
 
-        with open(all_reactions, 'w', encoding='utf8') as f:
-            header = ["dbRef_id", "Common name", "formula (with id)",
-                      "formula (with common name)", "in pathways", "associated genes", "categories"]
-            header = "\t".join(header)+"\n"
+        with open(all_reactions, "w", encoding="utf8") as f:
+            header = [
+                "dbRef_id",
+                "Common name",
+                "formula (with id)",
+                "formula (with common name)",
+                "in pathways",
+                "associated genes",
+                "categories",
+            ]
+            header = "\t".join(header) + "\n"
             f.write(header)
 
             count = 0
@@ -754,8 +996,13 @@ class PadmetSpec:
                     common_name = "Unknown"
                 # Recovering pathways associated
                 try:
-                    in_pathways = ";".join([rlt.id_out for rlt in self.dicOfRelationIn.get(rnode_id, None)
-                                            if rlt.type == "is_in_pathway"])
+                    in_pathways = ";".join(
+                        [
+                            rlt.id_out
+                            for rlt in self.dicOfRelationIn.get(rnode_id, None)
+                            if rlt.type == "is_in_pathway"
+                        ]
+                    )
                 except TypeError:
                     in_pathways = ""
                 # Recovering the formula
@@ -767,25 +1014,48 @@ class PadmetSpec:
                 elif direction == "LEFT-TO-RIGHT":
                     direction = " => "
 
-                reactants = [rlt.misc["STOICHIOMETRY"][0]+" "+rlt.id_out
-                             for rlt in self.dicOfRelationIn[rnode_id] if rlt.type == "consumes"]
-                products = [rlt.misc["STOICHIOMETRY"][0]+" "+rlt.id_out
-                            for rlt in self.dicOfRelationIn[rnode_id] if rlt.type == "produces"]
-                formula_id = " + ".join(reactants)+direction+" + ".join(products)
+                reactants = [
+                    rlt.misc["STOICHIOMETRY"][0] + " " + rlt.id_out
+                    for rlt in self.dicOfRelationIn[rnode_id]
+                    if rlt.type == "consumes"
+                ]
+                products = [
+                    rlt.misc["STOICHIOMETRY"][0] + " " + rlt.id_out
+                    for rlt in self.dicOfRelationIn[rnode_id]
+                    if rlt.type == "produces"
+                ]
+                formula_id = " + ".join(reactants) + direction + " + ".join(products)
 
                 try:
-                    reactants = [rlt.misc["STOICHIOMETRY"][0]+" "+self.dicOfNode[rlt.id_out].misc["COMMON-NAME"][0]
-                                 for rlt in self.dicOfRelationIn[rnode_id] if rlt.type == "consumes"]
-                    products = [rlt.misc["STOICHIOMETRY"][0]+" "+self.dicOfNode[rlt.id_out].misc["COMMON-NAME"][0]
-                                for rlt in self.dicOfRelationIn[rnode_id] if rlt.type == "produces"]
-                    formula_cname = " + ".join(reactants)+direction+" + ".join(products)
+                    reactants = [
+                        rlt.misc["STOICHIOMETRY"][0]
+                        + " "
+                        + self.dicOfNode[rlt.id_out].misc["COMMON-NAME"][0]
+                        for rlt in self.dicOfRelationIn[rnode_id]
+                        if rlt.type == "consumes"
+                    ]
+                    products = [
+                        rlt.misc["STOICHIOMETRY"][0]
+                        + " "
+                        + self.dicOfNode[rlt.id_out].misc["COMMON-NAME"][0]
+                        for rlt in self.dicOfRelationIn[rnode_id]
+                        if rlt.type == "produces"
+                    ]
+                    formula_cname = (
+                        " + ".join(reactants) + direction + " + ".join(products)
+                    )
                 except KeyError:
                     formula_cname = ""
 
                 # Recovering genes associated
                 try:
-                    gene_assoc = ";".join([rlt.id_out for rlt in self.dicOfRelationIn[rnode_id]
-                                           if rlt.type == "is_linked_to"])
+                    gene_assoc = ";".join(
+                        [
+                            rlt.id_out
+                            for rlt in self.dicOfRelationIn[rnode_id]
+                            if rlt.type == "is_linked_to"
+                        ]
+                    )
                 except TypeError:
                     gene_assoc = ""
 
@@ -796,13 +1066,27 @@ class PadmetSpec:
                         sources.append(src)
                 sources = ";".join(sources)
 
-                line = "\t".join([rnode_id, common_name, formula_id, formula_cname, in_pathways, gene_assoc, sources])
-                line = line+"\n"
+                line = "\t".join(
+                    [
+                        rnode_id,
+                        common_name,
+                        formula_id,
+                        formula_cname,
+                        in_pathways,
+                        gene_assoc,
+                        sources,
+                    ]
+                )
+                line = line + "\n"
                 f.write(line)
 
-        with open(all_metabolites, 'w', encoding='utf8') as f:
-            header = ["dbRef_id", "Common name", "Produced (p), Consumed (c), Both (cp)"]
-            header = "\t".join(header)+"\n"
+        with open(all_metabolites, "w", encoding="utf8") as f:
+            header = [
+                "dbRef_id",
+                "Common name",
+                "Produced (p), Consumed (c), Both (cp)",
+            ]
+            header = "\t".join(header) + "\n"
             f.write(header)
 
             count = 0
@@ -811,17 +1095,23 @@ class PadmetSpec:
                 mnode_id = mnode.id
                 is_consumed = False
                 is_produced = False
-                if verbose: print("Metabolite : %s %s/%s" % (mnode_id, count, nb_metabolites))
+                if verbose:
+                    print("Metabolite : %s %s/%s" % (mnode_id, count, nb_metabolites))
                 # Recover the first common_name
                 try:
                     common_name = mnode.misc["COMMON-NAME"][0]
                 except KeyError:
                     common_name = "Unknown"
-                rlts_c_and_p = [(rlt.type, rlt.id_in) for rlt in self.dicOfRelationOut[mnode_id]
-                                if rlt.type == "consumes" or rlt.type == "produces"]
+                rlts_c_and_p = [
+                    (rlt.type, rlt.id_in)
+                    for rlt in self.dicOfRelationOut[mnode_id]
+                    if rlt.type == "consumes" or rlt.type == "produces"
+                ]
 
-                if "REVERSIBLE" in [self.dicOfNode[rxn_id].misc["DIRECTION"][0]
-                                    for (rlt_type, rxn_id) in rlts_c_and_p]:
+                if "REVERSIBLE" in [
+                    self.dicOfNode[rxn_id].misc["DIRECTION"][0]
+                    for (rlt_type, rxn_id) in rlts_c_and_p
+                ]:
                     statut = "cp"
                 else:
                     for rlt_type, rxn_id in rlts_c_and_p:
@@ -839,19 +1129,20 @@ class PadmetSpec:
                         statut = "NA"
 
                 line = "\t".join([mnode_id, common_name, statut])
-                line = line+"\n"
+                line = line + "\n"
                 f.write(line)
 
-        with open(all_genes, 'w', encoding='utf8') as f:
+        with open(all_genes, "w", encoding="utf8") as f:
             header = ["id", "Common name", "linked reactions"]
-            header = "\t".join(header)+"\n"
+            header = "\t".join(header) + "\n"
             f.write(header)
 
             count = 0
             for gnode in genes:
                 count += 1
                 gnode_id = gnode.id
-                if verbose: print("Gene : %s %s/%s" % (gnode_id, count, nb_genes))
+                if verbose:
+                    print("Gene : %s %s/%s" % (gnode_id, count, nb_genes))
                 # Recover the first common_name
                 try:
                     common_name = gnode.misc["COMMON-NAME"][0]
@@ -860,19 +1151,23 @@ class PadmetSpec:
 
                 # Recovering linked reactions
                 try:
-                    rxn_assoc = ";".join([rlt.id_in for rlt in self.dicOfRelationOut.get(gnode_id, None)
-                                          if rlt.type == "is_linked_to"])
+                    rxn_assoc = ";".join(
+                        [
+                            rlt.id_in
+                            for rlt in self.dicOfRelationOut.get(gnode_id, None)
+                            if rlt.type == "is_linked_to"
+                        ]
+                    )
                 except TypeError:
                     rxn_assoc = ""
 
                 line = "\t".join([gnode_id, common_name, rxn_assoc])
-                line = line+"\n"
+                line = line + "\n"
                 f.write(line)
 
-
-#==============================================================================
-# For Nodes
-#==============================================================================
+    # ==============================================================================
+    # For Nodes
+    # ==============================================================================
     def _addNode(self, node):
         """
         Allows to add a node, only if the id is not already used.
@@ -886,7 +1181,6 @@ class PadmetSpec:
             return True
         else:
             return False
-
 
     def _copyNodeExtend(self, padmet, node_id):
         """
@@ -909,14 +1203,21 @@ class PadmetSpec:
                 relations_in = (rlt for rlt in padmet.dicOfRelationIn.get(node_id, None)
                 if rlt.type != "catalyses")
                 """
-                relations_in = (rlt for rlt in padmet.dicOfRelationIn.get(node_id, None))
+                relations_in = (
+                    rlt for rlt in padmet.dicOfRelationIn.get(node_id, None)
+                )
                 # For each relation, we add it with addRelation(), then
                 # call _copyNodeExtend() for the id 'out'.
                 for rlt in relations_in:
                     self._addRelation(rlt)
                     node_out_id = rlt.id_out
                     node_out_type = padmet.dicOfNode[node_out_id].type
-                    if (node_out_type in ["xref", "name", "suppData", "reconstructionData"]):
+                    if node_out_type in [
+                        "xref",
+                        "name",
+                        "suppData",
+                        "reconstructionData",
+                    ]:
                         self._addNode(padmet.dicOfNode[node_out_id])
                     else:
                         self._copyNodeExtend(padmet, node_out_id)
@@ -940,21 +1241,27 @@ class PadmetSpec:
         try:
             nodeToCopy = padmet.dicOfNode[node_id]
         except KeyError:
-            raise TypeError("Unable to get the node(s) with id: %s" %node_id)
-
+            raise TypeError("Unable to get the node(s) with id: %s" % node_id)
 
         # True => node successfully added in dictionary of node.
         if self._addNode(nodeToCopy):
             # Recover all relations of the node
             try:
-                relations_in = (rlt for rlt in padmet.dicOfRelationIn.get(node_id, None))
+                relations_in = (
+                    rlt for rlt in padmet.dicOfRelationIn.get(node_id, None)
+                )
                 # Add each relation with _addRelation, then call
                 # _copyNodeExtend() for the id 'out'.
                 for rlt in relations_in:
                     self._addRelation(rlt)
                     node_out_id = rlt.id_out
                     node_out_type = padmet.dicOfNode[node_out_id].type
-                    if (node_out_type in ["xref", "name", "suppData", "reconstructionData"]):
+                    if node_out_type in [
+                        "xref",
+                        "name",
+                        "suppData",
+                        "reconstructionData",
+                    ]:
                         self._addNode(padmet.dicOfNode[node_out_id])
                     else:
                         self._copyNodeExtend(padmet, node_out_id)
@@ -969,7 +1276,9 @@ class PadmetSpec:
                 relations_out = (rlt for rlt in padmet.dicOfRelationOut.get(node_id, None)
                 if rlt.type != "catalyses")
                 """
-                relations_out = (rlt for rlt in padmet.dicOfRelationOut.get(node_id, None))
+                relations_out = (
+                    rlt for rlt in padmet.dicOfRelationOut.get(node_id, None)
+                )
                 # For each relation, we add it with addRelation, then call
                 # _copyNodeExtend() for the id 'in'
                 for rlt in relations_out:
@@ -998,7 +1307,7 @@ class PadmetSpec:
         try:
             self.dicOfNode.pop(node_id)
         except KeyError:
-            print("The id %s doesnt exist. Unable to delete" %node_id)
+            print("The id %s doesnt exist. Unable to delete" % node_id)
             return False
 
         # If exist delete the relations 'in' and 'out'
@@ -1006,15 +1315,19 @@ class PadmetSpec:
             # Recover the relations where the node is "in".
             relationsIn = [rlt for rlt in self.dicOfRelationIn.get(node_id, None)]
             for rltIn in relationsIn:
-                #print(rltIn.toString())
+                # print(rltIn.toString())
                 self._delRelation(rltIn)
                 try:
-                    id_out_rlts_in = [rlt for rlt in self.dicOfRelationIn.get(rltIn.id_out, None)]
+                    id_out_rlts_in = [
+                        rlt for rlt in self.dicOfRelationIn.get(rltIn.id_out, None)
+                    ]
                 except TypeError:
                     try:
-                        id_out_rlts_out = [rlt for rlt in self.dicOfRelationOut.get(rltIn.id_out, None)]
+                        id_out_rlts_out = [
+                            rlt for rlt in self.dicOfRelationOut.get(rltIn.id_out, None)
+                        ]
                     except TypeError:
-                        #print("%s linked to nothing" %rltIn.id_out)
+                        # print("%s linked to nothing" %rltIn.id_out)
                         self.delNode(rltIn.id_out)
         except TypeError:
             pass
@@ -1024,18 +1337,21 @@ class PadmetSpec:
             for rltOut in relationsOut:
                 self._delRelation(rltOut)
                 try:
-                    id_in_rlts_in = [rlt for rlt in self.dicOfRelationIn.get(rltOut.id_in, None)]
+                    id_in_rlts_in = [
+                        rlt for rlt in self.dicOfRelationIn.get(rltOut.id_in, None)
+                    ]
                 except TypeError:
                     try:
-                        id_in_rlts_out = [rlt for rlt in self.dicOfRelationOut.get(rltOut.id_in, None)]
+                        id_in_rlts_out = [
+                            rlt for rlt in self.dicOfRelationOut.get(rltOut.id_in, None)
+                        ]
                     except TypeError:
-                        #print("%s linked to nothing" %rltOut.id_in)
+                        # print("%s linked to nothing" %rltOut.id_in)
                         self.delNode(rltOut.id_in)
 
         except TypeError:
             pass
         return True
-
 
     def updateNode(self, node_id, data, action):
         """
@@ -1063,7 +1379,7 @@ class PadmetSpec:
         try:
             node = self.dicOfNode[node_id]
         except KeyError:
-            print("The id %s doesnt exist. Unable to update" %node_id)
+            print("The id %s doesnt exist. Unable to update" % node_id)
             return False
 
         if action == "add":
@@ -1086,21 +1402,21 @@ class PadmetSpec:
                 else:
                     node.misc.pop(data[0])
             except KeyError:
-                print("No data %s associated to this node" %data[0])
+                print("No data %s associated to this node" % data[0])
                 return False
 
         elif action == "update":
             node.misc[data[0]] = data[1]
 
         else:
-            print("Unknown action: %s, please check docstring" %action)
+            print("Unknown action: %s, please check docstring" % action)
             return False
         self.dicOfNode[node_id] = node
         return True
 
-#==============================================================================
-# For Relations:
-#==============================================================================
+    # ==============================================================================
+    # For Relations:
+    # ==============================================================================
 
     def _delRelation(self, relation):
         """
@@ -1137,7 +1453,6 @@ class PadmetSpec:
             print("Unable to delete this relation, doesn't exist.")
         return delete
 
-
     def _addRelation(self, relation):
         """
         AddRelation() allows to add a relation if not already in allRelations.
@@ -1164,9 +1479,9 @@ class PadmetSpec:
             self.dicOfRelationOut[idOut] = [relation]
         return True
 
-#==============================================================================
-# manipulating de novo node:
-#==============================================================================
+    # ==============================================================================
+    # manipulating de novo node:
+    # ==============================================================================
 
     def createNode(self, _type, _id, dicOfMisc={}, listOfRelation=None):
         """
@@ -1182,9 +1497,9 @@ class PadmetSpec:
         @return: new_node
         @rtype: Node
         """
-        #add the new node
+        # add the new node
         if _id in list(self.dicOfNode.keys()):
-            raise ValueError("%s is already used, unable to create Node" %(_id))
+            raise ValueError("%s is already used, unable to create Node" % (_id))
         new_node = Node(_type, _id, dicOfMisc)
         self.dicOfNode[_id] = new_node
         if listOfRelation is not None:
@@ -1193,28 +1508,37 @@ class PadmetSpec:
 
         return new_node
 
-#==============================================================================
-# manipulating de novo node:
-#==============================================================================
+    # ==============================================================================
+    # manipulating de novo node:
+    # ==============================================================================
 
     def change_compart(self, old_compart, new_compart, verbose=False):
         """
         #TODO
         """
         rxns_updated = set()
-        for rlt in [rlt for rlt in self.getAllRelation()
-                    if rlt.type in ["consumes", "produces"] and rlt.misc["COMPARTMENT"][0] == old_compart]:
+        for rlt in [
+            rlt
+            for rlt in self.getAllRelation()
+            if rlt.type in ["consumes", "produces"]
+            and rlt.misc["COMPARTMENT"][0] == old_compart
+        ]:
             rxns_updated.add(rlt.id_in)
-            rlt.misc.update({"COMPARTMENT":[new_compart]})
+            rlt.misc.update({"COMPARTMENT": [new_compart]})
         if verbose:
-            print("%s reactions updated" %(len(rxns_updated)))
+            print("%s reactions updated" % (len(rxns_updated)))
 
     def get_all_compart(self):
         """
         #TODO
         """
-        all_compart = set([rlt.misc["COMPARTMENT"][0] for rlt in self.getAllRelation()
-                           if rlt.type in ["consumes", "produces"]])
+        all_compart = set(
+            [
+                rlt.misc["COMPARTMENT"][0]
+                for rlt in self.getAllRelation()
+                if rlt.type in ["consumes", "produces"]
+            ]
+        )
         return all_compart
 
     def delCompart(self, compart, verbose=False):
@@ -1222,13 +1546,17 @@ class PadmetSpec:
         #TODO
         """
         rxns_to_del = set()
-        for rlt in [rlt for rlt in self.getAllRelation()
-                    if rlt.type in ["consumes", "produces"] and rlt.misc["COMPARTMENT"][0] == compart]:
+        for rlt in [
+            rlt
+            for rlt in self.getAllRelation()
+            if rlt.type in ["consumes", "produces"]
+            and rlt.misc["COMPARTMENT"][0] == compart
+        ]:
             rxns_to_del.add(rlt.id_in)
         for rxn_id in rxns_to_del:
             self.delNode(rxn_id)
         if verbose:
-            print("%s reactions deleted" %(len(rxns_to_del)))
+            print("%s reactions deleted" % (len(rxns_to_del)))
 
     def ko(self, genes, verbose=False):
         """
@@ -1243,31 +1571,41 @@ class PadmetSpec:
         if isinstance(genes, str):
             genes = [genes]
         if verbose:
-            print('%s gene(s) to KO' %(len(genes)))
+            print("%s gene(s) to KO" % (len(genes)))
         all_rxn_to_del = set()
         for g_id in genes:
             if not g_id in [g for g in list(self.dicOfNode.keys())]:
-                raise ValueError('%s not found' %g_id)
-            reactions_to_del = [rlt.id_in for rlt in self.dicOfRelationOut[g_id] if rlt.type == "is_linked_to"]
+                raise ValueError("%s not found" % g_id)
+            reactions_to_del = [
+                rlt.id_in
+                for rlt in self.dicOfRelationOut[g_id]
+                if rlt.type == "is_linked_to"
+            ]
             if verbose:
-                print('%s reactions associated to %s' %(len(reactions_to_del), g_id))
+                print("%s reactions associated to %s" % (len(reactions_to_del), g_id))
             for rxn_id in reactions_to_del:
                 if verbose:
-                    print("\t%s" %(rxn_id))
+                    print("\t%s" % (rxn_id))
             [all_rxn_to_del.add(r) for r in reactions_to_del]
         if verbose:
-            print("%s unique reaction(s)" %len(all_rxn_to_del))
+            print("%s unique reaction(s)" % len(all_rxn_to_del))
         for rxn_id in all_rxn_to_del:
             if verbose:
-                print('removing %s' %rxn_id)
+                print("removing %s" % rxn_id)
             self.delNode(rxn_id)
 
     def get_growth_medium(self, b_compart="C-BOUNDARY"):
         """
         return set of metabolites corresponding to the growth medium
         """
-        growth_medium = set([rlt.id_out for rlt in self.getAllRelation()
-                             if rlt.type in ["consumes", "produces"] and rlt.misc.get('COMPARTMENT', [])[0] == b_compart])
+        growth_medium = set(
+            [
+                rlt.id_out
+                for rlt in self.getAllRelation()
+                if rlt.type in ["consumes", "produces"]
+                and rlt.misc.get("COMPARTMENT", [])[0] == b_compart
+            ]
+        )
         if growth_medium:
             return growth_medium
         else:
@@ -1280,22 +1618,37 @@ class PadmetSpec:
         current_growth_medium = self.get_growth_medium()
         if current_growth_medium:
             if verbose:
-                print("current growth medium: %s" %(list(current_growth_medium)))
+                print("current growth medium: %s" % (list(current_growth_medium)))
             for seed_id in current_growth_medium:
-                rxns = set([rlt.id_in for rlt in self.dicOfRelationOut[seed_id]
-                            if rlt.type in ['consumes','produces'] and rlt.misc['COMPARTMENT'][0] == b_compart])
+                rxns = set(
+                    [
+                        rlt.id_in
+                        for rlt in self.dicOfRelationOut[seed_id]
+                        if rlt.type in ["consumes", "produces"]
+                        and rlt.misc["COMPARTMENT"][0] == b_compart
+                    ]
+                )
                 for rxn_id in rxns:
                     if verbose:
-                        print("Removing %s" %rxn_id)
+                        print("Removing %s" % rxn_id)
                         self.delNode(rxn_id)
             new_g_m = self.get_growth_medium()
-            if not new_g_m: new_g_m = list()
-            print("New growth medium: %s" %(new_g_m))
+            if not new_g_m:
+                new_g_m = list()
+            print("New growth medium: %s" % (new_g_m))
         else:
             print("No growth medium found")
 
-    def set_growth_medium(self, new_growth_medium=None, padmetRef=None,
-                          rxn_prefix=set(["TransportSeed", "ExchangeSeed"]), b_compart="C-BOUNDARY", e_compart="e", c_compart="c", verbose=False):
+    def set_growth_medium(
+        self,
+        new_growth_medium=None,
+        padmetRef=None,
+        rxn_prefix=set(["TransportSeed", "ExchangeSeed"]),
+        b_compart="C-BOUNDARY",
+        e_compart="e",
+        c_compart="c",
+        verbose=False,
+    ):
         """
         if new_growth_medium is None: just remove the growth medium by deleting reactions starting with rxn_prefix
         else: remove and change by the new growth_medium, a list of compounds.
@@ -1313,30 +1666,36 @@ class PadmetSpec:
         @return: None
         @rtype: None
         """
-        #get all rxn starting with rxn_prefix
-        all_rxn_to_del = set([rlt.id_in for rlt in self.getAllRelation()
-                             if rlt.type in ["consumes", "produces"] and rlt.misc.get('COMPARTMENT', [])[0] == b_compart])
+        # get all rxn starting with rxn_prefix
+        all_rxn_to_del = set(
+            [
+                rlt.id_in
+                for rlt in self.getAllRelation()
+                if rlt.type in ["consumes", "produces"]
+                and rlt.misc.get("COMPARTMENT", [])[0] == b_compart
+            ]
+        )
         if len(all_rxn_to_del) == 0:
             if verbose:
                 print("No growth medium found")
         else:
             for rxn_id in all_rxn_to_del:
                 if verbose:
-                    print("removing %s" %(rxn_id))
+                    print("removing %s" % (rxn_id))
                 if rxn_id in list(self.dicOfNode.keys()):
                     self.delNode(rxn_id)
             if verbose:
-                print("%s reactions removed" %(len(all_rxn_to_del)))
+                print("%s reactions removed" % (len(all_rxn_to_del)))
 
-        #creating new reactions create growth medium
+        # creating new reactions create growth medium
         if new_growth_medium is not None:
             for seed_id in new_growth_medium:
-                #check if seed in padmetSpec or in padmetRef
+                # check if seed in padmetSpec or in padmetRef
                 try:
                     self.dicOfNode[seed_id]
                 except KeyError:
                     if verbose:
-                        print("%s not in the network" %seed_id)
+                        print("%s not in the network" % seed_id)
                     try:
                         if padmetRef is None:
                             raise KeyError
@@ -1345,51 +1704,95 @@ class PadmetSpec:
                         self._copyNodeExtend(padmetRef, seed_id)
                     except KeyError:
                         if verbose:
-                            print("%s not in the padmetRef" %seed_id)
+                            print("%s not in the padmetRef" % seed_id)
                             print("creating a new compound")
-                        #not in padmetRef and self, create compound and transport/exchange rxn
+                        # not in padmetRef and self, create compound and transport/exchange rxn
                         seed_node = Node("compound", seed_id)
                         self.dicOfNode[seed_id] = seed_node
                         if verbose:
-                            print("new compound created: id = %s" %seed_id)
-                exchange_rxn_id = "ExchangeSeed-"+seed_id
+                            print("new compound created: id = %s" % seed_id)
+                exchange_rxn_id = "ExchangeSeed-" + seed_id
                 if exchange_rxn_id not in list(self.dicOfNode.keys()):
                     if verbose:
-                        print("creating exchange reaction: id = %s" %exchange_rxn_id)
-                    exchange_rxn_node = Node("reaction", exchange_rxn_id, {"DIRECTION":["REVERSIBLE"]})
+                        print("creating exchange reaction: id = %s" % exchange_rxn_id)
+                    exchange_rxn_node = Node(
+                        "reaction", exchange_rxn_id, {"DIRECTION": ["REVERSIBLE"]}
+                    )
                     self.dicOfNode[exchange_rxn_id] = exchange_rxn_node
-                    consumption_rlt = Relation(exchange_rxn_id, "consumes", seed_id,
-                                               {"STOICHIOMETRY":[1.0], "COMPARTMENT":[b_compart]})
-                    self._addRelation(consumption_rlt)   
-                    production_rlt = Relation(exchange_rxn_id, "produces", seed_id,
-                                              {"STOICHIOMETRY":[1.0], "COMPARTMENT":[e_compart]})
+                    consumption_rlt = Relation(
+                        exchange_rxn_id,
+                        "consumes",
+                        seed_id,
+                        {"STOICHIOMETRY": [1.0], "COMPARTMENT": [b_compart]},
+                    )
+                    self._addRelation(consumption_rlt)
+                    production_rlt = Relation(
+                        exchange_rxn_id,
+                        "produces",
+                        seed_id,
+                        {"STOICHIOMETRY": [1.0], "COMPARTMENT": [e_compart]},
+                    )
                     self._addRelation(production_rlt)
-                #reconstructionData:
-                reconstructionData_id = exchange_rxn_id+"_reconstructionData_MANUAL"
+                # reconstructionData:
+                reconstructionData_id = exchange_rxn_id + "_reconstructionData_MANUAL"
                 if reconstructionData_id not in list(self.dicOfNode.keys()) and verbose:
-                    reconstructionData = {"SOURCE":["IMPORT_FROM_MEDIUM"],
-                                          "COMMENT":["Added to manage seeds from boundary to extracellular compartment"],
-                                          "CATEGORY":["MANUAL"]}
-                    reconstructionData_rlt = Relation(exchange_rxn_id, "has_reconstructionData", reconstructionData_id)
-                    self.createNode("reconstructionData", reconstructionData_id, reconstructionData, [reconstructionData_rlt])
+                    reconstructionData = {
+                        "SOURCE": ["IMPORT_FROM_MEDIUM"],
+                        "COMMENT": [
+                            "Added to manage seeds from boundary to extracellular compartment"
+                        ],
+                        "CATEGORY": ["MANUAL"],
+                    }
+                    reconstructionData_rlt = Relation(
+                        exchange_rxn_id, "has_reconstructionData", reconstructionData_id
+                    )
+                    self.createNode(
+                        "reconstructionData",
+                        reconstructionData_id,
+                        reconstructionData,
+                        [reconstructionData_rlt],
+                    )
 
-                transport_rxn_id = "TransportSeed-"+seed_id
+                transport_rxn_id = "TransportSeed-" + seed_id
                 if transport_rxn_id not in list(self.dicOfNode.keys()):
                     if verbose:
-                        print("creating trasnport reaction: id = %s" %transport_rxn_id)
-                    transport_rxn_node = Node("reaction", transport_rxn_id, {"DIRECTION":["LEFT-TO-RIGHT"]})
+                        print("creating trasnport reaction: id = %s" % transport_rxn_id)
+                    transport_rxn_node = Node(
+                        "reaction", transport_rxn_id, {"DIRECTION": ["LEFT-TO-RIGHT"]}
+                    )
                     self.dicOfNode[transport_rxn_id] = transport_rxn_node
-                    consumption_rlt = Relation(transport_rxn_id, "consumes", seed_id,
-                                               {"STOICHIOMETRY":[1.0], "COMPARTMENT":[e_compart]})
-                    self._addRelation(consumption_rlt)        
-                    production_rlt = Relation(transport_rxn_id, "produces", seed_id,
-                                              {"STOICHIOMETRY":[1.0], "COMPARTMENT":[c_compart]})
+                    consumption_rlt = Relation(
+                        transport_rxn_id,
+                        "consumes",
+                        seed_id,
+                        {"STOICHIOMETRY": [1.0], "COMPARTMENT": [e_compart]},
+                    )
+                    self._addRelation(consumption_rlt)
+                    production_rlt = Relation(
+                        transport_rxn_id,
+                        "produces",
+                        seed_id,
+                        {"STOICHIOMETRY": [1.0], "COMPARTMENT": [c_compart]},
+                    )
                     self._addRelation(production_rlt)
-                #reconstructionData:
-                reconstructionData_id = transport_rxn_id+"_reconstructionData_MANUAL"
+                # reconstructionData:
+                reconstructionData_id = transport_rxn_id + "_reconstructionData_MANUAL"
                 if reconstructionData_id not in list(self.dicOfNode.keys()) and verbose:
-                    reconstructionData = {"SOURCE":["IMPORT_FROM_MEDIUM"],
-                                          "COMMENT":["Added to manage seeds from extracellular to cytosol compartment"],
-                                          "CATEGORY":["MANUAL"]}
-                    reconstructionData_rlt = Relation(transport_rxn_id, "has_reconstructionData", reconstructionData_id)
-                    self.createNode("reconstructionData", reconstructionData_id, reconstructionData, [reconstructionData_rlt])
+                    reconstructionData = {
+                        "SOURCE": ["IMPORT_FROM_MEDIUM"],
+                        "COMMENT": [
+                            "Added to manage seeds from extracellular to cytosol compartment"
+                        ],
+                        "CATEGORY": ["MANUAL"],
+                    }
+                    reconstructionData_rlt = Relation(
+                        transport_rxn_id,
+                        "has_reconstructionData",
+                        reconstructionData_id,
+                    )
+                    self.createNode(
+                        "reconstructionData",
+                        reconstructionData_id,
+                        reconstructionData,
+                        [reconstructionData_rlt],
+                    )

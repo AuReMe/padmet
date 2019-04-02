@@ -48,8 +48,8 @@ from collections import ChainMap, defaultdict
 # Constants
 ERROR_LIMIT = 10  # at most 10 errors before compilation abortion
 SILENT_SYNTACTIC_ANALYSIS = True  # continue compilation even if syntactic error
-OP_AND = '&'
-OP_OR  = '|'
+OP_AND = "&"
+OP_OR = "|"
 
 
 def precedence(op1, op2):
@@ -64,41 +64,82 @@ def precedence(op1, op2):
 
 
 class Type(Enum):
-    Letter  = '[a-zA-Z0-9_\.:-]'
-    Op      = '[' + OP_AND + OP_OR + ']'
-    Opening = '\('
-    Closing = '\)'
-    Other   = ''  # used as start-state
-    EndOfFile = '\0'
+    Letter = "[a-zA-Z0-9_\.:-]"
+    Op = "[" + OP_AND + OP_OR + "]"
+    Opening = "\("
+    Closing = "\)"
+    Other = ""  # used as start-state
+    EndOfFile = "\0"
+
 
 class Command(Enum):
-    Stack        = -1
-    Finish       = -2
+    Stack = -1
+    Finish = -2
+
 
 class Error(Enum):
-    UnexpectedLetter  = 'unexpected letter'
-    UnexpectedOp      = 'unexpected operator'
-    UnexpectedOpening = 'unexpected opening parenthesis'
-    UnexpectedClosing = 'unexpected closing parenthesis'
-    UnexpectedChar    = 'unexpected character'
+    UnexpectedLetter = "unexpected letter"
+    UnexpectedOp = "unexpected operator"
+    UnexpectedOpening = "unexpected opening parenthesis"
+    UnexpectedClosing = "unexpected closing parenthesis"
+    UnexpectedChar = "unexpected character"
 
 
 def generate_fsm():
     """Return a dict {previous type: {current type: command/error}}"""
     # default command is : error everywhere
-    default_command = {Type.Letter: Error.UnexpectedLetter,
-                       Type.Op: Error.UnexpectedOp,
-                       Type.Opening: Error.UnexpectedOpening,
-                       Type.Closing: Error.UnexpectedClosing,
-                       Type.Other: Error.UnexpectedChar,
-                       Type.EndOfFile: Command.Stack}
+    default_command = {
+        Type.Letter: Error.UnexpectedLetter,
+        Type.Op: Error.UnexpectedOp,
+        Type.Opening: Error.UnexpectedOpening,
+        Type.Closing: Error.UnexpectedClosing,
+        Type.Other: Error.UnexpectedChar,
+        Type.EndOfFile: Command.Stack,
+    }
     # use ChainMap for specify only the differences with default commands
     return {
-        Type.Other  : ChainMap({Type.Letter: Type.Letter, Type.Op: Type.Op, Type.Opening: Type.Opening, Type.Closing: Type.Closing, Type.EndOfFile: Command.Finish}      , default_command),
-        Type.Letter : ChainMap({Type.Letter: Type.Letter   , Type.Op     : Command.Stack , Type.Closing: Command.Stack}   , default_command) ,
-        Type.Op     : ChainMap({Type.Letter: Command.Stack , Type.Opening: Command.Stack , Type.EndOfFile: Command.Stack} , default_command) ,
-        Type.Opening: ChainMap({Type.Letter: Command.Stack , Type.Opening: Command.Stack , Type.EndOfFile: Command.Stack} , default_command) ,
-        Type.Closing: ChainMap({Type.Op    : Command.Stack , Type.Closing: Command.Stack , Type.EndOfFile: Command.Stack} , default_command) ,
+        Type.Other: ChainMap(
+            {
+                Type.Letter: Type.Letter,
+                Type.Op: Type.Op,
+                Type.Opening: Type.Opening,
+                Type.Closing: Type.Closing,
+                Type.EndOfFile: Command.Finish,
+            },
+            default_command,
+        ),
+        Type.Letter: ChainMap(
+            {
+                Type.Letter: Type.Letter,
+                Type.Op: Command.Stack,
+                Type.Closing: Command.Stack,
+            },
+            default_command,
+        ),
+        Type.Op: ChainMap(
+            {
+                Type.Letter: Command.Stack,
+                Type.Opening: Command.Stack,
+                Type.EndOfFile: Command.Stack,
+            },
+            default_command,
+        ),
+        Type.Opening: ChainMap(
+            {
+                Type.Letter: Command.Stack,
+                Type.Opening: Command.Stack,
+                Type.EndOfFile: Command.Stack,
+            },
+            default_command,
+        ),
+        Type.Closing: ChainMap(
+            {
+                Type.Op: Command.Stack,
+                Type.Closing: Command.Stack,
+                Type.EndOfFile: Command.Stack,
+            },
+            default_command,
+        ),
     }
 
 
@@ -120,7 +161,7 @@ def lexical_analysis(string):
     error_count = 0
     fsm = generate_fsm()  # dict {previous:{current:type/command/error}}
     last_element_index = 0  # index in string where ends the last added item
-    START_TYPE    = Type.Other  # other is start, and is unreachable
+    START_TYPE = Type.Other  # other is start, and is unreachable
     previous_type = START_TYPE
     idx = 0
     # main loop
@@ -130,10 +171,19 @@ def lexical_analysis(string):
         next_state = fsm[previous_type][current_type]
         # print('LOOP: char:', char, '; previous:', previous_type, '; current:', current_type, '; next_state:', next_state)
         if next_state in Error:
-            print('ERROR:', next_state.value, 'at position', idx,
-                  '(prev:', previous_type, '; curr:', current_type, ')')
-            print('\t', string)
-            print('\t ', ' '*idx, '^', sep='')
+            print(
+                "ERROR:",
+                next_state.value,
+                "at position",
+                idx,
+                "(prev:",
+                previous_type,
+                "; curr:",
+                current_type,
+                ")",
+            )
+            print("\t", string)
+            print("\t ", " " * idx, "^", sep="")
             previous_type = next_state
             previous_type = START_TYPE
             if error_count > ERROR_LIMIT and not SILENT_SYNTACTIC_ANALYSIS:
@@ -204,8 +254,11 @@ def postfix(lextable):  # UNUSED
             yield token
         if type is Type.Op:
             # if any operator with higher precedence (left associativity) in stack
-            while (len(opstack) > 0 and opstack[-1][0] is Type.Op and
-                   precedence(opstack[-1], token)):
+            while (
+                len(opstack) > 0
+                and opstack[-1][0] is Type.Op
+                and precedence(opstack[-1], token)
+            ):
                 yield opstack.pop()
             opstack.append(token)
         if type is Type.Opening:
@@ -232,7 +285,7 @@ def prefix(lextable):
 
     """
     opstack = []
-    output  = []
+    output = []
     for token in reversed(lextable):
         type, value = token
         # print('LOOP:', '\n\t', token, '\n\t', opstack, '\n\t', output)
@@ -242,8 +295,11 @@ def prefix(lextable):
             opstack.append(token)
         if type is Type.Op:
             # if any operator with higher precedence (left associativity) in stack
-            while (len(opstack) > 0 and opstack[-1][0] is Type.Op and
-                   precedence(token, opstack[-1])):
+            while (
+                len(opstack) > 0
+                and opstack[-1][0] is Type.Op
+                and precedence(token, opstack[-1])
+            ):
                 output.append(opstack.pop())
             opstack.append(token)
         if type is Type.Opening:
@@ -259,9 +315,15 @@ def generate_syntree(pretable):
     """Return the syntactic tree of given prefix lexical table"""
     syntree = {}  # uid: node
     last_uid = 1
-    def parent(uid): return uid // 2
-    def leftson(uid): return uid * 2
-    def rightson(uid): return uid * 2 + 1
+
+    def parent(uid):
+        return uid // 2
+
+    def leftson(uid):
+        return uid * 2
+
+    def rightson(uid):
+        return uid * 2 + 1
 
     for token in pretable:
         # print('LOOP:', '\n\t', type, value, '\n\t', dag, '\n\t')
@@ -283,15 +345,21 @@ def generate_syntree(pretable):
     return syntree
 
 
-def eval_tree(tree:dict, root:int=1, combine_or:bool=False) -> iter:
+def eval_tree(tree: dict, root: int = 1, combine_or: bool = False) -> iter:
     """Yield paths from input syntree, from given root.
 
     combine_or -- if True, will also yield paths (a, b) from 'a|b'
 
     """
-    def parent(uid): return uid // 2
-    def leftson(uid): return uid * 2
-    def rightson(uid): return uid * 2 + 1
+
+    def parent(uid):
+        return uid // 2
+
+    def leftson(uid):
+        return uid * 2
+
+    def rightson(uid):
+        return uid * 2 + 1
 
     root_type, root_value = tree[root]
     if root_type is Type.Letter:
@@ -308,7 +376,7 @@ def eval_tree(tree:dict, root:int=1, combine_or:bool=False) -> iter:
                 yield end_path
 
 
-def compile_input(string, combine_or:bool=False):
+def compile_input(string, combine_or: bool = False):
     """Yields the possible combinations parsed from given string.
     See module docstring for more explanations.
 
@@ -331,9 +399,12 @@ def compile_input(string, combine_or:bool=False):
     yield from eval_tree(syntree, combine_or=bool(combine_or))
 
 
-
-if __name__ == '__main__':
-    string = 'a&b|c'  # operator priority
+if __name__ == "__main__":
+    string = "a&b|c"  # operator priority
     # string = 'jp&a(bc|cp)'  # error
-    print('Solutions of expression', string, 'are:\n\t',
-          '\n\t '.join(str(_) for _ in compile_input(string)))
+    print(
+        "Solutions of expression",
+        string,
+        "are:\n\t",
+        "\n\t ".join(str(_) for _ in compile_input(string)),
+    )

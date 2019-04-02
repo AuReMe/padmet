@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class Node:
     """
     A Node represent an element in a metabolic network
     
     e.g: compound, reaction.
     """
+
     def __init__(self, _type, _id, misc=None):
         """
         Parameters
@@ -21,7 +22,7 @@ class Node:
         """
         self.type = _type
         self.id = _id
-        #if misc is None so misc = {}
+        # if misc is None so misc = {}
         self.misc = misc or {}
 
     def toString(self):
