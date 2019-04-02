@@ -42,7 +42,7 @@ Note that there is no real error handling for parenthesis.
 """
 import re
 from enum import Enum
-from collections import ChainMap, defaultdict
+from collections import ChainMap
 
 
 # Constants
@@ -120,7 +120,8 @@ def generate_fsm():
             {
                 Type.Letter: Command.Stack,
                 Type.Opening: Command.Stack,
-                Type.EndOfFile: Command.Stack,
+                Type.Efrom collections import ChainMap, defaultdict
+ndOfFile: Command.Stack,
             },
             default_command,
         ),
@@ -397,14 +398,3 @@ def compile_input(string, combine_or: bool = False):
 
     # generate all paths
     yield from eval_tree(syntree, combine_or=bool(combine_or))
-
-
-if __name__ == "__main__":
-    string = "a&b|c"  # operator priority
-    # string = 'jp&a(bc|cp)'  # error
-    print(
-        "Solutions of expression",
-        string,
-        "are:\n\t",
-        "\n\t ".join(str(_) for _ in compile_input(string)),
-    )
