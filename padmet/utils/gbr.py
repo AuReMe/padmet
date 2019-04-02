@@ -42,7 +42,7 @@ Note that there is no real error handling for parenthesis.
 """
 import re
 from enum import Enum
-from collections import ChainMap
+from collections import ChainMap, defaultdict
 
 
 # Constants
@@ -120,8 +120,7 @@ def generate_fsm():
             {
                 Type.Letter: Command.Stack,
                 Type.Opening: Command.Stack,
-                Type.Efrom collections import ChainMap, defaultdict
-ndOfFile: Command.Stack,
+                Type.EndOfFile: Command.Stack,
             },
             default_command,
         ),
