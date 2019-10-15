@@ -909,9 +909,10 @@ class PadmetSpec:
                 header = [
                     "dbRef_id",
                     "Common name",
+                    "Taxons",
                     "Number of reaction found",
                     "Total number of reaction",
-                    "Ratio (Reaction found / Total)",
+                    "Ratio (Reaction found / Total)"
                 ]
                 header = "\t".join(header) + "\n"
                 f.write(header)
@@ -926,6 +927,11 @@ class PadmetSpec:
                         common_name = pnode.misc["COMMON-NAME"][0]
                     except KeyError:
                         common_name = "Unknown"
+                    try:
+                        taxons = ";".join(pnode.misc["TAXONOMIC-RANGE"])
+                    except KeyError:
+                        taxons = "Unknown"
+                        
 
                     number_of_reaction_found = len(
                         [
@@ -960,6 +966,7 @@ class PadmetSpec:
                         line = [
                             pnode_id,
                             common_name,
+                            taxons,
                             str(number_of_reaction_found),
                             str(total_number_of_reaction),
                             str(ratio),
