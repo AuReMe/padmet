@@ -27,7 +27,7 @@ class PyTest(TestCommand):
 setup(
  
     name='padmet',
-    version="3.2.2",
+    version="4.0",
  
     packages=find_packages(),
  
