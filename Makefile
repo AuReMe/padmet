@@ -38,5 +38,5 @@ real_install:
 	python setup.py sdist upload
 	pip install padmet
 push:
-	python setup.py sdist upload
+	python3 setup.py sdist upload
 
