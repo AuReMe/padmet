@@ -1268,7 +1268,8 @@ def create_venn(total_padmet_data, output_file, verbose=False):
     if verbose: print("Venn Diagramm")
                
     labels = get_labels([i.keys() for i in total_padmet_data["reconstruction"]["category"].values()])
-    fig, ax = venn4(labels, names=list(total_padmet_data["reconstruction"]["category"].keys()))
+    names = ["annotation", "orthology", "gap-filling", "manual"]
+    fig, ax = venn4(labels, names)
     fig.savefig(output_file)
 
 def copy_io_files():
