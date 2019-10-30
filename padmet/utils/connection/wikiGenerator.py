@@ -14,8 +14,6 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from matplotlib import colors
-import math
 import re
 
 def wikiGenerator(padmet, output, wiki_id, padmetRef=None, database=None, log_file=None, verbose=False):
