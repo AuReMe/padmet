@@ -3,7 +3,7 @@
 from . import Policy
 from . import Node
 from . import Relation
-from ..utils.sbmlPlugin import convert_from_coded_id
+from ..utils import sbmlPlugin
 import libsbml
 
 __all__ = ["PadmetRef"]
@@ -234,7 +234,7 @@ class PadmetRef:
             except KeyError:
                 self.dicOfRelationOut[rlt_id_out] = [relation]
 
-    def initFromSbml(self, sbml_file, verbose=False):
+    def updateFromSbml(self, sbml_file, verbose=False):
         """
         Initialize a padmetRef from sbml. Copy all species, convert id with sbmlPlugin
         stock name in COMMON NAME. Copy all reactions,
@@ -265,7 +265,7 @@ class PadmetRef:
             print("creating species")
         for specie in listOfSpecies:
             specie_id_encoded = specie.getId()
-            specie_id = convert_from_coded_id(specie_id_encoded)[0]
+            specie_id = sbmlPlugin.convert_from_coded_id(specie_id_encoded)[0]
             if verbose:
                 print("specie: %s, uncoded: %s" % (specie_id_encoded, specie_id))
             try:
@@ -286,7 +286,7 @@ class PadmetRef:
             print("creating reactions")
         for reaction in listOfReactions:
             reaction_id_encoded = reaction.getId()
-            reaction_id = convert_from_coded_id(reaction_id_encoded)[0]
+            reaction_id = sbmlPlugin.convert_from_coded_id(reaction_id_encoded)[0]
             if verbose:
                 print("reaction: %s, uncoded: %s" % (reaction_id_encoded, reaction_id))
             try:
@@ -312,7 +312,7 @@ class PadmetRef:
                 self.dicOfNode[reaction_id] = reaction_node
                 reactants = reaction.getListOfReactants()
                 for reactant in reactants:
-                    reactant_id, x, reactant_compart = convert_from_coded_id(
+                    reactant_id, x, reactant_compart = sbmlPlugin.convert_from_coded_id(
                         reactant.getSpecies()
                     )
                     if reactant_compart is None:
@@ -332,7 +332,7 @@ class PadmetRef:
                     self._addRelation(consumes_rlt)
                 products = reaction.getListOfProducts()
                 for product in products:
-                    product_id, x, product_compart = convert_from_coded_id(
+                    product_id, x, product_compart = sbmlPlugin.convert_from_coded_id(
                         product.getSpecies()
                     )
                     if product_compart is None:

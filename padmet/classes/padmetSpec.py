@@ -275,8 +275,9 @@ class PadmetSpec:
         listOfSpecies = model.getListOfSpecies()
         listOfReactions = model.getListOfReactions()
         nbReactions = len(listOfReactions)
+        nbSpecies = len(listOfSpecies)
         if verbose:
-            # print("nb species: %s" %nbSpecies)
+            print("nb species: %s" %nbSpecies)
             print(("nb reactions: %s" % nbReactions))
         dicOfAssoc = {}
         # reading assocIdOriginRef line by line, one line = "origin_id\tref_id\n"
