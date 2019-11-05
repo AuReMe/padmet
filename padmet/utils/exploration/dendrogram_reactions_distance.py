@@ -421,7 +421,7 @@ def absent_and_specific_reactions(reactions_dataframe, output_folder_tree_cluste
                                         len(list(reactions_not_in_species.intersection(reactions_in_others)))])
     specific_output.close()
 
-def reaction_figure_creation(reaction_file, upset_cluster, output_folder, padmet_ref_file=None, pvclust=None):
+def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, padmet_ref_file=None, pvclust=None):
     """
     Create dendrogram, upset figure (if upset argument) and compare reactiosn in species.
 
