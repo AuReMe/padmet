@@ -39,7 +39,7 @@ setup(
     long_description=open('README.md', encoding='utf8').read(),
  
     
-    install_requires= ["docopt==0.6.2","python-libsbml==5.18.0","cobra==0.14.0","biopython==1.70"],
+    install_requires= ["docopt==0.6.2","python-libsbml==5.18.0","cobra==0.14.0","biopython==1.74"],
  
     include_package_data=True,
  
