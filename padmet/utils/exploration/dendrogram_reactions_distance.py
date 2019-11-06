@@ -421,7 +421,7 @@ def absent_and_specific_reactions(reactions_dataframe, output_folder_tree_cluste
                                         len(list(reactions_not_in_species.intersection(reactions_in_others)))])
     specific_output.close()
 
-def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, padmet_ref_file=None, pvclust=None):
+def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, padmetRef_file=None, pvclust=None):
     """
     Create dendrogram, upset figure (if upset argument) and compare reactiosn in species.
 
@@ -496,8 +496,8 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
     # Extract all the nodes inside the clustering. 
     _, node_list = to_tree(linkage_matrix, rd=True)
 
-    if padmet_ref_file:
-        padmet_ref = PadmetRef(padmet_ref_file)
+    if padmetRef_file:
+        padmet_ref = PadmetRef(padmetRef_file)
         metacyc_to_ecs = {node.id: node.misc['EC-NUMBER'] for node in padmet_ref.dicOfNode.values() if node.type == "reaction" and 'EC-NUMBER' in node.misc}
     else:
         metacyc_to_ecs = {}
