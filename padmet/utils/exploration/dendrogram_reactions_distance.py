@@ -217,7 +217,7 @@ def create_cluster(reactions_dataframe, absence_presence_matrix, linkage_matrix)
     return dendrogram_fclusters
 
 
-def create_intervene_graph(absence_presence_matrix, reactions_dataframe, temp_data_folder, path_to_intervene, output_folder_upset, dendrogram_fclusters, k):
+def create_intervene_graph(absence_presence_matrix, reactions_dataframe, temp_data_folder, path_to_intervene, output_folder_upset, dendrogram_fclusters, k, verbose=False):
     """
     Create an upset graph.
 
@@ -421,7 +421,7 @@ def absent_and_specific_reactions(reactions_dataframe, output_folder_tree_cluste
                                         len(list(reactions_not_in_species.intersection(reactions_in_others)))])
     specific_output.close()
 
-def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, padmetRef_file=None, pvclust=None):
+def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, padmetRef_file=None, pvclust=None, verbose=False):
     """
     Create dendrogram, upset figure (if upset argument) and compare reactiosn in species.
 
@@ -552,4 +552,4 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
 
     if upset_cluster:
         dendrogram_fclusters = create_cluster(reactions_dataframe, absence_presence_matrix, linkage_matrix)
-        create_intervene_graph(absence_presence_matrix, reactions_dataframe, temp_data_folder, path_to_intervene, output_folder_upset, dendrogram_fclusters, upset_cluster)
+        create_intervene_graph(absence_presence_matrix, reactions_dataframe, temp_data_folder, path_to_intervene, output_folder_upset, dendrogram_fclusters, upset_cluster, verbose)
