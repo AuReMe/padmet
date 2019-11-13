@@ -4,7 +4,7 @@ Description:
     #TODO
 
 """
-from padmet.relation import Relation
+from padmet.classes import Relation
 from padmet.padmetRef import PadmetRef
 from datetime import datetime
 
