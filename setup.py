@@ -45,6 +45,7 @@ setup(
                        "biopython==1.74",
                        "seaborn==0.9.0",
                        "matplotlib==3.1.1",
+                       "grequests==0.4.0",
                        ],
  
     include_package_data=True,
