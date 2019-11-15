@@ -92,8 +92,11 @@ class PadmetRef:
     def setDicOfNode(self, source):
         """
         Set dicOfNode from a dict or copying from an other padmet
-        @param source: may be a dict or an other padmet from where will be copied the dicOfNode
-        @type source: dict or Padmet
+
+        Parameters
+        ----------
+        source: dict or padmet.classes.PadmetRef
+            may be a dict or an other padmet from where will be copied the dicOfNode
         """
         if type(source) is dict:
             self.dicOfNode = source
@@ -121,7 +124,7 @@ class PadmetRef:
         Parameters
         ----------
         source: dict or padmet.classes.PadmetRef
-            may be a dict or an other padmet from where will be copied the dicOfRelationIn
+            may be a dict or an other padmet from where will be copied the dicOfRelationOut
         """
         if type(source) is dict:
             self.dicOfRelationOut = source
