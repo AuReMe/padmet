@@ -46,6 +46,7 @@ setup(
                        "seaborn==0.9.0",
                        "matplotlib==3.1.1",
                        "grequests==0.4.0",
+                       'lxml==4.3.4'
                        ],
  
     include_package_data=True,
