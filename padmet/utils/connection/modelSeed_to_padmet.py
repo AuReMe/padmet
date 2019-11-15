@@ -5,7 +5,7 @@ Description:
 
 """
 from padmet.classes import Relation
-from padmet.padmetRef import PadmetRef
+from padmet.classes import PadmetRef
 from datetime import datetime
 
 import csv
