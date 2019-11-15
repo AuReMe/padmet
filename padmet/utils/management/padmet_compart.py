@@ -66,5 +66,3 @@ def remplace_compart(padmet, old_compart, new_compart, verbose = False):
     padmet.change_compart(old_compart, new_compart, verbose)
     return padmet
 
-if __name__ == "__main__":
-    main()
