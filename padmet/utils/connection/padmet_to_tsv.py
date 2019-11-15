@@ -45,6 +45,7 @@ import csv
 
 def padmet_to_tsv(padmetSpec_file, padmetRef_file, output_dir, verbose=False):
     """
+    #TODO
     """
     global all_rxn_nodes, all_cpd_nodes, all_pwy_nodes
     
@@ -282,6 +283,8 @@ def extract_nodes(padmet, nodes, entity_id, output, opt_col = {}):
     create a file with line = [node.id,A[0],B[0]],[node.id,"",B[1]]
     the order is defined in fieldnames.
     merge common name and synonyms in 'name'
+    
+    #TODO
     """
     #set of keys from each misc dict
     all_keys = set()
@@ -319,6 +322,8 @@ def extract_rxn_cpd(rxn_cpd_rlt):
     for rlt in rxn_cpd_rlt, append in data: [rxn_id,cpd_id(consumed),'',stoich,compartment]
     and/or [rxn_id,'',cpd_id(produced),stoich,compartment]. The value in index 0
     is a merge of all data to create a unique relation id
+    
+    #TODO
     """
     data = []
     for rlt in rxn_cpd_rlt:
@@ -338,6 +343,8 @@ def extract_rxn_cpd(rxn_cpd_rlt):
 def rxn_cpd_file(data, output):
     """
     from data obtained with extract_rxn_cpd(), create file rxn_cpd
+    
+    #TODO
     """
     fieldnames = ["rxn_cpd","concerns@reaction","consumes@compound","produces@compound","stoichiometry","compartment"]
     with open(output, 'w') as f:
@@ -349,6 +356,8 @@ def extract_rxn_pwy(rxn_pwy_rlt):
     """
     for rlt in rxn_pwy_rlt, append in data: [rxn_id,pwy_id]. The value in index 0
     is a merge of all data to create a unique relation id
+    
+    #TODO
     """
     data = []
     for rlt in rxn_pwy_rlt:
@@ -362,6 +371,8 @@ def extract_rxn_pwy(rxn_pwy_rlt):
 def extract_pwy(padmet):
     """
     from padmet return a dict, k = pwy_id, v = set of rxn_id in pwy
+    
+    #TODO
     """
     #get all pathways in ref in dict: k=pwy_id, v = set(rxn_id in pwy)
     #get all pathways in in spec dict: k=pwy_id, v = set(rxn_id in pwy)
@@ -374,6 +385,8 @@ def extract_pwy(padmet):
 def pwy_rate(padmetRef, padmetSpec, metabolic_network, output):
     """
     pwy rate in padmetSpec is calculated based on padmetRef
+    
+    #TODO
     """
     all_pathways_dict = extract_pwy(padmetRef)    
     network_pathways_dict = extract_pwy(padmetSpec)
@@ -395,6 +408,9 @@ def pwy_rate(padmetRef, padmetSpec, metabolic_network, output):
             writer.writerow([pwy_rate_id, metabolic_network, pwy_id, rate])
 
 def rxn_pwy_file(data, output):
+    """
+    #TODO
+    """
     fieldnames = ["rxn_pwy","concerns@reaction","is_included_in@pathway"]
     with open(output, 'w') as f:
         writer = csv.writer(f, delimiter="\t")
@@ -403,6 +419,9 @@ def rxn_pwy_file(data, output):
 
 
 def extract_entity_xref(entity_xref_rlt, padmet):
+    """
+    #TODO
+    """
     data = []
     for rlt in entity_xref_rlt:
         entity_id = rlt.id_in
@@ -420,6 +439,9 @@ def extract_entity_xref(entity_xref_rlt, padmet):
     return data
 
 def entity_xref_file(data, output):
+    """
+    #TODO
+    """
     fieldnames = ["entity_xref", "has_metadata@xref", "concerns@reaction","concerns@pathway","concerns@compound"]
     with open(output, 'w') as f:
         writer = csv.writer(f, delimiter="\t")
@@ -427,6 +449,9 @@ def entity_xref_file(data, output):
         [writer.writerow(d) for d in data]
 
 def extract_rxn_gene(rxn_gene_rlt):
+    """
+    #TODO
+    """
     data = []
     for rlt in rxn_gene_rlt:
         rxn_id = rlt.id_in
@@ -446,6 +471,9 @@ def extract_rxn_gene(rxn_gene_rlt):
     return data
 
 def rxn_gene_file(data, output):
+    """
+    #TODO
+    """
     fieldnames = ["rxn_gene_recData","concerns@reaction","is_linked_to@gene","was_obtained_with@reconstructionData", "assignment_evidence"]
     with open(output, 'w') as f:
         writer = csv.writer(f, delimiter="\t")
@@ -453,6 +481,9 @@ def rxn_gene_file(data, output):
         [writer.writerow(d) for d in data]
 
 def extract_rxn_rec(rxn_rec_rlt):
+    """
+    #TODO
+    """
     data = []
     for rlt in rxn_rec_rlt:
         rxn_id = rlt.id_in
@@ -462,6 +493,9 @@ def extract_rxn_rec(rxn_rec_rlt):
     return data
 
 def rxn_rec_file(data, output):
+    """
+    #TODO
+    """
     fieldnames = ["reaction","has_metadata@reconstructionData"]
     with open(output, 'w') as f:
         writer = csv.writer(f, delimiter="\t")

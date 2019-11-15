@@ -60,7 +60,7 @@ import os
 
 def get_sbml_files(sbml, workflow = None, verbose = False):
     """
-    
+    #TODO
     """
     if workflow: workflow = workflow.lower()
     if workflow not in [None, 'aureme','aucome']:

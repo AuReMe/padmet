@@ -22,6 +22,7 @@ BOUNDARY_ID = 'C-BOUNDARY'
 
 def from_init_source(padmet_file, init_source, output, verbose=False):
     """
+    #TODO
     """
     padmet = PadmetSpec(padmet_file)
     rxn_to_del = set()
@@ -36,16 +37,23 @@ def padmet_to_sbml(padmet_file, output, model_id = None, obj_fct = None, sbml_lv
     Convert padmet file to sbml file.
     Specificity: 
     - ids are encoded for sbml using functions sbmlPlugin.convert_to_coded_id
-    @param padmet_file: the pathname to the padmet file to convert
-    @param output: the pathname to the sbml file to create
-    @param obj_fct: the identifier of the objection function, the reaction to test in FBA
-    @param sbml_lvl: the sbml level
-    @param sbml_version: the sbml version
-    @param verbose: print informations
-    @type padmet_file, output, verbose: str
-    @type sbml_lvl, sbml_version: int
-    @return: check return of writeSBMLToFile
-    @rtype: int
+
+    Parameters
+    ----------
+    padmet_file: str
+        the pathname to the padmet file to convert
+    output: str
+        the pathname to the sbml file to create
+    model_id: str or None
+        model id to set in sbml file
+    obj_fct: str
+        the identifier of the objection function, the reaction to test in FBA
+    sbml_lvl: int
+        the sbml level
+    sbml_version: int
+        the sbml version
+    verbose: bool
+        print informations
     """
     global all_ga
     padmet = PadmetSpec(padmet_file)
@@ -388,6 +396,9 @@ def padmet_to_sbml(padmet_file, output, model_id = None, obj_fct = None, sbml_lv
     libsbml.writeSBMLToFile(document, output)
 
 def parse_mnx_chem_xref(mnx_chem_xref):
+    """
+    #TODO
+    """
     #k = xref id, v = mnx_id
     dict_mnx_chem_xref = {}
     with open(mnx_chem_xref, 'r') as f:
@@ -397,6 +408,9 @@ def parse_mnx_chem_xref(mnx_chem_xref):
     return dict_mnx_chem_xref
 
 def parse_mnx_chem_prop(mnx_chem_prop):
+    """
+    #TODO
+    """
     #k=mnx_id, v = dict of data
     dict_mnx_chem_prop = {}
     with open(mnx_chem_prop, 'r') as f:
@@ -405,6 +419,9 @@ def parse_mnx_chem_prop(mnx_chem_prop):
     return dict_mnx_chem_prop
 
 def create_note(dict_data):
+    """
+    #TODO
+    """
     notes = "<body xmlns=\"http://www.w3.org/1999/xhtml\">"
     for k,v in list(dict_data.items()):
         notes += "<p>"+k+": "+v+"</p>"
@@ -414,6 +431,7 @@ def create_note(dict_data):
 def create_annotation(inchi, ref_id):
     """
     dict_data, k = url, v = id
+    #TODO
     """
     annotations = '<annotation>\n  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">\n    <rdf:Description rdf:about="'+ref_id+'">\n      <bqbiol:isVersionOf>\n        <rdf:Bag>\n          <rdf:li rdf:resource="http://identifiers.org/inchi/'+inchi+'"/>\n        </rdf:Bag>\n      </bqbiol:isVersionOf>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>'
     annot_xml = libsbml.XMLNode.convertStringToXMLNode(annotations)
@@ -426,6 +444,7 @@ def add_ga(rId_encoded, all_ga_subsets):
     for each ga in list_ga: if len == 1: if the only ga len == 1: just add gene, else create OR structure
     elif len > 1: create AND structure, then for each GA if len GA == 1: just add gene, else create OR structure
     if no suppdata, if linked_genes: if len linked_genes == 1: just add gene, else create OR structure
+    #TODO
     """    
     global all_ga
     ga_count = len(all_ga) + 1
@@ -465,18 +484,15 @@ def reaction_to_sbml(reactions, output, padmetRef, verbose = False):
     """
     convert a list of reactions to sbml format based on a given padmet of reference.
     - ids are encoded for sbml using functions sbmlPlugin.convert_to_coded_id
-    @param reactions: list of reactions ids
-    @param padmetRef: padmet of reference
-    @param output: the pathname to the sbml file to create
-    @param sbml_lvl: the sbml level
-    @param sbml_version: the sbml version
-    @param verbose: print informations
-    @type reactions: set
-    @type output, verbose: str
-    @type padmetRef: <Padmet>
-    @type sbml_lvl, sbml_version: int
-    @return: check return of writeSBMLToFile
-    @rtype: int
+    
+    Parameters
+    ----------
+    reactions: list
+        list of reactions ids
+    padmetRef: padmet.classes.PadmetRef
+        padmet of reference
+    output: str
+        the pathname to the sbml file to create
     """
     if os.path.isfile(reactions):
         with open(reactions, 'r') as f:
@@ -502,17 +518,15 @@ def compound_to_sbml(species_compart, output, verbose = False):
     if compart_name is not None, then the compounds id will by: M_originalID_compart_name
     if verbose and specified padmetRef and/or padmetSpec: will check if compounds are in one of the padmet files
     Ids are encoded for sbml using functions sbmlPlugin.convert_to_coded_id
-    @param compounds_file: the pathname to the file containing the compounds ids and the compart, line = cpd-id\tcompart.
-    @param output: the pathname to the sbml file to create
-    @param padmetRef_file: the pathname to the file padmet of reference
-    @param padmetRef_file: the pathname to the file padmet of a species
-    @param compart_name: the default compart to concatenate
-    @param sbml_version: the sbml version
-    @param verbose: print informations
-    @type compounds_file, output, padmetRef_file, padmetSpec_file, verbose: str
-    @type sbml_lvl, sbml_version: int
-    @return: check return of writeSBMLToFile
-    @rtype: int
+
+    Parameters
+    ----------
+    species_file: str
+        pathname to the file containing the compounds ids and the compart, line = cpd-id\tcompart.
+    output: str
+        pathname to the sbml file to create
+    verbose: bool
+        print informations
     """
     if os.path.isfile(species_compart):
         with open(species_compart, 'r') as f:

@@ -13,6 +13,7 @@ import json
 
 def modelSeed_to_padmet(rxn_file, pwy_file, output, verbose=False):
     """
+    #TODO
     """
     global list_of_relation
     now = datetime.now()
@@ -126,6 +127,9 @@ def modelSeed_to_padmet(rxn_file, pwy_file, output, verbose=False):
     padmetRef.generateFile(output)
 
 def add_kegg_pwy(pwy_file, padmetRef, verbose = False):
+    """
+    #TODO
+    """
     global list_of_relation
     with open(pwy_file, 'r') as f:
         for data in [line.split("\t") for line in f.read().splitlines()][1:]:

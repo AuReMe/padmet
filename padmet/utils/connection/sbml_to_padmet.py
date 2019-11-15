@@ -41,6 +41,8 @@ def sbml_to_padmetRef(sbml, padmetRef_file, output=None, db="NA", version="NA", 
         if padmetSpec exist, instance PadmetSpec
         else init PadmetSpec
         update padmetSpec using padmetRef if padmetRef
+    
+    #TODO
     """
     if output is None:
         output = padmetRef_file
@@ -85,6 +87,8 @@ def sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=None, output=None, 
         if padmetSpec exist, instance PadmetSpec
         else init PadmetSpec
         update padmetSpec using padmetRef if padmetRef
+    
+    #TODO
     """
     if output is None:
         output = padmetSpec_file
@@ -141,6 +145,7 @@ def sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=None, output=None, 
 
 def create_padmet_instance(padmet_file, padmet_type, db, version, padmetRef=None):
     """
+    #TODO
     """
     if padmet_type not in ["PadmetRef","PadmetSpec"]:
         raise TypeError('padmet_type must be in ["PadmetRef","PadmetSpec"], given:%s' %padmet_type)

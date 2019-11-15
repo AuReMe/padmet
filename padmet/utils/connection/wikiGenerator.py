@@ -18,7 +18,7 @@ import re
 
 def wikiGenerator(padmet, output, wiki_id, padmetRef=None, database=None, log_file=None, verbose=False):
     """
-    
+    #TODO
     """
     #if padmet is a directory: padmetFiles = list of padmet path, a padmet file must end with .padmet extension
     #padmetFiles = [/path/padmet_a.padmet, /path/padmet_b.padmet]
@@ -151,6 +151,8 @@ def extract_padmet_data(padmetFile, total_padmet_data, global_pwy_rxn_dict=None,
             add total_padmet_data["reaction"][reaction_id][padmet_source] = dict()
             
     else, add data only if differents from first
+    
+    #TODO
     """
     #name of current padmet
     padmet_source = os.path.basename(padmetFile).replace(".padmet","")

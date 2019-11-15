@@ -26,6 +26,7 @@ from padmet.utils import sbmlPlugin as sp
 
 def check_orthology_input(model_metabolic, model_faa, dict_ids_file, output, verbose, cutoff):
     """
+    #TODO
     """
     if model_metabolic is not None:
         if verbose: print("check genes ids model_metablic vs model_faa")
@@ -53,8 +54,22 @@ def check_ids(model_metabolic, model_faa, cutoff, verbose=False):
     check if genes ids of model_metabolic = model_faa for a given cutoff
     faa genes ids are in the first line of each sequence: >GENE_ID ....
     metabolic netowkrs genes ids are in note section, GENE_ASSOCIATION: gene_id-1 or gene_id-2
-    @return: True if same ids, if verbose, print % of genes under cutoff
-    @type: bool
+
+    Parameters
+    ----------
+    model_metabolic: str
+        path to sbml file
+    model_faa: str
+        path to fasta faa file
+    cutoff: int
+        cutoff genes ids from model found in faa
+    verbose: bool
+        verbose
+        
+    Returns
+    -------
+    bool    
+        True if same ids, if verbose, print % of genes under cutoff
     """
     reader = libsbml.SBMLReader()
     document = reader.readSBML(model_metabolic)
@@ -92,6 +107,15 @@ def get_valid_faa(model_faa, dict_ids_file, output):
     """
     create a new faa from the model_faa by converting the gene id with the dict_ids
     dict_ids: line = origin_id new_gene_id, sep = \t
+
+    Parameters
+    ----------
+    model_faa: str
+        path to faa file
+    dict_ids_file: str
+        path to file containing link old to new ids
+    output: str
+        path to new faa file
     """
     regex_origin_id = re.compile("^>(\w*)")
     with open(dict_ids_file, 'r') as f:
