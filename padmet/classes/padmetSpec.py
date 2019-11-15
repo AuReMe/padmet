@@ -34,10 +34,11 @@ class PadmetSpec:
     def __init__(self, padmetSpec_file=None):
         """
         if None, initializes an empty <PadmetSpec>
-        @param padmetSpec_file: pathname of the padmet file
-        @type padmetSpec_file: str
-        @return: _
-        @rtype: None
+
+        Parameters
+        ----------
+        padmetSpec_file: str
+            pathname of the padmet file
         """
         if padmetSpec_file is not None:
             self.loadGraph(padmetSpec_file)
@@ -57,8 +58,11 @@ class PadmetSpec:
         All the information printed in the header of a padmet stocked in a dict.
         {"metacyc":{version:XX,...},"ecocyc":{...}...}
         set Info from a dictionary or copying from an other padmet
-        @param source: may be a dict or an other padmet from where will be copied the info
-        @type source: dict or Padmet
+
+        Parameters
+        ----------
+        source: dict or padmet.classes.PadmetRef/PadmetSpec
+            may be a dict or an other padmet from where will be copied the info
         """
         if isinstance(source, dict):
             self.info = source
@@ -68,8 +72,11 @@ class PadmetSpec:
     def setPolicy(self, source):
         """
         Set policy from a list or copying from an other padmet
-        @param source: may be a list or an other padmet from where will be copied the policy
-        @type source: list or Padmet
+
+        Parameters
+        ----------
+        source: list or padmet.classes.PadmetRef/PadmetSpec
+            may be a list or an other padmet from where will be copied the policy
         """
         if isinstance(source, list):
             self.policy = Policy(source)
@@ -79,8 +86,11 @@ class PadmetSpec:
     def setDicOfNode(self, source):
         """
         Set dicOfNode from a dict or copying from an other padmet
-        @param source: may be a dict or an other padmet from where will be copied the dicOfNode
-        @type source: dict or Padmet
+
+        Parameters
+        ----------
+        source: dict or padmet.classes.PadmetRef/PadmetSpec
+            may be a dict or an other padmet from where will be copied the dicOfNode
         """
         if isinstance(source, dict):
             self.dicOfNode = source
@@ -90,10 +100,11 @@ class PadmetSpec:
     def setdicOfRelationIn(self, source):
         """
         Set dicOfRelationIn from a dict or copying from an other padmet
-        @param source: may be a dict or an other padmet from where will be
-        copied the dicOfRelationIn
-        @type source: dict or Padmet
-        @rtype: None
+
+        Parameters
+        ----------
+        source: dict or padmet.classes.PadmetRef/PadmetSpec
+            may be a dict or an other padmet from where will be copied the dicOfRelationIn
         """
         if isinstance(source, dict):
             self.dicOfRelationIn = source
@@ -103,10 +114,11 @@ class PadmetSpec:
     def setdicOfRelationOut(self, source):
         """
         Set dicOfRelationOut from a dict or copying from an other padmet
-        @param source: may be a dict or an other padmet from where will be
-        copied the dicOfRelationIn
-        @type source: dict or Padmet
-        @rtype: None
+
+        Parameters
+        ----------
+        source: dict or padmet.classes.PadmetRef/PadmetSpec
+            may be a dict or an other padmet from where will be copied the dicOfRelationOut
         """
         if isinstance(source, dict):
             self.dicOfRelationOut = source
@@ -116,7 +128,11 @@ class PadmetSpec:
     def getAllRelation(self):
         """
         return a set of all relations
-        @rtype: set
+
+        Returns
+        -------
+        set
+            return a set of all relations
         """
         all_relation = set()
         for list_rlt in self.dicOfRelationIn.values():
@@ -133,9 +149,11 @@ class PadmetSpec:
         The section Data Base information corresponds to the self.info
         The section Nodes corresponds to the data of each nodes in self.dicOfNode, sep ="\t"
         The section Relations corresponds to the data of each relations in self.dicOfRelationIn/Out, sep ="\t"
-        @param padmet_file: the pathname of the padmet file to load.
-        @return: _
-        @rtype: None
+
+        Parameters
+        ----------
+        padmet_file: str
+            the pathname of the padmet file to load.
         """
         with open(padmet_file, "r", encoding="utf8") as f:
             padmet_in_array = [line for line in f.read().splitlines() if len(line) != 0]
@@ -646,7 +664,15 @@ class PadmetSpec:
                             self._addRelation(linked_rlt)
 
     def updateFromPadmet(self, padmet):
-        # update sillico from exp
+        """
+        update padmet from an other padmet file
+        
+        Parameters
+        ----------
+        padmet: padmet.classes.PadmetRef/PadmetSpec
+            padmet instance
+       
+        """
         for k, v in list(padmet.dicOfNode.items()):
             try:
                 self.dicOfNode[k]
@@ -672,9 +698,11 @@ class PadmetSpec:
     def generateFile(self, output):
         """
         Allow to create a padmet file to stock all the data.
-        @param output: pathname of the padmet file to create
-        @return: _
-        @rtype: None
+
+        Parameters
+        ----------
+        output: str
+            path to output file
         """
         # Order the dictionary of node by unique id and the tuple of relation
         # by the node in id.
@@ -722,12 +750,17 @@ class PadmetSpec:
         of reactions in the pathway.
         Header = "Reactions (metacyc_id)", "Reactions (common_name)", "EC-Number",
                       "Formula (metacyc_id)", "Formula (common_name)", "Found in the network"
-        @param node_id: id of the pathway
-        @param padmetRef_file: pathname of the padmet ref file
-        @param output: pathname of the output to create
-        @param sbml: if true, create a sbml file of this pathway
-        @return: _
-        @rtype: None
+
+        Parameters
+        ----------
+        node_id: str
+            id of the pathway
+        padmetRef_file: str
+            pathname of the padmet ref file
+        output: str
+            pathname of the output to create
+        sbml: None or str
+            if path given, create a sbml file of this pathway
         """
         # Retriving the ID and the node of the pathway.
         try:
@@ -860,13 +893,15 @@ class PadmetSpec:
         line = dbRef_id, Common name, Produced (p), Consumed (c), Both (cp)
         all_genes.csv: report on the genes of the network. (sep= "\t")
         line = "id", "Common name", "linked reactions"
-        @param padmetRef_file: pathname of the padmet of reference
-        @param output_dir: pathname of the folder where to create the reports
-        @param verbose: if true print info.
-        @type padmetRef_file, output_dir: str
-        @type verbose: bool
-        @return: _
-        @rtype: None
+
+        Parameters
+        ----------
+        padmetRef_file: str
+            pathname of the padmet of reference
+        output_dir: str
+            pathname of the folder where to create the reports
+        verbose: bool
+            if true print info.
         """
         os.system("mkdir -p " + output_dir)
         if not output_dir.endswith("/"):
@@ -1179,10 +1214,16 @@ class PadmetSpec:
     def _addNode(self, node):
         """
         Allows to add a node, only if the id is not already used.
-        @param node: the node to add
-        @type node: Node
-        @return: True if added, False if no.
-        @rtype: Bool
+
+        Parameters
+        ----------
+        node:  padmet.classes.Node
+            the node to add
+
+        Returns
+        -------
+        bool
+            True if added, False if no.        
         """
         if node.id not in list(self.dicOfNode.keys()):
             self.dicOfNode[node.id] = node
@@ -1196,12 +1237,13 @@ class PadmetSpec:
         Recursive function, call itself for the relations where the node is "in"
         NB: particular case: we don't want to recover the relations "prot catalyses reaction"
         do nothing for the relations where the node is "out"
-        @param padmet: Padmet from where to copy the node.
-        @param node_id: the id of the node to copy.
-        @type padmetRef: PadmetSpec/Ref
-        @type node_id: str
-        @return: _
-        @rtype: None
+
+        Parameters
+        ----------
+        padmet: padmet.classes.PadmetRef/PadmetSpec
+            Padmet from where to copy the node.
+        node_id: str
+            the id of the node to copy.
         """
         node = padmet.dicOfNode[node_id]
         # If true, the node does not exist and was susccessfully added.
@@ -1239,12 +1281,13 @@ class PadmetSpec:
         copyNode() allows to copy a node from an other padmetSpec or padmetRef. It copies all
         the relations 'in' and 'out' and it calls the function
         _copyNodeExtend() to recover the associated node.
-        @param Padmet: PadmetSpec/Ref from where to copy the node
-        @param node_id: the id of the node to copy
-        @type padmetRef: PadmetSpec/Ref
-        @type node_id: str
-        @return: _
-        @rtype: None
+
+        Parameters
+        ----------
+        Padmet: padmet.classes.PadmetRef/PadmetSpec
+            padmet from where to copy the node
+        node_id: str
+            the id of the node to copy
         """
         try:
             nodeToCopy = padmet.dicOfNode[node_id]
@@ -1306,10 +1349,16 @@ class PadmetSpec:
             if rlt type in ['has_xref','has_name','has_suppData']: delNode out
         For relations where the node to del is 'out':
             if rlt type in ['consumes','produces']
-        @param node_id: id of node to delete
-        @type node_id: str
-        @return: True if node successfully deleted, False if node not in dicOfNode
-        @rtype: Bool
+
+        Parameters
+        ----------
+        node_id: str
+            id of node to delete
+
+        Returns
+        -------
+        bool
+            True if node successfully deleted, False if node not in dicOfNode
         """
         # Delete the node from dicOfNode.
         try:
@@ -1374,15 +1423,20 @@ class PadmetSpec:
         if == "update":data[1] is the new value of the key data[0]
         ex: updateNode('RXN-5',('direction',['LEFT-TO-RIGHT']),update). The
         reaction' direction will be change to left2right
-        @param node_id: the id of the node to update
-        @param data: tuple of data to update, data[0] is the key, data[1] is a value, list or None
-        @param action: action in ['add','pop','remove','update']. Check description for more information
-        @param verbose: print more info
-        @type node_id, action: str
-        @type data: list or None
-        @type verbose: Bool
-        @return: True if successfully updated, False if no
-        @rtype: Bool
+
+        Parameters
+        ----------
+        node_id: str
+            the id of the node to update
+        data: tuple
+            tuple of data to update, data[0] is the key, data[1] is a value, list or None
+        action: str
+            action in ['add','pop','remove','update']. Check description for more information
+
+        Returns
+        -------
+        bool
+            True if node successfully updated
         """
         try:
             node = self.dicOfNode[node_id]
@@ -1429,10 +1483,16 @@ class PadmetSpec:
     def _delRelation(self, relation):
         """
         Delete a relation from dicOfRelationIn and out
-        @param relation: the relation to delete
-        @type relation: Relation
-        @return: True if successfully deleted
-        @rtype: Bool
+
+        Parameters
+        ----------
+        relation: padmet.classes.Relation
+            the relation to delete
+
+        Returns
+        -------
+        bool
+            True if succesfully deleted
         """
         delete = False
         idIn = relation.id_in
@@ -1464,10 +1524,16 @@ class PadmetSpec:
     def _addRelation(self, relation):
         """
         AddRelation() allows to add a relation if not already in allRelations.
-        @param relation: the relation to add
-        @type relation: Relation
-        @return: true if relation was successfully added
-        @rtype: bool
+
+        Parameters
+        ----------
+        relation: padmet.classes.Relation
+            the relation to add
+
+        Returns
+        -------
+        bool
+            true if relation was successfully added
         """
         idIn = relation.id_in
         idOut = relation.id_out
@@ -1494,16 +1560,22 @@ class PadmetSpec:
     def createNode(self, _type, _id, dicOfMisc={}, listOfRelation=None):
         """
         Creation of new node to add in the network.
-        @param _type: type of node (gene, reaction...)
-        @param _id: id of the node
-        @param dicOfMisc: dictionary of miscellaneous data
-        @param listOfRelation: list of relation
-        @type _type: str
-        @type _id: str
-        @type dicOfMisc: dict
-        @type listOfRelation: default = None else: list(Relation(s))
-        @return: new_node
-        @rtype: Node
+
+        Parameters
+        ----------
+        _type: str
+            type of node (gene, reaction...)
+        _id: str
+            id of the node
+        dicOfMisc: dict
+            dictionnary of miscellaneous data
+        listOfRelation: list or None
+            list of relation
+
+        Returns
+        -------
+        padmet.classes.Node
+            new_node
         """
         # add the new node
         if _id in list(self.dicOfNode.keys()):
@@ -1569,12 +1641,13 @@ class PadmetSpec:
     def ko(self, genes, verbose=False):
         """
         remove all reactions associated to a given gene or list of genes
-        @param genes: one gene or list of genes to remove
-        @param verbose: print more info
-        @type gene: str or list
-        @type verbose: Bool
-        @return: None
-        @rtype: None
+
+        Parameters
+        ----------
+        genes: str or list
+            one gene or list of genes to remove
+        verbose: bool
+            print more info
         """
         if isinstance(genes, str):
             genes = [genes]
@@ -1660,19 +1733,20 @@ class PadmetSpec:
         """
         if new_growth_medium is None: just remove the growth medium by deleting reactions starting with rxn_prefix
         else: remove and change by the new growth_medium, a list of compounds.
-        @param new_growth_medium: list of metabolites ids for the new media
-        @param padmetRef_file: path name of the padmet ref file
-        @param rxn_prefix: list of prefix corresponding to reactions of exchanges (specific to growth medium)
-        @param boundary_compart: ID of the boundary compartment, compound
-        in this compart will have BoundaryCondition True in sbml
-        @param verbose: print more info
-        @type new_growth_medium: list
-        @type padmetRef_file: path name of the padmet ref file
-        @type rxn_prefix: list
-        @type boundary_compart: str
-        @type verbose: Bool
-        @return: None
-        @rtype: None
+
+        Parameters
+        ----------
+        new_growth_medium: list or None
+            list of metabolites ids for the new media
+        padmetRef: str
+            path name of the padmet ref file
+        rxn_prefix: set
+            set of prefix corresponding to reactions of exchanges (specific to growth medium)
+        b_compart: str
+            ID of the boundary compartment, compound
+            in this compart will have BoundaryCondition True in sbml
+        verbose: bool
+            print more info
         """
         # get all rxn starting with rxn_prefix
         all_rxn_to_del = set(
