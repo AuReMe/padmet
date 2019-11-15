@@ -309,6 +309,7 @@ def map_sbml(sbml_file, to_map, db_out, output, verbose = False, mnx_reac_file =
 
 def get_from_mnx(mnx_dict, element_id, db_out):
     """
+    #TODO
     """
     match_ids = None
     for map_dict in list(mnx_dict.values()):
@@ -323,6 +324,7 @@ def get_from_mnx(mnx_dict, element_id, db_out):
 
 def mnx_reader(input_file, db_out):
     """
+    #TODO
     """
     with open(input_file, "r") as f:
         dataInArray = [line.split("\t")[:2] for line in f.read().splitlines() if not line.startswith("#")]
@@ -360,6 +362,7 @@ def mnx_reader(input_file, db_out):
 
 def intern_mapping(id_to_map, db_out, _type):
     """
+    #TODO
     """
     
     intern_reac_dict = {

@@ -143,5 +143,3 @@ def orthology_result(padmet_file, padmet_names):
 
     return df
 
-if __name__ == "__main__":
-    main()

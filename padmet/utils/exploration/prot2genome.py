@@ -1,6 +1,9 @@
 #!/usr/bin/env python3.7
 # -*- coding: utf-8 -*-
 """
+Description:
+    Prot2Genome contains functions used for blast analysis and padmet enrichment
+    
     
 """
 
@@ -22,6 +25,29 @@ import itertools
 
 def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=True, debug=False):
     """
+    This function fit an AuCoMe run. Select a aucome run folder and then the function will:
+    1./ For each couple of studied organisms, extract specific reactions
+        ex: For org A and org B, extract reactions in org A but not in org B and vice versa
+    2./ Then for each specific reactions, extract genes associated and run blastp, tblastn and exonerate
+    3./ For each reaction, for all genes associated, if no blastp match but tblastn and exonerate hit select the reaction as a hit
+    4./ Create a new padmet file with the new reactions to add within
+    
+    Parameters
+    ----------
+    run_folder: str
+        path to aucome run folder
+    cpu: int
+        number of cpu to use for multiprocessing steps
+    padmetRef: str
+        path to padmetRef from where to extract and add the new reactions to create new padmet files
+    blastp: bool
+        If true run blastp during analysis
+    tblastn: bool
+        If true run tblastn during analysis
+    exonerate: bool
+        If true run exonerate during analysis, tblastn must also be True
+    debug: bool
+        if true, print all raw informations of analysis
     """
     prot2genome_folder = os.path.join(run_folder,"prot2genome")
     padmet_folder = os.path.join(run_folder,"networks","PADMETs")
@@ -40,11 +66,29 @@ def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=
     print("Extracting reactions to add...")
     extractAnalysis(blast_analysis_folder, spec_reactions_folder, reactions_to_add_folder)
     print("Creating padmet files...")
-    mp_createPadmet(reactions_to_add_folder, studied_organisms_folder, padmet_folder, prot2genome_padmet_folder, padmetRef, cpu, verbose=True)
+    mp_createPadmet(reactions_to_add_folder, padmet_folder, prot2genome_padmet_folder, padmetRef, cpu, verbose=True)
 
 ##### create padmets #####
-def mp_createPadmet(reactions_to_add_folder, studied_organisms_folder, padmet_folder, prot2genome_padmet_folder, padmetRef, cpu, verbose=False):
+def mp_createPadmet(reactions_to_add_folder, padmet_folder, output_folder, padmetRef, cpu, verbose=False):
     """
+    Update all padmet in padmet_folder with reactions to add from file in reactiosn_to_add_folder, the informations of the reactions are extracted from padmetRef as unique source
+    ex: for padmet_folder/org_a.padmet, select reactions_to_add_folder/org_a.csv, add each reactions listed in this file based on padmetRef to create  output_folder/org_a.padmet
+    Create the padmet files in multiprocess, the more cpu the more new padmet files will be created faster
+
+    Parameters
+    ----------
+    reactions_to_add_folder: str
+        path folder with all files containing reactions to add for each studied organism
+    padmet_folder: str
+        path to folder with all padmet files of studied organism
+    output_folder: str
+        path to output folder where to create new padmet files
+    padmetRef: str
+        path to padmetRef from where to extract and add the new reactions to create new padmet files
+    cpu: int
+        number of cpu to use for multiprocessing steps
+    verbose: bool
+        verbose
     """
     all_padmets = next(os.walk(padmet_folder))[2]
     all_dict_args = []
@@ -54,8 +98,8 @@ def mp_createPadmet(reactions_to_add_folder, studied_organisms_folder, padmet_fo
         org_id = os.path.splitext(padmet_file)[0]
         padmet_to_update = os.path.join(padmet_folder, padmet_file)
         reactions_to_add_path = os.path.join(reactions_to_add_folder, org_id+".csv")
-        output = os.path.join(prot2genome_padmet_folder, padmet_file)
-        dict_args = {"reactions_to_add_path": reactions_to_add_path, "padmet_to_update": padmet_to_update, "output":output, "padmetRef":padmetRef}
+        output = os.path.join(output_folder, padmet_file)
+        dict_args = {"reactions_to_add_path": reactions_to_add_path, "padmet_to_update": padmet_to_update, "output":output, "padmetRef":padmetRef, "verbose": verbose}
         all_dict_args.append(dict_args)
         
     pool = Pool(cpu)
@@ -66,12 +110,15 @@ def mp_createPadmet(reactions_to_add_folder, studied_organisms_folder, padmet_fo
     
 def createPadmet(dict_args):
     """
+    function used in mp_createPadmet by each worker the Pool
+    padmet are updated using funciton add_delete_rxn from padmet.utils.connection.manual_curation
     """
     reactions_to_add_path = dict_args["reactions_to_add_path"]
     padmet_to_update = PadmetSpec(dict_args["padmet_to_update"])
     output = dict_args["output"]
     padmetRef = PadmetSpec(dict_args["padmetRef"])
-    manual_curation.add_delete_rxn(reactions_to_add_path, padmet_to_update, output, padmetRef=padmetRef, category="MANUAL")
+    verbose = dict_args["verbose"]
+    manual_curation.add_delete_rxn(reactions_to_add_path, padmet_to_update, output, padmetRef=padmetRef, category="MANUAL", verbose=verbose)
     
 
 
@@ -80,6 +127,17 @@ def createPadmet(dict_args):
     
 def mp_extractReactions(padmet_folder, output_folder, cpu):
     """
+    From a folder of padmet files, create all dual combination and extract specific reactions to create a file in output_folder
+    ex: in padmet_folder: org_a.padmet, org_b.padmet, create: output_folder: org_a_vs_org_b.csv and org_b_vs_org_a.csv
+
+    Parameters
+    ----------
+    padmet_folder: str
+        path to folder with all padmet files of studied organism
+    output_folder: str
+        path to output folder where to extract specific reactions
+    cpu: int
+        number of cpu to use for multiprocessing steps    
     """
     all_padmets = next(os.walk(padmet_folder))[2]
     all_combi = list(itertools.combinations(all_padmets, 2))
@@ -100,6 +158,13 @@ def mp_extractReactions(padmet_folder, output_folder, cpu):
 
 def extractReactions(dict_args):
     """
+    function used in mp_cextractReactions by each worker the Pool
+    for org_a.padmet and org_b.padmet:
+        1./ extract reactions and specific reactiosn (not in a, not in b)
+        2./ extract genes associated to specific reactions
+        3./ Select only reactions if they are from annotation
+        rxn-1 in org_a but not in org_b, if rxn-1 doesn't come from org_a annotation, skip the reaction
+        4./ create output file: header = ["reaction_id", "genes_ids", "sources"]
     """
     org_a = dict_args["org_a"]
     path_a = dict_args["path_a"]
@@ -177,12 +242,46 @@ def extractReactions(dict_args):
 
 
 ##### run all analysis in multiprocess #####
-def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, blast_analysis_folder, tmp_folder, cpu, blastp, tblastn, exonerate, debug):
+def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folder, tmp_folder, cpu, blastp, tblastn, exonerate, debug):
     """
+    Run different blast analysis based on files representing specific reactions of 2 padmet files.
+    For each specific reaction file in spec_reactions_folder (ex: org_a_vs_org_b.csv):
+        1./ search for:
+            faa file of org_a (studied_organisms_folder/org_a/org_a.faa)
+            gbk file of org_b (studied_organisms_folder/org_b/org_b.gbk)
+            faa file of org_b (studied_organisms_folder/org_b/org_b.faa)
+            fna file of org_b (studied_organisms_folder/org_b/org_b.fna)
+                if fna doesn't exist create it
+        2./ if output file (blast_analysis_folder/org_a_VS_org_b.csv) doesn't already exist run analysis
+        3./ extracts all genes ids from specific reaction file with fct extractGenes()
+        4./ Run blastp, tblastn, exonerate on gene_id.faa vs target.faa / fna with runAllAnalysis()
+        5./ Create analysis output
+        The analysis create a lot of temp files, all are in tmp_folder wich is cleanned after all loop
+
+    Parameters
+    ----------
+    spec_reactions_older: str
+        path folder with all files containing specific reactions
+    studied_organisms_folder: str
+        path to folder with all data of studied organisms. Folder contains 1 folder by org with name as org name, in each: org.gbk,org.faa,org.fna
+    output_folder: str
+        path to output folder where to extract blast analysis
+    tmp_folder: str
+        path to tmp folder where to create faa of each gene to analyse
+    cpu: int
+        number of cpu to use for multiprocessing steps
+    blastp: bool
+        If true run blastp during analysis
+    tblastn: bool
+        If true run tblastn during analysis
+    exonerate: bool
+        If true run exonerate during analysis, tblastn must also be True
+    debug: bool
+        if true, print all raw informations of analysis
     """
     for rxn_file in [os.path.join(spec_reactions_folder, i) for i in next(os.walk(spec_reactions_folder))[2]]:
         org_a, org_b = os.path.basename(rxn_file).replace(".csv","").split("_VS_")
-        analysis_output = os.path.join(blast_analysis_folder, "%s_VS_%s.csv"%(org_a, org_b))
+        analysis_output = os.path.join(output_folder, "%s_VS_%s.csv"%(org_a, org_b))
         query_faa = os.path.join(studied_organisms_folder, org_a, "%s.faa"%org_a)
         subject_gbk = os.path.join(studied_organisms_folder, org_b, "%s.gbk"%org_b)
         subject_faa = os.path.join(studied_organisms_folder, org_b, "%s.faa"%org_b)
@@ -216,6 +315,12 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, blast_analys
 
 def cleanTmp(tmp_folder):
     """
+    Remove all files from tmp folder
+
+    Parameters
+    ----------
+    tmp_folder: str
+        path to tmp folder where to create faa of each gene to analyse
     """
     for the_file in os.listdir(tmp_folder):
         file_path = os.path.join(tmp_folder, the_file)
@@ -223,6 +328,12 @@ def cleanTmp(tmp_folder):
 
 def extractGenes(reactions_file):
     """
+    Extract genes ids and return a list from reactions_file obtained with extractReactions()
+
+    Parameters
+    ----------
+    reactions_file: str
+        path to reaction file
     """
     all_query_seq_ids = set()
     with open(reactions_file, 'r') as csvfile:
@@ -232,6 +343,16 @@ def extractGenes(reactions_file):
 
 def runAllAnalysis(dict_args):
     """
+    For a given gene query id:
+        1/ extract from query_faa the sequence and create a faa file output_folder/query_id.faa
+            If isoforms found, also search for each specific isoform
+        2/ if blastp, run blastp; if tblastn, run tblastn; if exonerate and tblastn has hit, run exonerate
+        Run all of them and extract output as dict of data
+
+    Returns
+    -------
+    list
+        list of dict with all analysis output
     """
     query_seq_id = dict_args["query_seq_id"]
     query_faa = dict_args["query_faa"]
@@ -293,6 +414,25 @@ def runAllAnalysis(dict_args):
 
 def runBlastp(query_seq_faa, subject_faa, header=["sseqid", "evalue", "bitscore"], debug=False):
     """
+    Run blastp on querry_seq vs subectj faa and return output based on header
+    Use NcbiblastpCommandline fct and extract output
+    Extract 1st best hit based on bitscore
+
+    Parameters
+    ----------
+    query_seq_faa: str
+        path to query fasta sequence
+    subject_faa: str
+        path to subject fasta sequence
+    header: list
+        output format of blastp
+    debug: bool
+        if true print all raw blastp output
+
+    Returns
+    -------
+    dict
+        dict of the best blastp hit, add 'blastp_' tag, or empty dict if no hit
     """
     print("\tRunning Blastp %s vs %s" %(os.path.basename(query_seq_faa), os.path.basename(subject_faa)))
     outfmt_arg = '"%s %s"'%(6, " ".join(header))
@@ -325,6 +465,25 @@ def runBlastp(query_seq_faa, subject_faa, header=["sseqid", "evalue", "bitscore"
 
 def runTblastn(query_seq_faa, subject_fna, header=["sseqid", "evalue", "bitscore"], debug=False):
     """
+    Run tblastn on querry_seq vs subectj fna and return output based on header
+    Use NcbitblastnCommandline fct and extract output
+    Extract 1st best hit based on bitscore
+
+    Parameters
+    ----------
+    query_seq_faa: str
+        path to query fasta sequence
+    subject_fna: str
+        path to subject fna sequence
+    header: list
+        output format of tblastn
+    debug: bool
+        if true print all raw tblastn output
+
+    Returns
+    -------
+    dict
+        dict of the best tblastn hit, add 'tblastn_' tag, or empty dict if no hit
     """    
     print("\tRunning tBlastn %s vs %s" %(os.path.basename(query_seq_faa), os.path.basename(subject_fna)))
     outfmt_arg = '"%s %s"'%(6, " ".join(header))
@@ -354,6 +513,26 @@ def runTblastn(query_seq_faa, subject_fna, header=["sseqid", "evalue", "bitscore
 
 def runExonerate(query_seq_faa, sseq_seq_faa, output, debug=False):
     """
+    Run exonerate on querry_seq vs subject faa
+    Exonerate must be installed, and the global var PATH must be update with the exonerate/bin/
+    command 'exonerate' should work from shell
+    sseq_seq_faa is obtained after tblastn run based on tblastn_sseqid value
+    
+    Parameters
+    ----------
+    query_seq_faa: str
+        path to query fasta sequence
+    sseq_seq_faa: str
+        path to subject faa sequence
+    output: str
+        path to exonerate output
+    debug: bool
+        if true print all raw exonerate output
+
+    Returns
+    -------
+    dict
+        dict of the best exonerate hit, add 'exonerate_' tag, or empty dict if no hit
     """
     exonerate_path = "exonerate"
     print("\tRunning Exonerate %s vs %s" %(os.path.basename(query_seq_faa), os.path.basename(sseq_seq_faa)))
@@ -384,8 +563,22 @@ def runExonerate(query_seq_faa, sseq_seq_faa, output, debug=False):
     return exonerate_result
 
 ##### extract analysis results #####
-def extractAnalysis(blast_analysis_folder, spec_reactions_folder, reactions_to_add_folder):
+def extractAnalysis(blast_analysis_folder, spec_reactions_folder, output_folder):
     """
+    For each analysis output in blast analysis folder, obtained with runAllAnalysis()
+        1./ Extract orthologues hit
+        2./ For each specific reactions from spec_reactions_folder, if all genes of a reactions got ortho hit
+            add reaction to reactions_to_add
+
+    Parameters
+    ----------
+    blast_analysis_folder: str
+        path folder with all blast analysis output files
+    spec_reactions_folder: str
+        path folder with all files containing specific reactions
+    output_folder: str
+        path folder where to extract all reactions to add
+
     """
     # {org_id: {org_id:set(genes_ids,...), }, }
     orthologue_dict = {}
@@ -421,25 +614,7 @@ def extractAnalysis(blast_analysis_folder, spec_reactions_folder, reactions_to_a
                     reactions_dict[org_a][reaction_id] = {org_b: {'total_genes': genes_ids, 'orthologues': orthologues}}
                     
     for org_a, org_dict in reactions_dict.items():
-        output_file = os.path.join(reactions_to_add_folder, "%s.csv"%org_a)
-        """
-        with open(output_file, 'w') as csvfile:
-            fieldnames = ['reaction_id', 'rate', 'in_org', 'org_with_orthologues']
-            writer = csv.DictWriter(csvfile,fieldnames, delimiter="\t")
-            writer.writeheader()
-            total_rxn_to_add = 0
-            total_rxn = len(org_dict.keys())
-            for reaction_id, reaction_dict in org_dict.items():
-                total_org = set(reaction_dict.keys())
-                org_with_orthologues = set([org_b for org_b, org_b_dict in reaction_dict.items() if org_b_dict['total_genes'] == org_b_dict['orthologues']])
-
-                rate = round(float(len(org_with_orthologues)/len(total_org)),2)
-                if rate == 1.0:
-                    total_rxn_to_add += 1
-                line = {'reaction_id': reaction_id, 'rate': rate, 'in_org': ";".join(total_org), 'org_with_orthologues': ";".join(org_with_orthologues)}
-                writer.writerow(line)
-            print("%s: %s/%s reactions to add"%(org_a, total_rxn_to_add, total_rxn))
-        """
+        output_file = os.path.join(output_folder, "%s.csv"%org_a)
         with open(output_file, 'w') as csvfile:
             fieldnames = ['idRef', 'Comment', 'Genes', 'Action']
             writer = csv.DictWriter(csvfile,fieldnames, delimiter="\t")
