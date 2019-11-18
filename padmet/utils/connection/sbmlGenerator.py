@@ -56,7 +56,7 @@ def padmet_to_sbml(padmet, output, model_id = None, obj_fct = None, sbml_lvl = 3
         print informations
     """
     global all_ga
-    if os.path.isfile(padmet):
+    if isinstance(padmet, str):
         padmet = PadmetSpec(padmet)
 
     if not model_id:
