@@ -32,7 +32,7 @@ def from_init_source(padmet_file, init_source, output, verbose=False):
     reactions_to_add = set([node.id for node in list(padmet.dicOfNode.values()) if node.type == "reaction"]).difference(rxn_to_del)
     reaction_to_sbml(reactions_to_add, output, padmet, verbose)
 
-def padmet_to_sbml(padmet_file, output, model_id = None, obj_fct = None, sbml_lvl = 3, mnx_chem_prop = None, mnx_chem_xref = None, verbose = False):
+def padmet_to_sbml(padmet, output, model_id = None, obj_fct = None, sbml_lvl = 3, mnx_chem_prop = None, mnx_chem_xref = None, verbose = False):
     """
     Convert padmet file to sbml file.
     Specificity: 
@@ -40,8 +40,8 @@ def padmet_to_sbml(padmet_file, output, model_id = None, obj_fct = None, sbml_lv
 
     Parameters
     ----------
-    padmet_file: str
-        the pathname to the padmet file to convert
+    padmet: str or padmet.classes.PadmetSpec/PadmetRef
+        the pathname to the padmet file to convert, or PadmetSpec/PadmetRef object
     output: str
         the pathname to the sbml file to create
     model_id: str or None
@@ -56,7 +56,9 @@ def padmet_to_sbml(padmet_file, output, model_id = None, obj_fct = None, sbml_lv
         print informations
     """
     global all_ga
-    padmet = PadmetSpec(padmet_file)
+    if os.path.isfile(padmet):
+        padmet = PadmetSpec(padmet)
+
     if not model_id:
         model_id = os.path.splitext(os.path.basename(output))[0]
     if sbml_lvl:
