@@ -52,7 +52,7 @@ def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=
     prot2genome_folder = os.path.join(run_folder,"prot2genome")
     padmet_folder = os.path.join(run_folder,"networks","PADMETs")
     studied_organisms_folder = os.path.join(run_folder,"studied_organisms")
-    spec_reactions_folder = os.path.join(prot2genome_folder, "spec_reactions")
+    spec_reactions_folder = os.path.join(prot2genome_folder, "specifics_reactions")
     reactions_to_add_folder = os.path.join(prot2genome_folder, "reactions_to_add")
     blast_result_folder = os.path.join(prot2genome_folder, "blast_results")
     blast_analysis_folder = os.path.join(blast_result_folder, "analysis")
