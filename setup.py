@@ -46,7 +46,8 @@ setup(
                        "seaborn==0.9.0",
                        "matplotlib==3.1.1",
                        "grequests==0.4.0",
-                       'lxml==4.3.4'
+                       'lxml==4.3.4',
+                       'scipy==1.3.0',
                        ],
  
     include_package_data=True,
@@ -59,7 +60,7 @@ setup(
         "License :: OSI Approved",
         "Natural Language :: French",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
 )
