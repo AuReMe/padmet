@@ -55,6 +55,7 @@ Utils API
     :glob:
 
     api_docs/padmet.utils
+    api_docs/utils.*
 
 
 Getting help

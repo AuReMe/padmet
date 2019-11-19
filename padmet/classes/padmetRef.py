@@ -3,7 +3,7 @@
 from . import Policy
 from . import Node
 from . import Relation
-from ..utils.sbmlPlugin import convert_from_coded_id
+from ..utils import sbmlPlugin
 import libsbml
 
 __all__ = ["PadmetRef"]
@@ -39,10 +39,12 @@ class PadmetRef:
     def __init__(self, padmetRef_file=None):
         """
         if None, initializes an empty <PadmetRef>
-        @param padmetRef_file: pathname of the padmet file
-        @type padmetRef_file: str
-        @return: _
-        @rtype: None
+        
+        Parameters
+        ----------
+        padmetRef_file: str
+            pathname of the padmet file
+        
         """
         if padmetRef_file is not None:
             self.loadGraph(padmetRef_file)
@@ -62,8 +64,11 @@ class PadmetRef:
         All the information printed in the header of a padmet stocked in a dict.
         {"metacyc":{version:XX,...},"ecocyc":{...}...}
         set Info from a dictionnary or copying from an other padmet
-        @param source: may be a dict or an other padmet from where will be copied the info
-        @tyme source: dict or Padmet
+
+        Parameters
+        ----------
+        source: dict or padmet.classes.PadmetRef
+            may be a dict or an other padmet from where will be copied the info
         """
         if type(source) is dict:
             self.info = source
@@ -73,8 +78,11 @@ class PadmetRef:
     def setPolicy(self, source):
         """
         Set policy from a list or copying from an other padmet
-        @param source: may be a list or an other padmet from where will be copied the policy
-        @type source: list or Padmet
+
+        Parameters
+        ----------
+        source: list or padmet.classes.PadmetRef
+            may be a list or an other padmet from where will be copied the policy
         """
         if type(source) is list:
             self.policy = Policy(source)
@@ -84,8 +92,11 @@ class PadmetRef:
     def setDicOfNode(self, source):
         """
         Set dicOfNode from a dict or copying from an other padmet
-        @param source: may be a dict or an other padmet from where will be copied the dicOfNode
-        @type source: dict or Padmet
+
+        Parameters
+        ----------
+        source: dict or padmet.classes.PadmetRef
+            may be a dict or an other padmet from where will be copied the dicOfNode
         """
         if type(source) is dict:
             self.dicOfNode = source
@@ -95,9 +106,11 @@ class PadmetRef:
     def setdicOfRelationIn(self, source):
         """
         Set dicOfRelationIn from a dict or copying from an other padmet
-        @param source: may be a dict or an other padmet from where will be copied the dicOfRelationIn
-        @type source: dict or Padmet
-        @rtype: None
+
+        Parameters
+        ----------
+        source: dict or padmet.classes.PadmetRef
+            may be a dict or an other padmet from where will be copied the dicOfRelationIn
         """
         if type(source) is dict:
             self.dicOfRelationIn = source
@@ -107,9 +120,11 @@ class PadmetRef:
     def setdicOfRelationOut(self, source):
         """
         Set dicOfRelationOut from a dict or copying from an other padmet
-        @param source: may be a dict or an other padmet from where will be copied the dicOfRelationIn
-        @type source: dict or Padmet
-        @rtype: None
+        
+        Parameters
+        ----------
+        source: dict or padmet.classes.PadmetRef
+            may be a dict or an other padmet from where will be copied the dicOfRelationOut
         """
         if type(source) is dict:
             self.dicOfRelationOut = source
@@ -118,8 +133,11 @@ class PadmetRef:
 
     def getAllRelation(self):
         """
-        return a set of all relations
-        @rtype: set
+
+        Returns
+        -------
+        set
+            return a set of all relations
         """
         all_relation = set()
         for list_rlt in self.dicOfRelationIn.values():
@@ -136,9 +154,11 @@ class PadmetRef:
         The section Data Base informations corresponds to the self.info
         The section Nodes corresponds to the data of each nodes in self.dicOfNode, sep ="\t"
         The section Relations corresponds to the data of each relations in self.dicOfRelationIn/Out, sep ="\t"
-        @param padmet_file: the pathname of the padmet file to load.
-        @return: _
-        @rtype: None
+
+        Parameters
+        ----------
+        padmet_file: str
+            the pathname of the padmet file to load.
         """
         with open(padmet_file, "r", encoding="utf8") as f:
             padmet_in_array = [line for line in f.read().splitlines() if len(line) != 0]
@@ -234,15 +254,19 @@ class PadmetRef:
             except KeyError:
                 self.dicOfRelationOut[rlt_id_out] = [relation]
 
-    def initFromSbml(self, sbml_file, verbose=False):
+    def updateFromSbml(self, sbml_file, verbose=False):
         """
         Initialize a padmetRef from sbml. Copy all species, convert id with sbmlPlugin
         stock name in COMMON NAME. Copy all reactions,
         convert id with sbmlPlugin, stock name in common name, stock compart and stoichio data relative
         to reactants and products in the misc of consumes/produces relations
-        @param sbml_file: pathname of the sbml file
-        @param verbose: <bool> if True print supp info
-        @type sbml_file: str
+
+        Parameters
+        ----------
+        sbml_file: str
+            pathname of the sbml file
+        verbose: bool
+            if True print supp info
         """
         # using libSbml to read sbml_file
         if verbose:
@@ -265,7 +289,7 @@ class PadmetRef:
             print("creating species")
         for specie in listOfSpecies:
             specie_id_encoded = specie.getId()
-            specie_id = convert_from_coded_id(specie_id_encoded)[0]
+            specie_id = sbmlPlugin.convert_from_coded_id(specie_id_encoded)[0]
             if verbose:
                 print("specie: %s, uncoded: %s" % (specie_id_encoded, specie_id))
             try:
@@ -286,7 +310,7 @@ class PadmetRef:
             print("creating reactions")
         for reaction in listOfReactions:
             reaction_id_encoded = reaction.getId()
-            reaction_id = convert_from_coded_id(reaction_id_encoded)[0]
+            reaction_id = sbmlPlugin.convert_from_coded_id(reaction_id_encoded)[0]
             if verbose:
                 print("reaction: %s, uncoded: %s" % (reaction_id_encoded, reaction_id))
             try:
@@ -312,7 +336,7 @@ class PadmetRef:
                 self.dicOfNode[reaction_id] = reaction_node
                 reactants = reaction.getListOfReactants()
                 for reactant in reactants:
-                    reactant_id, x, reactant_compart = convert_from_coded_id(
+                    reactant_id, x, reactant_compart = sbmlPlugin.convert_from_coded_id(
                         reactant.getSpecies()
                     )
                     if reactant_compart is None:
@@ -332,7 +356,7 @@ class PadmetRef:
                     self._addRelation(consumes_rlt)
                 products = reaction.getListOfProducts()
                 for product in products:
-                    product_id, x, product_compart = convert_from_coded_id(
+                    product_id, x, product_compart = sbmlPlugin.convert_from_coded_id(
                         product.getSpecies()
                     )
                     if product_compart is None:
@@ -355,8 +379,11 @@ class PadmetRef:
         """
         Allow to create a padmet file to stock all the data.
         @param output: pathname of the padmet file to create
-        @return: _
-        @rtype: None
+
+        Parameters
+        ----------
+        output: str
+            path to output file
         """
         # Order the dictionary of node by unique id and the tuple of relation
         # by the node in id.
@@ -396,185 +423,6 @@ class PadmetRef:
                 line = rlt.toString() + "\n"
                 f.write(line)
 
-    def extract_data(self, output_directory, verbose=False):
-        """
-        extracting data on rections and compounds in flate files.(used for samifier)
-        """
-
-        all_reactions = output_directory + "all_reactions.ts"
-        all_metabolites = output_directory + "all_metabolites.tsv"
-
-        # Recovering metabolites
-        if verbose:
-            print("Recovering metabolites")
-        metabolites_nodes = set(
-            [
-                self.dicOfNode[rlt.id_out]
-                for rlt in self.getAllRelation()
-                if rlt.type in ["consumes", "produces"]
-            ]
-        )
-
-        # recovere all the compounds that are in a class which is involved in a reaction
-        metabolites_sub_class = []
-        for node in metabolites_nodes:
-            if node.type == "class":
-                node_id = node.id
-                metabolites_sub_class += [
-                    self.dicOfNode[rlt.id_in]
-                    for rlt in self.dicOfRelationOut.get(node_id, None)
-                    if rlt.type == "is_a_class"
-                ]
-        metabolites_nodes = metabolites_nodes.union(set(metabolites_sub_class))
-
-        # Recovering reactions
-        if verbose:
-            print("Recovering reactions")
-        reactions_nodes = [
-            node for node in self.dicOfNode.values() if node.type == "reaction"
-        ]
-
-        if verbose:
-            print("Metabolites...")
-        count = 0
-        with open(all_metabolites, "w", encoding="utf8") as f:
-            header = "\t".join(["METACYC", "SYNONYMS", "XREF"]) + "\n"
-            f.write(header)
-            for node in metabolites_nodes:
-                count += 1
-                if verbose:
-                    print(
-                        "Metabolite " + str(count) + "/" + str(len(metabolites_nodes))
-                    )
-
-                metacyc_id = node.id
-
-                try:
-                    common_name = node.misc["COMMON-NAME"]
-                except KeyError:
-                    common_name = []
-
-                try:
-                    names = [
-                        self.dicOfNode[rlt.id_out].misc["LABEL"][0]
-                        for rlt in self.dicOfRelationIn.get(metacyc_id, None)
-                        if rlt.type == "has_name"
-                    ]
-                except TypeError:
-                    names = []
-                synonyms = ";".join(common_name + names)
-
-                try:
-                    INCHIKEY = node.misc["INCHI_KEY"][0]
-                    INCHIKEY = [INCHIKEY.replace("InChIKey=", "INCHIKEY:")]
-                except KeyError:
-                    INCHIKEY = []
-
-                try:
-                    SMILES = node.misc["SMILES"][0]
-                    SMILES = ["SMILES:" + SMILES]
-                except KeyError:
-                    SMILES = []
-
-                try:
-                    xrefs_node = [
-                        self.dicOfNode[rlt.id_out]
-                        for rlt in self.dicOfRelationIn.get(metacyc_id, None)
-                        if rlt.type == "has_xref"
-                    ]
-                    xrefs = [
-                        ":".join((node.misc["DB"][0].strip(), node.misc["ID"][0]))
-                        for node in xrefs_node
-                    ]
-                except TypeError:
-                    xrefs = []
-                all_xrefs = ";".join(INCHIKEY + SMILES + xrefs)
-                line = "\t".join([metacyc_id, synonyms, all_xrefs]) + "\n"
-                f.write(line)
-
-        if verbose:
-            print("Reactions...")
-        count = 0
-        with open(all_reactions, "w", encoding="utf8") as f:
-            header = (
-                "\t".join(["METACYC", "SYNONYMS", "XREF", "REAGS", "PRODS", "REV"])
-                + "\n"
-            )
-            f.write(header)
-            for node in reactions_nodes:
-                count += 1
-                if verbose:
-                    print("Reaction " + str(count) + "/" + str(len(reactions_nodes)))
-
-                metacyc_id = node.id
-
-                try:
-                    common_name = node.misc["COMMON-NAME"]
-                except KeyError:
-                    common_name = []
-
-                try:
-                    names = [
-                        self.dicOfNode[rlt.id_out].misc["LABEL"][0]
-                        for rlt in self.dicOfRelationIn.get(metacyc_id, None)
-                        if rlt.type == "has_name"
-                    ]
-                except TypeError:
-                    names = []
-                synonyms = ";".join(common_name + names)
-
-                try:
-                    ec = node.misc["EC-NUMBER"]
-                except KeyError:
-                    SMILES = []
-
-                rev = node.misc["DIRECTION"][0]
-                if rev == "LEFT-TO-RIGHT":
-                    rev_bool = "0"
-                else:
-                    rev_bool = "1"
-
-                try:
-                    xrefs_node = [
-                        self.dicOfNode[rlt.id_out]
-                        for rlt in self.dicOfRelationIn.get(metacyc_id, None)
-                        if rlt.type == "has_xref"
-                    ]
-                    xrefs = [
-                        ":".join((node.misc["DB"][0].strip(), node.misc["ID"][0]))
-                        for node in xrefs_node
-                    ]
-                except TypeError:
-                    xrefs = []
-                all_xrefs = ";".join(ec + xrefs)
-
-                try:
-                    reactants = [
-                        rlt.id_out
-                        for rlt in self.dicOfRelationIn.get(metacyc_id, None)
-                        if rlt.type == "consumes"
-                    ]
-                    reactants = ";".join(reactants)
-                except TypeError:
-                    reactants = ""
-
-                try:
-                    products = [
-                        rlt.id_out
-                        for rlt in self.dicOfRelationIn.get(metacyc_id, None)
-                        if rlt.type == "produces"
-                    ]
-                    products = ";".join(products)
-                except TypeError:
-                    products = ""
-                line = (
-                    "\t".join(
-                        [metacyc_id, synonyms, all_xrefs, reactants, products, rev_bool]
-                    )
-                    + "\n"
-                )
-                f.write(line)
-
     # ==============================================================================
     # For Nodes
     # ==============================================================================
@@ -582,10 +430,16 @@ class PadmetRef:
     def _addNode(self, node):
         """
         Allows to add a node, only if the id is not already used.
-        @param node: the node to add
-        @type node: Node
-        @return: True if added, False if no.        
-        @rtype: Bool
+
+        Parameters
+        ----------
+        node:  padmet.classes.Node
+            the node to add
+
+        Returns
+        -------
+        bool
+            True if added, False if no.        
         """
         if node.id not in list(self.dicOfNode.keys()):
             self.dicOfNode[node.id] = node
@@ -601,10 +455,16 @@ class PadmetRef:
             if rlt type in ['has_xref','has_name','has_suppData']: delNode out
         For relations where the node to del is 'out':
             if rlt type in ['consumes','produces']
-        @param node_id: id of node to delete
-        @type node_id: str
-        @return: True if node successfully deleted, False if node not in dicOfNode
-        @rtype: Bool
+
+        Parameters
+        ----------
+        node_id: str
+            id of node to delete
+
+        Returns
+        -------
+        bool
+            True if node successfully deleted, False if node not in dicOfNode
         """
         # Delete the node from dicOfNode.
         try:
@@ -644,10 +504,16 @@ class PadmetRef:
     def _delRelation(self, relation):
         """
         Delete a relation from dicOfRelationIn and out
-        @param relation: the relation to delete
-        @type relation: Relation
-        @return: True if succesfully deleted
-        @rtype: Bool
+
+        Parameters
+        ----------
+        relation: padmet.classes.Relation
+            the relation to delete
+
+        Returns
+        -------
+        bool
+            True if succesfully deleted
         """
         delete = False
         idIn = relation.id_in
@@ -679,10 +545,16 @@ class PadmetRef:
     def _addRelation(self, relation):
         """
         AddRelation() allows to add a relation if not already in allRelations.
-        @param relation: the relation to add
-        @type relation: Relation
-        @return: true if relation was successfully added
-        @rtype: bool
+
+        Parameters
+        ----------
+        relation: padmet.classes.Relation
+            the relation to add
+
+        Returns
+        -------
+        bool
+            true if relation was successfully added
         """
         idIn = relation.id_in
         idOut = relation.id_out
@@ -708,16 +580,22 @@ class PadmetRef:
     def createNode(self, _type, _id, dicOfMisc={}, listOfRelation=None):
         """
         Creation of new node to add in the network.
-        @param _type: type of node (gene, reaction...)
-        @param _id: id of the node
-        @param dicOfMisc: dictionnary of miscellaneous data
-        @param listOfRelation: list of relation
-        @type _type: str
-        @type _id: str
-        @type dicOfMisc: dict
-        @type listOfRelation: default = None else: list(Relation(s))
-        @return: new_node
-        @rtype: Node
+
+        Parameters
+        ----------
+        _type: str
+            type of node (gene, reaction...)
+        _id: str
+            id of the node
+        dicOfMisc: dict
+            dictionnary of miscellaneous data
+        listOfRelation: list or None
+            list of relation
+
+        Returns
+        -------
+        padmet.classes.Node
+            new_node
         """
         # add the new node in the tgdbp
         if _id in list(self.dicOfNode.keys()):

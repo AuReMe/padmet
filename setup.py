@@ -27,7 +27,7 @@ class PyTest(TestCommand):
 setup(
  
     name='padmet',
-    version="3.2.2",
+    version="4.0",
  
     packages=find_packages(),
  
@@ -39,7 +39,16 @@ setup(
     long_description=open('README.md', encoding='utf8').read(),
  
     
-    install_requires= ["docopt==0.6.2","python-libsbml==5.18.0","cobra==0.14.0","biopython==1.70"],
+    install_requires= ["docopt==0.6.2",
+                       "python-libsbml==5.18.0",
+                       "cobra==0.14.0",
+                       "biopython==1.74",
+                       "seaborn==0.9.0",
+                       "matplotlib==3.1.1",
+                       "grequests==0.4.0",
+                       'lxml==4.3.4',
+                       'scipy==1.3.0',
+                       ],
  
     include_package_data=True,
  
@@ -51,7 +60,7 @@ setup(
         "License :: OSI Approved",
         "Natural Language :: French",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
 )
