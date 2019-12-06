@@ -1,6 +1,6 @@
 author: meziane aite (meziane.aite@inria.fr)
 
-## Description:
+## Description:
 
 The PADMet package allows conciliating genomics and metabolic network information used to produce a genome-scale constraint-based metabolic model within a database that traces all the reconstruction process steps. It allows representing the metabolic model in the form of a Wiki containing all the used/traced information. Other standard outputs are made available with the package. 
 

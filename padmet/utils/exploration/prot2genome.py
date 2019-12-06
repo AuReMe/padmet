@@ -8,6 +8,7 @@ Description:
 """
 
 from Bio.Blast.Applications import NcbiblastpCommandline, NcbitblastnCommandline
+from Bio.SeqFeature import FeatureLocation
 from Bio import SearchIO
 from Bio import SeqIO
 from padmet.classes import PadmetSpec
@@ -155,6 +156,7 @@ def mp_extractReactions(padmet_folder, output_folder, cpu):
     pool = Pool(cpu)
     pool.map(extractReactions, all_dict_args)
     pool.close()
+    pool.join()
 
 def extractReactions(dict_args):
     """
@@ -279,6 +281,7 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
     debug: bool
         if true, print all raw informations of analysis
     """
+    pool = Pool(cpu)
     for rxn_file in [os.path.join(spec_reactions_folder, i) for i in next(os.walk(spec_reactions_folder))[2]]:
         org_a, org_b = os.path.basename(rxn_file).replace(".csv","").split("_VS_")
         analysis_output = os.path.join(output_folder, "%s_VS_%s.csv"%(org_a, org_b))
@@ -303,15 +306,15 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
             #list of dict to give to dictWritter
             all_analysis_result = []
             #Run runAllAnalysis in multiproccess.
-            pool = Pool(cpu)
             mp_results = pool.map(runAllAnalysis, all_dict_args)
             for _list in mp_results:
                 all_analysis_result += _list
             print("Creating output analysis: %s" %analysis_output)
-            pool.close()
             #Create output file
             analysisOutput(all_analysis_result, analysis_output)
             cleanTmp(tmp_folder)
+    pool.close()
+    pool.join()
 
 def cleanTmp(tmp_folder):
     """
@@ -375,7 +378,7 @@ def runAllAnalysis(dict_args):
         query_seq_faa = os.path.join(output_folder,query_seq_id+".faa")
         if not os.path.exists(query_seq_faa):
             SeqIO.write(query_seq, query_seq_faa, "fasta")
-        current_result ={"query_seq_id": query_seq_id,}
+        current_result = {"query_seq_id": query_seq_id,}
     
         # Run BLASTP and parse the output
         if blastp:
@@ -395,22 +398,78 @@ def runAllAnalysis(dict_args):
             _tblastn_hit = True
             try:
                 exonerate_target_id = current_result["tblastn_sseqid"]
+                start_match = int(tblastn_result['tblastn_sstart'])
+                end_match = int(tblastn_result['tblastn_send'])
             except KeyError:
                 _tblastn_hit = False
                 if debug:
                     print("No hit from tblastn, can't run exonerate")
             if _tblastn_hit:
                 sseq_seq_faa = os.path.join(output_folder,exonerate_target_id+".fna")
-                if not os.path.exists(sseq_seq_faa):
-                    with open(subject_fna, "r") as fna:
-                        sseq_seq = [seq_record for seq_record in SeqIO.parse(fna, "fasta") if seq_record.id == exonerate_target_id][0]
-                        SeqIO.write(sseq_seq, sseq_seq_faa, "fasta")
+                createSeqFromTblastn(subject_fna, sseq_seq_faa, exonerate_target_id, start_match, end_match)
                 exonerate_output = os.path.join(output_folder, "exonerate_output_%s_vs_%s.txt"%(query_seq_id, exonerate_target_id))
                 exonerate_result = runExonerate(query_seq_faa, sseq_seq_faa, exonerate_output, debug=debug)
                 current_result.update(exonerate_result)
         analysis_result.append(current_result)
 
     return analysis_result
+
+def runSearchOnProteome(proteome_orgA, genome_orgB, output_folder, proteome_orgB=None):
+    """
+    From a proteome of OrgA search for missing structural annotation in genome of OrgB.
+    First launch Blastp between proteome of OrgA and proteome of OrgB.
+    Then launch tBlastn between proteome of OrgA and genome of OrgB to find matches.
+    Use the best match to extract a region from the genome of OrgB.
+    Then launch Exonerate on this region using the sequence of OrgA.
+
+    Parameters
+    ----------
+    proteome_orgA: str
+        path to fasta file of proteome of OrgA
+    genome_orgB: str
+        path to fasta file of genome of OrgB
+    output_folder: str
+        path to output folder
+    proteome_orgB: str
+        path to fasta file of proteome of OrgB
+    """
+    if not os.path.exists(output_folder):
+        os.mkdir(output_folder)
+
+    analysis_result = []
+
+    if proteome_orgB:
+        current_result = {"query_seq_id": proteome_orgB,}
+        blastp_result = runBlastp(proteome_orgA, proteome_orgB, header=["sseqid", "evalue", "bitscore"], debug=False)
+        if blastp_result:
+            current_result.update(blastp_result)
+    else:
+        current_result = {}
+
+    tblast_hit = None
+    tblastn_result = runTblastn(proteome_orgA, genome_orgB)
+    if tblastn_result:
+        current_result.update(tblastn_result)
+    try:
+        exonerate_target_id = tblastn_result['tblastn_sseqid']
+        start_match = int(tblastn_result['tblastn_sstart'])
+        end_match = int(tblastn_result['tblastn_send'])
+        tblast_hit = True
+    except KeyError:
+        print("No hit from tblastn, can't run exonerate")
+
+    if tblast_hit:
+        sseq_seq_faa = output_folder + "/" + exonerate_target_id + ".fna"
+        createSeqFromTblastn(genome_orgB, sseq_seq_faa, exonerate_target_id, start_match, end_match)
+
+        exonerate_output = output_folder + "/exonerate_output.txt"
+        exonerate_result = runExonerate(proteome_orgA, sseq_seq_faa, exonerate_output, debug=False)
+        current_result.update(exonerate_result)
+        analysis_result.append(current_result)
+
+        prot2genomes_output = output_folder + "/prot2genomes_result.tsv"
+        analysisOutput(analysis_result, prot2genomes_output)
+
 
 def runBlastp(query_seq_faa, subject_faa, header=["sseqid", "evalue", "bitscore"], debug=False):
     """
@@ -463,7 +522,7 @@ def runBlastp(query_seq_faa, subject_faa, header=["sseqid", "evalue", "bitscore"
         result = {}
     return result
 
-def runTblastn(query_seq_faa, subject_fna, header=["sseqid", "evalue", "bitscore"], debug=False):
+def runTblastn(query_seq_faa, subject_fna, header=["sseqid", "evalue", "bitscore", "sstart", "send"], debug=False):
     """
     Run tblastn on querry_seq vs subectj fna and return output based on header
     Use NcbitblastnCommandline fct and extract output
@@ -510,6 +569,49 @@ def runTblastn(query_seq_faa, subject_fna, header=["sseqid", "evalue", "bitscore
     except IndexError:
         result = {}
     return result
+
+def createSeqFromTblastn(subject_fna, sseq_seq_faa, exonerate_target_id, start_match, end_match):
+    """
+    Use the result from the tBlastn to extract a region from the subject genome.
+    The region extracted corresponds to the match region and 10kb before and 10kb after.
+
+    Parameters
+    ----------
+    subject_fna: str
+        path to subject fasta sequence (genome)
+    sseq_seq_faa: str
+        path to output fasta sequence
+    exonerate_target_id: str
+        ID of the contig/scaffold/chromosome where a match has been found
+    start_match: int
+        start of the match
+    end_match: int
+        end of the match
+    """
+    if not os.path.exists(sseq_seq_faa):
+        with open(subject_fna, "r") as fna:
+            sseq_seq = [seq_record for seq_record in SeqIO.parse(fna, "fasta") if seq_record.id == exonerate_target_id][0]
+            sseq_seq.description = "tblastn identified sequence"
+            sseq_seq.id = exonerate_target_id + "_" + str(start_match) + "_" + str(end_match)
+            if start_match > end_match:
+                start_match = start_match + 10000
+                end_match = end_match - 10000
+                if start_match > len(sseq_seq.seq):
+                    start_match = len(sseq_seq.seq)
+                if end_match < 0:
+                    end_match = 0
+                seq_location = FeatureLocation(end_match, start_match)
+                sseq_seq.seq = seq_location.extract(sseq_seq.seq)
+            elif start_match < end_match:
+                start_match = start_match - 10000
+                end_match = end_match + 10000
+                if start_match < 0:
+                    start_match = 0
+                if end_match > len(sseq_seq.seq):
+                    end_match = len(sseq_seq.seq)
+                seq_location = FeatureLocation(start_match, end_match)
+                sseq_seq.seq = seq_location.extract(sseq_seq.seq)
+            SeqIO.write(sseq_seq, sseq_seq_faa, "fasta")
 
 def runExonerate(query_seq_faa, sseq_seq_faa, output, debug=False):
     """
@@ -632,7 +734,7 @@ def extractAnalysis(blast_analysis_folder, spec_reactions_folder, output_folder)
 def analysisOutput(analysis_result, analysis_output):
     """
     """
-    analysis_header = ["query_seq_id", "blastp_sseqid", "blastp_evalue", "blastp_bitscore",  "tblastn_sseqid", "tblastn_evalue", "tblastn_bitscore", "exonerate_score", "exonerate_hit_range"]
+    analysis_header = ["query_seq_id", "blastp_sseqid", "blastp_evalue", "blastp_bitscore",  "tblastn_sseqid", "tblastn_evalue", "tblastn_bitscore", "tblastn_sstart", "tblastn_send", "exonerate_score", "exonerate_hit_range"]
     with open(analysis_output,"w") as csvfile:
         dict_writer = csv.DictWriter(csvfile, fieldnames=analysis_header, delimiter="\t")
         dict_writer.writeheader()            
