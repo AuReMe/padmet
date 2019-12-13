@@ -60,17 +60,22 @@ def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=
     tmp_folder = os.path.join(blast_result_folder, "tmp")
     prot2genome_padmet_folder = os.path.join(prot2genome_folder, "PADMETs")
 
+    pool = Pool(cpu)
+
     print("Extracting specific reactions...")
-    mp_extractReactions(padmet_folder, spec_reactions_folder, cpu)
+    mp_extractReactions(padmet_folder, spec_reactions_folder, pool)
     print("Running blast analysis...")
-    mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, blast_analysis_folder, tmp_folder, cpu, blastp, tblastn, exonerate, debug)
+    mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, blast_analysis_folder, tmp_folder, pool, blastp, tblastn, exonerate, debug)
     print("Extracting reactions to add...")
     extractAnalysis(blast_analysis_folder, spec_reactions_folder, reactions_to_add_folder)
     print("Creating padmet files...")
-    mp_createPadmet(reactions_to_add_folder, padmet_folder, prot2genome_padmet_folder, padmetRef, cpu, verbose=True)
+    mp_createPadmet(reactions_to_add_folder, padmet_folder, prot2genome_padmet_folder, padmetRef, pool, verbose=True)
+
+    pool.close()
+    pool.join()
 
 ##### create padmets #####
-def mp_createPadmet(reactions_to_add_folder, padmet_folder, output_folder, padmetRef, cpu, verbose=False):
+def mp_createPadmet(reactions_to_add_folder, padmet_folder, output_folder, padmetRef, pool, verbose=False):
     """
     Update all padmet in padmet_folder with reactions to add from file in reactiosn_to_add_folder, the informations of the reactions are extracted from padmetRef as unique source
     ex: for padmet_folder/org_a.padmet, select reactions_to_add_folder/org_a.csv, add each reactions listed in this file based on padmetRef to create  output_folder/org_a.padmet
@@ -86,8 +91,8 @@ def mp_createPadmet(reactions_to_add_folder, padmet_folder, output_folder, padme
         path to output folder where to create new padmet files
     padmetRef: str
         path to padmetRef from where to extract and add the new reactions to create new padmet files
-    cpu: int
-        number of cpu to use for multiprocessing steps
+    pool: Pool object
+        pool object of multiprocessing
     verbose: bool
         verbose
     """
@@ -103,10 +108,8 @@ def mp_createPadmet(reactions_to_add_folder, padmet_folder, output_folder, padme
         dict_args = {"reactions_to_add_path": reactions_to_add_path, "padmet_to_update": padmet_to_update, "output":output, "padmetRef":padmetRef, "verbose": verbose}
         all_dict_args.append(dict_args)
         
-    pool = Pool(cpu)
     pool.map(createPadmet, all_dict_args)
-    pool.close()
-        
+
     
     
 def createPadmet(dict_args):
@@ -126,7 +129,7 @@ def createPadmet(dict_args):
 
 ##### extract reactions #####
     
-def mp_extractReactions(padmet_folder, output_folder, cpu):
+def mp_extractReactions(padmet_folder, output_folder, pool):
     """
     From a folder of padmet files, create all dual combination and extract specific reactions to create a file in output_folder
     ex: in padmet_folder: org_a.padmet, org_b.padmet, create: output_folder: org_a_vs_org_b.csv and org_b_vs_org_a.csv
@@ -137,8 +140,8 @@ def mp_extractReactions(padmet_folder, output_folder, cpu):
         path to folder with all padmet files of studied organism
     output_folder: str
         path to output folder where to extract specific reactions
-    cpu: int
-        number of cpu to use for multiprocessing steps    
+    pool: Pool object
+        pool object of multiprocessing
     """
     all_padmets = next(os.walk(padmet_folder))[2]
     all_combi = list(itertools.combinations(all_padmets, 2))
@@ -153,10 +156,8 @@ def mp_extractReactions(padmet_folder, output_folder, cpu):
             dict_args = {"org_a": org_a, "path_a": path_a, "output_a": output_a, "org_b": org_b, "path_b": path_b, "output_b": output_b}
             all_dict_args.append(dict_args)
 
-    pool = Pool(cpu)
     pool.map(extractReactions, all_dict_args)
-    pool.close()
-    pool.join()
+
 
 def extractReactions(dict_args):
     """
@@ -244,7 +245,7 @@ def extractReactions(dict_args):
 
 
 ##### run all analysis in multiprocess #####
-def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folder, tmp_folder, cpu, blastp, tblastn, exonerate, debug):
+def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folder, tmp_folder, pool, blastp, tblastn, exonerate, debug):
     """
     Run different blast analysis based on files representing specific reactions of 2 padmet files.
     For each specific reaction file in spec_reactions_folder (ex: org_a_vs_org_b.csv):
@@ -270,8 +271,8 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
         path to output folder where to extract blast analysis
     tmp_folder: str
         path to tmp folder where to create faa of each gene to analyse
-    cpu: int
-        number of cpu to use for multiprocessing steps
+    pool: Pool object
+        pool object of multiprocessing
     blastp: bool
         If true run blastp during analysis
     tblastn: bool
@@ -281,7 +282,6 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
     debug: bool
         if true, print all raw informations of analysis
     """
-    pool = Pool(cpu)
     for rxn_file in [os.path.join(spec_reactions_folder, i) for i in next(os.walk(spec_reactions_folder))[2]]:
         org_a, org_b = os.path.basename(rxn_file).replace(".csv","").split("_VS_")
         analysis_output = os.path.join(output_folder, "%s_VS_%s.csv"%(org_a, org_b))
@@ -313,8 +313,6 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
             #Create output file
             analysisOutput(all_analysis_result, analysis_output)
             cleanTmp(tmp_folder)
-    pool.close()
-    pool.join()
 
 def cleanTmp(tmp_folder):
     """
