@@ -7,6 +7,12 @@ Description:
     
 """
 
+import csv
+import itertools
+import os
+import subprocess
+import sys
+
 from Bio.Blast.Applications import NcbiblastpCommandline, NcbitblastnCommandline
 from Bio.SeqFeature import FeatureLocation
 from Bio import SearchIO
@@ -14,10 +20,7 @@ from Bio import SeqIO
 from padmet.classes import PadmetSpec
 from padmet.utils.management import manual_curation
 from multiprocessing import Pool
-import os
-import csv
-import subprocess
-import itertools
+
 
 #Utilise gbk to faa, ajouter une option pour faire un fichier fasta une sequence.
 #pident a ajouter
@@ -50,15 +53,20 @@ def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=
     debug: bool
         if true, print all raw informations of analysis
     """
-    prot2genome_folder = os.path.join(run_folder,"prot2genome")
-    padmet_folder = os.path.join(run_folder,"networks","PADMETs")
+    prot2genome_folder = os.path.join(run_folder,"structural_check")
+    padmet_folder = os.path.join(run_folder,"orthology_based","3_padmet_filtered")
     studied_organisms_folder = os.path.join(run_folder,"studied_organisms")
-    spec_reactions_folder = os.path.join(prot2genome_folder, "specifics_reactions")
-    reactions_to_add_folder = os.path.join(prot2genome_folder, "reactions_to_add")
-    blast_result_folder = os.path.join(prot2genome_folder, "blast_results")
+    spec_reactions_folder = os.path.join(prot2genome_folder, "0_specifics_reactions")
+    blast_result_folder = os.path.join(prot2genome_folder, "1_blast_results")
     blast_analysis_folder = os.path.join(blast_result_folder, "analysis")
     tmp_folder = os.path.join(blast_result_folder, "tmp")
-    prot2genome_padmet_folder = os.path.join(prot2genome_folder, "PADMETs")
+    reactions_to_add_folder = os.path.join(prot2genome_folder, "2_reactions_to_add")
+    prot2genome_padmet_folder = os.path.join(prot2genome_folder, "3_PADMETs")
+
+    if len(os.listdir(padmet_folder)) == 0:
+        padmet_folder = os.path.join(run_folder,"orthology_based","2_padmet_orthology")
+        if len(os.listdir(padmet_folder)) == 0:
+            sys.exit('No input padmets inside either ' + os.path.join(run_folder,"orthology_based","3_padmet_filtered") + ' or ' + os.path.join(run_folder,"orthology_based","2_padmet_orthology"))
 
     pool = Pool(cpu)
 
@@ -100,13 +108,14 @@ def mp_createPadmet(reactions_to_add_folder, padmet_folder, output_folder, padme
     all_dict_args = []
 
     for padmet_file in all_padmets:
-        dict_args = {}
-        org_id = os.path.splitext(padmet_file)[0]
-        padmet_to_update = os.path.join(padmet_folder, padmet_file)
-        reactions_to_add_path = os.path.join(reactions_to_add_folder, org_id+".csv")
-        output = os.path.join(output_folder, padmet_file)
-        dict_args = {"reactions_to_add_path": reactions_to_add_path, "padmet_to_update": padmet_to_update, "output":output, "padmetRef":padmetRef, "verbose": verbose}
-        all_dict_args.append(dict_args)
+        if '.padmet' in padmet_file:
+            dict_args = {}
+            org_id = os.path.splitext(padmet_file)[0]
+            padmet_to_update = os.path.join(padmet_folder, padmet_file)
+            reactions_to_add_path = os.path.join(reactions_to_add_folder, org_id+".csv")
+            output = os.path.join(output_folder, padmet_file)
+            dict_args = {"reactions_to_add_path": reactions_to_add_path, "padmet_to_update": padmet_to_update, "output":output, "padmetRef":padmetRef, "verbose": verbose}
+            all_dict_args.append(dict_args)
         
     pool.map(createPadmet, all_dict_args)
 
@@ -144,6 +153,7 @@ def mp_extractReactions(padmet_folder, output_folder, pool):
         pool object of multiprocessing
     """
     all_padmets = next(os.walk(padmet_folder))[2]
+    all_padmets = [padmet for padmet in all_padmets if '.padmet' in padmet]
     all_combi = list(itertools.combinations(all_padmets, 2))
     #test_combi = [(org_a, org_b) for org_a,org_b in all_combi if org_a in ["Ectocarpus_siliculosus.padmet", "Ectocarpus_subulatus.padmet"] and org_b in ["Ectocarpus_siliculosus.padmet", "Ectocarpus_subulatus.padmet"]]
     all_dict_args = []
@@ -408,6 +418,7 @@ def runAllAnalysis(dict_args):
                 exonerate_output = os.path.join(output_folder, "exonerate_output_%s_vs_%s.txt"%(query_seq_id, exonerate_target_id))
                 exonerate_result = runExonerate(query_seq_faa, sseq_seq_faa, exonerate_output, debug=debug)
                 current_result.update(exonerate_result)
+                current_result['exonerate_hit_range'] = '-'.join([str(hit_range) for hit_range in current_result['exonerate_hit_range']])
         analysis_result.append(current_result)
 
     return analysis_result
@@ -638,7 +649,7 @@ def runExonerate(query_seq_faa, sseq_seq_faa, output, debug=False):
     print("\tRunning Exonerate %s vs %s" %(os.path.basename(query_seq_faa), os.path.basename(sseq_seq_faa)))
     exonerate_result = {}
     cmd_args = '{0} --model protein2genome {1} {2} --score 500 --showquerygff True  \
-    --ryo ">%qi length=%ql alnlen=%qal\n>%ti length=%tl alnlen=%tal\n" >> {3}'.format(exonerate_path, query_seq_faa, sseq_seq_faa, output)
+    --ryo ">%qi length=%ql alnlen=%qal\n>%ti length=%tl alnlen=%tal\nFasta_seq\n>%ti\n%qs" >> {3}'.format(exonerate_path, query_seq_faa, sseq_seq_faa, output)
     subprocess.run([cmd_args], shell = True)
     try:
         exonerate_raw_output = list(SearchIO.parse(output, 'exonerate-text'))
