@@ -12,9 +12,18 @@ Description:
 from padmet.classes import PadmetSpec
 import os
 
-def padmet_to_padmet(to_add, output, padmetRef=None, verbose=False):
+def padmet_to_padmet(to_add, output, verbose=False):
     """
-    #TODO
+    Create a padmet by merging multiple other padmet files.
+
+    Parameters
+    ----------
+    to_add: dir or str
+        padmet directory or string with multiple padmet paths separated by ','
+    output:
+        path to the output file
+    verbose: bool
+        verbose level of script
     """
     if os.path.isdir(to_add):
         path = to_add
@@ -24,7 +33,7 @@ def padmet_to_padmet(to_add, output, padmetRef=None, verbose=False):
             print("No padmet found in %s" %path)
             return
     else:
-        padmetFiles = to_add.split(";")
+        padmetFiles = to_add.split(",")
     
     padmet_init_file = padmetFiles[0]
     padmet_init = PadmetSpec(padmet_init_file)
