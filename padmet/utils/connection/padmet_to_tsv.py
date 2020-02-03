@@ -253,7 +253,7 @@ def padmet_to_tsv(padmetSpec_file, padmetRef_file, output_dir, verbose=False):
             except KeyError:
                 pass
 
-        if padmetRef:
+        if padmetRef_file:
             if verbose: print("\tExtracting pathways's completion rate and creating pwy_rate.tsv")
             pwy_rate(padmetRef, padmetSpec, padmetSpec_name, padmetSpec_folder+"pwy_rate.tsv")
         else:
