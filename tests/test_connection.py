@@ -14,6 +14,7 @@ from padmet.utils.connection.sbml_to_curation_form import sbml_to_curation
 from padmet.utils.connection.padmet_to_tsv import padmet_to_tsv
 from padmet.utils.connection.gbk_to_faa import gbk_to_faa
 from padmet.utils.connection.gene_to_targets import gene_to_targets
+from padmet.utils.connection.padmet_to_padmet import padmet_to_padmet
 
 
 FABO_RXNS = ['ACYLCOADEHYDROG-RXN', 'ACYLCOASYN-RXN', 'ENOYL-COA-HYDRAT-RXN',
@@ -222,3 +223,36 @@ def test_gene_to_targets():
         found_targets = sorted(target_file.read().split('\n'))
     os.remove('targets.txt')
     assert found_targets == expected_tagerts
+
+
+def test_padmet_to_padmet():
+    # Using inpu data, create 2 padmets and delete one reaction in each.
+    fabo_1_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
+    fabo_1_padmetSpec.delNode('ACYLCOASYN-RXN')
+    fabo_1_padmetSpec.generateFile('fabo_1.padmet')
+
+    _, _, all_rxns, _ = extract_data_padmet(fabo_1_padmetSpec)
+
+    assert not set(FABO_RXNS).issubset(set(all_rxns))
+
+    fabo_2_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
+    fabo_2_padmetSpec.delNode('ACYLCOADEHYDROG-RXN')
+    fabo_2_padmetSpec.generateFile('fabo_2.padmet')
+
+    _, _, all_rxns, _ = extract_data_padmet(fabo_2_padmetSpec)
+
+    assert not set(FABO_RXNS).issubset(set(all_rxns))
+
+    # By merging them we should retrieve the two deleted reactions
+    padmet_to_padmet('fabo_1.padmet,fabo_2.padmet', 'fabo.padmet')
+
+    expected_padmet = PadmetSpec('fabo.padmet')
+
+    _, _, all_rxns, _ = extract_data_padmet(expected_padmet)
+
+    assert set(FABO_RXNS).issubset(set(all_rxns))
+
+    os.remove('fabo_1.padmet')
+    os.remove('fabo_2.padmet')
+    os.remove('fabo.padmet')
+
