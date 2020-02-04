@@ -1,11 +1,20 @@
+import csv
 import libsbml
 import os
+import shutil
 
+from Bio import SeqIO
 from padmet.classes.padmetSpec import PadmetSpec
 from padmet.utils import sbmlPlugin
 from padmet.utils.connection.pgdb_to_padmet import from_pgdb_to_padmet
 from padmet.utils.connection.sbmlGenerator import padmet_to_sbml
 from padmet.utils.connection.sbml_to_padmet import sbml_to_padmetSpec
+from padmet.utils.connection.wikiGenerator import wikiGenerator
+from padmet.utils.connection.sbml_to_curation_form import sbml_to_curation
+from padmet.utils.connection.padmet_to_tsv import padmet_to_tsv
+from padmet.utils.connection.gbk_to_faa import gbk_to_faa
+from padmet.utils.connection.gene_to_targets import gene_to_targets
+
 
 FABO_RXNS = ['ACYLCOADEHYDROG-RXN', 'ACYLCOASYN-RXN', 'ENOYL-COA-HYDRAT-RXN',
             'ENOYL-COA-DELTA-ISOM-RXN', 'OHBUTYRYL-COA-EPIM-RXN', 'KETOACYLCOATHIOL-RXN',
@@ -86,8 +95,8 @@ def test_pgdb_to_padmet_no_orphan_with_genes():
 
 
 def test_sbmlGenerator():
-    padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
-    padmet_to_sbml(padmetSpec, 'fabo.sbml')
+    fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
+    padmet_to_sbml(fabo_padmetSpec, 'fabo.sbml')
     reader = libsbml.SBMLReader()
     document = reader.readSBML('fabo.sbml')
     model = document.getModel()
@@ -115,8 +124,8 @@ def test_sbmlGenerator():
 
 
 def test_sbml_to_padmet():
-    padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
-    padmet_to_sbml(padmetSpec, 'fabo.sbml')
+    fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
+    padmet_to_sbml(fabo_padmetSpec, 'fabo.sbml')
     sbml_to_padmetSpec('fabo.sbml', 'fabo.padmet')
     fabo_padmet = PadmetSpec('fabo.padmet')
 
@@ -132,3 +141,84 @@ def test_sbml_to_padmet():
 
     os.remove('fabo.sbml')
     os.remove('fabo.padmet')
+
+
+def test_wikiGenerator():
+    fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
+    fabo_padmetSpec.generateFile('fabo.padmet')
+    wikiGenerator('fabo.padmet', 'output', 'TEST', None, None, None, False)
+
+    os.remove('fabo.padmet')
+
+    test_genes = [gene for gene in os.listdir('output/genes')]
+
+    test_cpds = [metabolite for metabolite in os.listdir('output/metabolites')]
+
+    test_reactions = [reaction for reaction in os.listdir('output/reactions')]
+
+    test_pathways = [pathway for pathway in os.listdir('output/pathways')]
+
+    test_organisms = [organism for organism in os.listdir('output/organisms')]
+
+    test_navigations = [navigation for navigation in os.listdir('output/navigation')]
+
+    assert test_pathways == FABO_PWYS
+
+    assert set(FABO_RXNS).issubset(set(test_reactions))
+
+    assert set(FABO_CPDS).issubset(set(test_cpds))
+
+    assert set(FABO_GENES).issubset(set(test_genes))
+
+    assert test_organisms == ['fabo']
+
+    assert test_navigations == ['annotation', 'pathwaytools', 'Category:gene', 'Category:reaction',
+                                'MediaWiki:Sidebar', 'Category:pathway', 'Main_Page', 'Category:metabolite',
+                                'Category:organism']
+
+    shutil.rmtree('output')
+
+
+def test_sbml_to_curation_form():
+    fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
+    padmet_to_sbml(fabo_padmetSpec, 'fabo.sbml')
+    rxns = ['ACYLCOADEHYDROG-RXN', 'ACYLCOASYN-RXN', 'ENOYL-COA-HYDRAT-RXN']
+    id_reactions = ['R_'+sbmlPlugin.convert_to_coded_id(reaction) for reaction in rxns]
+    sbml_to_curation('fabo.sbml', id_reactions, 'form.txt')
+    os.remove('fabo.sbml')
+
+    with open('form.txt', 'r') as form_file:
+        form_str = form_file.read()
+        for rxn in rxns:
+            assert rxn in form_str
+
+    os.remove('form.txt')
+
+
+def test_gbk_to_fasta():
+    gbk_to_faa('test_data/gbk/fatty_acid_beta_oxydation_I_1.gbk', 'fatty_acid_beta_oxydation_I_1.faa', 'locus_tag')
+
+    records = [record for record in SeqIO.parse('fatty_acid_beta_oxydation_I_1.faa', 'fasta')]
+
+    expected_records = [record for record in SeqIO.parse('test_data/gbk/fatty_acid_beta_oxydation_I_1.faa', 'fasta')]
+
+    for index, record in enumerate(records):
+        assert record.id == expected_records[index].id
+        assert record.seq == expected_records[index].seq
+
+    os.remove('fatty_acid_beta_oxydation_I_1.faa')
+
+
+def test_gene_to_targets():
+    fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
+
+    gene_to_targets(fabo_padmetSpec, 'test_data/genes_to_targets.txt', 'targets.txt')
+
+    expected_tagerts = sorted(['PROTON', '3-KETOACYL-COA', 'CIS-DELTA3-ENOYL-COA', 'PPI', 'NADH',
+                        'D-3-HYDROXYACYL-COA', 'TRANS-D2-ENOYL-COA', 'L-3-HYDROXYACYL-COA',
+                        'Saturated-Fatty-Acyl-CoA', 'AMP'])
+
+    with open('targets.txt', 'r') as target_file:
+        found_targets = sorted(target_file.read().split('\n'))
+    os.remove('targets.txt')
+    assert found_targets == expected_tagerts
