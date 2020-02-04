@@ -26,7 +26,7 @@ Description:
     a new reaction in padmetSpec with the arg -f
 
 """
-from padmet.classes import PadmetSpec, PadmetRef
+from padmet.classes import PadmetSpec, PadmetRef,instantiate_padmet
 from datetime import datetime
 import os
         
@@ -54,7 +54,7 @@ def sbml_to_padmetRef(sbml, padmetRef_file, output=None, db="NA", version="NA", 
     if os.path.isfile(padmetRef_file):
         padmet_to_update = PadmetRef(padmetRef_file)
     else:
-        padmet_to_update = create_padmet_instance(padmetRef_file, "PadmetRef", db, version)
+        padmet_to_update = instantiate_padmet("PadmetRef", None, db, version, verbose)
 
     for sbml_file in sbml_files:
         if verbose:
@@ -62,6 +62,7 @@ def sbml_to_padmetRef(sbml, padmetRef_file, output=None, db="NA", version="NA", 
         padmet_to_update.updateFromSbml(sbml_file, verbose)
 
     padmet_to_update.generateFile(output)
+
 
 def sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=None, output=None, mapping=None, mapping_tag="_dict.csv", source_tool=None, source_category=None, db="NA", version="NA", verbose=False):
     """
@@ -108,7 +109,7 @@ def sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=None, output=None, 
     if os.path.isfile(padmetSpec_file):
         padmet_to_update = PadmetSpec(padmetSpec_file)
     else:
-        padmet_to_update = create_padmet_instance(padmetSpec_file, "PadmetSpec", db, version, padmetRef)
+        padmet_to_update = instantiate_padmet("PadmetSpec", padmetRef_file, db, version, verbose)
 
     #if sbml is a directory, recover all file path in a list. if no => only one file: create a list with only this file
     #sbml_mapping_dict = {'/path/to/my_sbml1.sbml': '/path/to/my_sbml1_dict.csv' // None}  
@@ -140,41 +141,3 @@ def sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=None, output=None, 
         padmet_to_update.updateFromSbml(sbml_file=sbml_file, padmetRef=padmetRef, mapping_file=mapping_file, verbose=verbose, force=force, source_category=source_category, source_tool=source_tool)
 
     padmet_to_update.generateFile(output)
-
-
-
-def create_padmet_instance(padmet_file, padmet_type, db, version, padmetRef=None):
-    """
-    #TODO
-    """
-    if padmet_type not in ["PadmetRef","PadmetSpec"]:
-        raise TypeError('padmet_type must be in ["PadmetRef","PadmetSpec"], given:%s' %padmet_type)
-    now = datetime.now()
-    today_date = now.strftime("%Y-%m-%d")
-
-    if padmet_type == "PadmetSpec":
-        padmet = PadmetSpec()
-    elif padmet_type == "PadmetRef":
-        padmet = PadmetRef()
-        
-    if padmetRef:
-        padmet.setInfo(padmetRef)
-        padmet.info["PADMET"]["creation"] = today_date
-        padmet.setPolicy(padmetRef)
-    else:
-        POLICY_IN_ARRAY = [['class','is_a_class','class'], ['class','has_name','name'], ['class','has_xref','xref'], ['class','has_suppData','suppData'],
-                        ['compound','is_a_class','class'], ['compound','has_name','name'], ['compound','has_xref','xref'], ['compound','has_suppData','suppData'],
-                        ['gene','is_a_class','class'], ['gene','has_name','name'], ['gene','has_xref','xref'], ['gene','has_suppData','suppData'], ['gene','codes_for','protein'],
-                        ['pathway','is_a_class','class'], ['pathway','has_name','name'], ['pathway','has_xref','xref'], ['pathway','is_in_pathway','pathway'],
-                        ['protein','is_a_class','class'], ['protein','has_name','name'], ['protein','has_xref','xref'], ['protein','has_suppData','suppData'], ['protein','catalyses','reaction'],
-                        ['protein','is_in_species','class'],
-                        ['reaction','is_a_class','class'], ['reaction','has_name','name'], ['reaction','has_xref','xref'], ['reaction','has_suppData','suppData'], ['reaction','has_reconstructionData','reconstructionData'], ['reaction','is_in_pathway','pathway'],
-                        ['reaction','consumes','class','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','class','STOICHIOMETRY','X','COMPARTMENT','Y'],
-                        ['reaction','consumes','compound','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','compound','STOICHIOMETRY','X','COMPARTMENT','Y'],
-                        ['reaction','consumes','protein','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','protein','STOICHIOMETRY','X','COMPARTMENT','Y'],
-                        ['reaction','is_linked_to','gene','SOURCE:ASSIGNMENT','X:Y']]
-        dbNotes = {"PADMET":{"creation":today_date,"version":"2.6"},"DB_info":{"DB":db,"version":version}}
-        padmet.setInfo(dbNotes)
-        padmet.setPolicy(POLICY_IN_ARRAY)
-    return padmet
-

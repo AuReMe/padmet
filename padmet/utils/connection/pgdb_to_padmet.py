@@ -99,10 +99,11 @@ Description:
 """
 import re
 import os
-from datetime import datetime
-from padmet.classes import PadmetRef, PadmetSpec, Node, Relation
 import padmet.utils.sbmlPlugin as sbmlPlugin
 import libsbml
+
+from padmet.classes import PadmetRef, Node, Relation, instantiate_padmet
+
 
 def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', extract_gene=False, no_orphan=False, enhanced_db=False, padmetRef_file=None, verbose=False):
     """
@@ -152,17 +153,11 @@ def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', ext
     else:
         genes_file = None
 
-    now = datetime.now()
-    today_date = now.strftime("%Y-%m-%d")
     if padmetRef_file:
-        padmet = PadmetSpec()
         padmetRef = PadmetRef(padmetRef_file)
-        version = padmetRef.info["DB_info"]["version"]
-        db = padmetRef.info["DB_info"]["DB"]
-        dbNotes = {"PADMET":{"creation":today_date,"version":"2.6"},"DB_info":{"DB":db,"version":version}}
-        padmet.setInfo(dbNotes)
 
-        padmet.setPolicy(padmetRef)
+        padmet = instantiate_padmet("PadmetSpec", padmetRef_file, db, version, verbose)
+
         with open(reactions_file, 'r') as f:
             rxns_id = [line.split(" - ")[1] for line in f.read().splitlines() if line.startswith("UNIQUE-ID")]
         count = 0
@@ -192,25 +187,8 @@ def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', ext
             enzrxns_parser(enzrxns_file, padmet, mapped_dict_protein_gene_id, source, verbose)
 
     else:
-        POLICY_IN_ARRAY = [['class','is_a_class','class'], ['class','has_name','name'], ['class','has_xref','xref'], ['class','has_suppData','suppData'],
-                        ['compound','is_a_class','class'], ['compound','has_name','name'], ['compound','has_xref','xref'], ['compound','has_suppData','suppData'],
-                        ['gene','is_a_class','class'], ['gene','has_name','name'], ['gene','has_xref','xref'], ['gene','has_suppData','suppData'], ['gene','codes_for','protein'],
-                        ['pathway','is_a_class','class'], ['pathway','has_name','name'], ['pathway','has_xref','xref'], ['pathway','is_in_pathway','pathway'],
-                        ['protein','is_a_class','class'], ['protein','has_name','name'], ['protein','has_xref','xref'], ['protein','has_suppData','suppData'], ['protein','catalyses','reaction'],
-                        ['protein','is_in_species','class'],
-                        ['reaction','is_a_class','class'], ['reaction','has_name','name'], ['reaction','has_xref','xref'], ['reaction','has_suppData','suppData'], ['reaction','has_reconstructionData','reconstructionData'], ['reaction','is_in_pathway','pathway'],
-                        ['reaction','consumes','class','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','class','STOICHIOMETRY','X','COMPARTMENT','Y'],
-                        ['reaction','consumes','compound','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','compound','STOICHIOMETRY','X','COMPARTMENT','Y'],
-                        ['reaction','consumes','protein','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','protein','STOICHIOMETRY','X','COMPARTMENT','Y'],
-                        ['reaction','is_linked_to','gene','SOURCE:ASSIGNMENT','X:Y']]
-        dbNotes = {"PADMET":{"creation":today_date,"version":"2.6"},"DB_info":{"DB":db,"version":version}}
-        padmet = PadmetRef()
-        if verbose: print("setting policy")
-        padmet.setPolicy(POLICY_IN_ARRAY)
-        if verbose: print("setting dbInfo")
-        padmet.setInfo(dbNotes)
-    
-    
+        padmet = instantiate_padmet("PadmetRef", None, db, version, verbose)
+
         if verbose: print("parsing classes")
         classes_parser(classes_file, padmet, verbose)
     
@@ -664,7 +642,6 @@ def compounds_parser(filePath, padmet, verbose = False):
         count += 1
         if verbose:
             print("\r%s/%s: %s" %(count, nb_cpds, compound_id),end="", flush=True)
-            #print(compound_id)
         compound_node = Node("compound", compound_id)
         padmet.dicOfNode[compound_id] = compound_node
         try:

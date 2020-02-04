@@ -4,36 +4,18 @@ Description:
     #TODO
 
 """
-from padmet.classes import Relation
-from padmet.classes import PadmetRef
-from datetime import datetime
-
 import csv
 import json
+
+from padmet.classes import Relation, instantiate_padmet
 
 def modelSeed_to_padmet(rxn_file, pwy_file, output, verbose=False):
     """
     #TODO
     """
     global list_of_relation
-    now = datetime.now()
-    today_date = now.strftime("%Y-%m-%d")
-    #print(verbose,today_date,version, output, classes_file, compounds_file, proteins_file, reactions_file, enzrxns_file, pathways_file)
-    policyInArray = [['compound','has_name','name'], ['compound','has_xref','xref'], ['compound','has_suppData','suppData'],
-                    ['gene','has_name','name'], ['gene','has_xref','xref'], ['gene','has_suppData','suppData'], ['gene','codes_for','protein'],
-                    ['pathway','has_name','name'], ['pathway','has_xref','xref'], ['pathway','is_in_pathway','pathway'], 
-                    ['protein','has_name','name'], ['protein','has_xref','xref'], ['protein','has_suppData','suppData'], ['protein','catalyses','reaction'],
-                    ['reaction','has_name','name'], ['reaction','has_xref','xref'], ['reaction','has_suppData','suppData'], ['reaction','has_reconstructionData','reconstructionData'], ['reaction','is_in_pathway','pathway'],  
-                    ['reaction','consumes','class','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','class','STOICHIOMETRY','X','COMPARTMENT','Y'], 
-                    ['reaction','consumes','compound','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','compound','STOICHIOMETRY','X','COMPARTMENT','Y'], 
-                    ['reaction','consumes','protein','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','protein','STOICHIOMETRY','X','COMPARTMENT','Y'], 
-                    ['reaction','is_linked_to','gene','SOURCE:ASSIGNMENT','X:Y']]
-    dbNotes = {"PADMET":{"Creation":today_date, "version":"2.6"}, "DB_info":{"DB":"MODELSEED", "version":"1.0"}}
-    padmetRef = PadmetRef()
-    if verbose: print("setting policy")
-    padmetRef.setPolicy(policyInArray)
-    if verbose: print("setting dbInfo")
-    padmetRef.setInfo(dbNotes)
+    padmetRef = instantiate_padmet("PadmetRef", None, "MODELSEED", "1.0", verbose)
+
     list_of_relation = []
     
     rxn_data = json.load(open(rxn_file))

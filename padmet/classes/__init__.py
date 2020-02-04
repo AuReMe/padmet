@@ -20,3 +20,4 @@ from .node import Node
 from .relation import Relation
 from .padmetRef import PadmetRef
 from .padmetSpec import PadmetSpec
+from .instantiation import instantiate_padmet
