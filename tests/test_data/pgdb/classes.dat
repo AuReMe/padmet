@@ -1,0 +1,98 @@
+UNIQUE-ID - D-3-HYDROXYACYL-COA
+TYPES - 3-HYDROXYACYL-COA
+COMMON-NAME - a 2,3,4-saturated (3<i>R</i>)-3-hydroxyacyl-CoA
+SYNONYMS - a D-3-hydroxyacyl-CoA
+SYNONYMS - an (R)-hydroxyacyl-CoA
+SYNONYMS - a <i>cis</i>-3-hydroxyacyl-CoA
+SYNONYMS - a 3-OH-acyl-CoA
+SYNONYMS - a 3-hydroxyacyl-CoA
+COMMENT - |FRAME:ACYL-COA "Acyl-CoAs"| are oxoacids that have been activated by |FRAME: CO-A|. They are often classified by the length of their acyl moiety.
+/
+/|FRAME: Medium-Chain-Acyl-CoAs "Medium-chain acyl-CoAs"|  are derived from fatty acids with aliphatic tails of 6-12 carbons.
+/
+/|FRAME: Long-Chain-Acyl-CoAs "Long-chain acyl-CoAs"| are derived from fatty acids with aliphatic tails of 13-21 carbons.
+/
+/|FRAME: VERY-LONG-CHAIN-FATTY-ACYL-COA "Very long-chain fatty acyl-CoAs"| are derived from fatty acids with aliphatic tails of 22 carbons or longer.
+//
+UNIQUE-ID - L-3-HYDROXYACYL-COA
+TYPES - 3S-S-3-hydroxyacyl-CoAs
+COMMON-NAME - a 2,3,4-saturated (3<i>S</i>)-3-hydroxyacyl-CoA
+SYNONYMS - (3S)-3-hydroxyacyl-CoA
+SYNONYMS - 3-hydroxyacyl-CoA
+SYNONYMS - 3-OH-acyl-CoA
+SYNONYMS - RCHOHCH2CO-CoA
+SYNONYMS - trans-3-hydroxyacyl-CoA
+SYNONYMS - (S)-3-hydroxyacyl-CoA
+SYNONYMS - a (S)-3-hydroxyacyl-CoA
+SYNONYMS - a <i>trans</i>-3-hydroxyacyl-CoA
+SYNONYMS - a 3-OH-acyl-CoA
+SYNONYMS - a 3-hydroxyacyl-CoA
+SYNONYMS - an L-3-hydroxyacyl-CoA
+COMMENT - |FRAME:ACYL-COA "Acyl-CoAs"| are oxoacids that have been activated by |FRAME: CO-A|. They are often classified by the length of their acyl moiety.
+/
+/|FRAME: Medium-Chain-Acyl-CoAs "Medium-chain acyl-CoAs"|  are derived from fatty acids with aliphatic tails of 6-12 carbons.
+/
+/|FRAME: Long-Chain-Acyl-CoAs "Long-chain acyl-CoAs"| are derived from fatty acids with aliphatic tails of 13-21 carbons.
+/
+/|FRAME: VERY-LONG-CHAIN-FATTY-ACYL-COA "Very long-chain fatty acyl-CoAs"| are derived from fatty acids with aliphatic tails of 22 carbons or longer.
+//
+UNIQUE-ID - TRANS-D2-ENOYL-COA
+TYPES - D2-ENOYL-COA
+COMMON-NAME - a (2<i>E</i>)-2-enoyl-CoA
+SYNONYMS - a <i>trans</i>-didehydroacyl-CoA
+SYNONYMS - a <i>trans</i>-&Delta;<SUP>2</SUP>-enoyl-CoA
+SYNONYMS - a <i>trans</i>-2,3-didehydroacyl-CoA
+SYNONYMS - a <i>trans</i>-2,3-dehydroacyl-CoA
+SYNONYMS - trans-2,3-didehydroacyl-CoA
+SYNONYMS - trans-2,3-dehydroacyl-CoA
+SYNONYMS - trans-&Delta;<SUP>2</SUP>-enoyl-CoA
+SYNONYMS - <i>trans</i>-2,3-didehydroacyl-CoA
+SYNONYMS - <i>trans</i>-2,3-dehydroacyl-CoA
+SYNONYMS - <i>trans</i>-&Delta;<SUP>2</SUP>-enoyl-CoA
+SYNONYMS - <i>trans</i>-didehydroacyl-CoA
+SYNONYMS - a <i>trans</i>-2-enoyl-CoA
+SYNONYMS - a (2E)-alk-2-enoyl-CoA
+//
+UNIQUE-ID - CIS-DELTA3-ENOYL-COA
+TYPES - All-Coas
+COMMON-NAME - a (3Z)-alk-3-enoyl-CoA
+SYNONYMS - a <i>cis</i>-&Delta;<SUP>3</SUP>-enoyl-CoA
+SYNONYMS - a <i>cis</i>-3-enoyl-CoA
+//
+UNIQUE-ID - Saturated-Fatty-Acyl-CoA
+TYPES - ACYL-COA
+COMMON-NAME - a 2,3,4-saturated fatty acyl CoA
+COMMENT - This class describes |FRAME:ACYL-COA "acyl-CoAs"| that do not contain any double bonds in the 2, 3, and 4 positions.
+/Acyl-CoAs are oxoacids that have been activated by |FRAME: CO-A|. They are often classified by the length of their acyl moiety.
+/
+/This class includes the following sub-classes:
+/
+/|FRAME: Short-Chain-234-Saturated-acyl-CoAs "Short-chain 2,3,4-saturated fatty acyl-CoAs"| are derived from |FRAME: Short-chain-fatty-acids "2,3,4-saturated fatty acids with aliphatic chains shorter than 6 carbons"|.
+/
+/|FRAME: Medium-Chain-234-Saturated-acyl-CoAs "Medium-chain 2,3,4-saturated fatty acyl-CoAs"|  are derived from |FRAME: Medium-chain-fatty-acids "fatty acids with aliphatic chains of 6-12 carbons"|.
+/
+/|FRAME: Long-Chain-234-Saturated-acyl-CoAs "Long-chain 2,3,4-saturated fatty acyl-CoAs"| are derived from |FRAME: Long-Chain-234-Saturated-Fatty-Acids "2,3,4-saturated fatty acids with aliphatic chains of 13-22 carbons"|.
+/
+/|FRAME: Very-long-Chain-234-Saturated-acyl-CoAs "Very-long-chain 2,3,4-saturated fatty acyl-CoAs"| are derived from |FRAME: Very-long-chain-fatty-acids "fatty acids with aliphatic chains of 23 carbons or longer"|.
+//
+UNIQUE-ID - ETF-Oxidized
+TYPES - Etf
+TYPES - Modified-Proteins
+TYPES - Oxidized-Flavoproteins
+COMMON-NAME - an oxidized electron-transfer flavoprotein
+SYNONYMS - an oxidized ETF
+SYNONYMS - an oxidized electron-transferring flavoprotein
+//
+UNIQUE-ID - ETF-Reduced
+TYPES - Etf
+TYPES - Reduced-Flavoproteins
+COMMON-NAME - a reduced electron-transfer flavoprotein
+SYNONYMS - ETFH<sub>2</sub>
+SYNONYMS - a reduced ETF
+SYNONYMS - a reduced electron-transferring flavoprotein
+COMMENT - The electron transferring-flavoproteins (ETF) serve as specific electron carriers for other dehydrogenases. They transfer the electrons to the main respiratory chain via |FRAME: HS10326-MONOMER "ETF-ubiquinone oxidoreductase"| (ETF dehydrogenase).
+/
+/Most of the characterized electron-transferring flavoproteins belong to a single group. These proteins, including those from mammals |CITS: [8962055]|, plants |CITS: [16923016]|, and some bacteria, such as the methylotrophic bacterium |FRAME: TAX-2327| |CITS: [7798207]| and the soil bacterium |FRAME: TAX-266| |CITS: [10026281]|, are heterodimeric, contain one non-covalently bound FAD and one AMP per molecule, and function as electron carriers between other flavoproteins (such as |FRAME: B0221-MONOMER "acyl-CoA dehydrogenases"|, |FRAME: CPLX-6421|, and |FRAME: CPLX-7462|) and |FRAME: ETR-Quinones "a quinone"|, depending on the source species.
+/
+/A different type of ETF has been characterized from the anaerobic bacterium |FRAME: TAX-907|. This ETF is also a heterodimer but contains two FAD molecules. The presence of AMP has not been reported. The function of |FRAME: TAX-907| ETF is to transfer electrons between flavoproteins, |FRAME: CPLX-5242| (DLDH) and |FRAME: CPLX-7036| (BCD) |CITS: [14688238]|, and additionally to oxidize NADH |CITS: [4364030][4365840]|.
+//
