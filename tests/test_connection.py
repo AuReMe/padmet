@@ -15,6 +15,7 @@ from padmet.utils.connection.padmet_to_tsv import padmet_to_tsv
 from padmet.utils.connection.gbk_to_faa import gbk_to_faa
 from padmet.utils.connection.gene_to_targets import gene_to_targets
 from padmet.utils.connection.padmet_to_padmet import padmet_to_padmet
+from padmet.utils.connection.padmet_to_matrix import padmet_to_matrix
 
 
 FABO_RXNS = ['ACYLCOADEHYDROG-RXN', 'ACYLCOASYN-RXN', 'ENOYL-COA-HYDRAT-RXN',
@@ -256,3 +257,20 @@ def test_padmet_to_padmet():
     os.remove('fabo_2.padmet')
     os.remove('fabo.padmet')
 
+
+def test_padmet_to_matrix():
+    fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb')
+    padmet_to_matrix(fabo_padmetSpec, 'matrix.tsv')
+
+    expected_matrix = []
+    with open('test_data/stoechiometry_matrix.tsv', 'r') as expected_output:
+        expected_matrix_reader = csv.reader(expected_output, delimiter='\t')
+        expected_matrix = [row for row in expected_matrix_reader]
+
+    found_matrix = []
+    with open('matrix.tsv', 'r') as found_output:
+        found_matrix_reader = csv.reader(found_output, delimiter='\t')
+        found_matrix = [row for row in found_matrix_reader]
+
+    assert found_matrix == expected_matrix
+    os.remove('matrix.tsv')
