@@ -16,7 +16,7 @@ from padmet.utils.connection.gbk_to_faa import gbk_to_faa
 from padmet.utils.connection.gene_to_targets import gene_to_targets
 from padmet.utils.connection.padmet_to_padmet import padmet_to_padmet
 from padmet.utils.connection.padmet_to_matrix import padmet_to_matrix
-
+from padmet.utils.connection.extract_rxn_with_gene_assoc import extract_rxn_with_gene_assoc
 
 FABO_RXNS = ['ACYLCOADEHYDROG-RXN', 'ACYLCOASYN-RXN', 'ENOYL-COA-HYDRAT-RXN',
             'ENOYL-COA-DELTA-ISOM-RXN', 'OHBUTYRYL-COA-EPIM-RXN', 'KETOACYLCOATHIOL-RXN',
@@ -274,3 +274,22 @@ def test_padmet_to_matrix():
 
     assert found_matrix == expected_matrix
     os.remove('matrix.tsv')
+
+
+def test_extract_rxn_with_gene_assoc():
+    fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
+    padmet_to_sbml(fabo_padmetSpec, 'fabo.sbml')
+
+    # Extract reactions with only genes association so 2.3.1.49-RXN should not be here.
+    extract_rxn_with_gene_assoc('fabo.sbml', 'fabo_rxn_with_genes.sbml', verbose=False)
+
+    reader = libsbml.SBMLReader()
+    document = reader.readSBML('fabo_rxn_with_genes.sbml')
+    model = document.getModel()
+    reactions = model.getListOfReactions()
+    id_reactions = [sbmlPlugin.convert_from_coded_id(reaction.id)[0] for reaction in reactions]
+
+    os.remove('fabo.sbml')
+    os.remove('fabo_rxn_with_genes.sbml')
+
+    assert '2.3.1.49-RXN' not in id_reactions
