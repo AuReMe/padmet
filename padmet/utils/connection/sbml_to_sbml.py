@@ -55,7 +55,7 @@ def sbml_to_padmet(sbml, db, version, source_tool, source_category, source_id, m
     else:
         raise TypeError("%s is not a dir or a file" %(sbml))
 
-    padmet_to_update = instantiate_padmet("PadmetSpec", db, version, verbose)
+    padmet_to_update = instantiate_padmet("PadmetSpec", None, db, version, verbose)
 
     #if sbml is a directory, recover all file path in a list. if no => only one file: create a list with only this file
     sbml_mapping_dict = {}
