@@ -41,7 +41,7 @@ setup(
     
     install_requires= ["docopt>=0.6.2",
                        "python-libsbml>=5.18.0",
-                       "cobra>=0.14.0",
+                       "cobra>=0.17.1",
                        "biopython>=1.74",
                        "seaborn>=0.9.0",
                        "matplotlib>=3.1.1",
@@ -49,7 +49,7 @@ setup(
                        "requests>=2.22.0",
                        "grequests>=0.4.0",
                        'lxml>=4.3.4',
-                       'rpy2==3.0.5',
+                       'rpy2>=3.0.5',
                        'scipy>=1.3.0',
                        ],
  

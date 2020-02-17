@@ -1,4 +1,4 @@
-author: meziane aite (meziane.aite@inria.fr)
+[![Build Status](https://travis-ci.org/AuReMe/padmet.svg?branch=master)](https://travis-ci.org/AuReMe/padmet)
 
 ## Description:
 

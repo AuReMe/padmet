@@ -21,7 +21,7 @@ Description:
 from padmet.utils.sbmlPlugin import convert_from_coded_id
 from cobra import Reaction
 from cobra import flux_analysis as cobra_flux_analysis
-from cobra.io.sbml import create_cobra_model_from_sbml_file
+from cobra.io.sbml import read_sbml_model
 import subprocess
 
 def flux_analysis(sbml_file, seeds_file = None, targets_file = None, all_species = False):
@@ -55,8 +55,8 @@ def flux_analysis(sbml_file, seeds_file = None, targets_file = None, all_species
         
     """
     if targets_file:
-        targets = create_cobra_model_from_sbml_file(targets_file).metabolites
-    model=create_cobra_model_from_sbml_file(sbml_file)
+        targets = read_sbml_model(targets_file).metabolites
+    model=read_sbml_model(sbml_file)
     
     #nb metabolites
     real_metabolites = set([i.id.replace("_"+i.compartment,"") for i in model.metabolites])
