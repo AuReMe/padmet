@@ -153,4 +153,3 @@ def test_flux_analysis():
     padmet_to_sbml(fabo_padmetSpec, 'fabo.sbml', obj_fct='KETOACYLCOATHIOL-RXN')
     flux_analysis('fabo.sbml', seeds_file='test_data/seeds.sbml', targets_file='test_data/targets.sbml', all_species=True)
     os.remove('fabo.sbml')
-test_flux_analysis()

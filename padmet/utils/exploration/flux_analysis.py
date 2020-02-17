@@ -126,7 +126,7 @@ def flux_analysis(sbml_file, seeds_file = None, targets_file = None, all_species
         metabolitedict = dict(bms_products)
         metabolitedict.update({reactant:stoich})
 
-        model.add_reaction(test_rxn)
+        model.add_reactions([test_rxn])
         test_rxn.add_metabolites(metabolitedict)
         test_rxn.objective_coefficient = 1.0
 
@@ -169,7 +169,7 @@ def fba_on_targets(allspecies, model):
         FBA_rxn = Reaction("FBA_TEST")
         FBA_rxn.lower_bound = 0
         FBA_rxn.upper_bound = 1000
-        model2.add_reaction(FBA_rxn)
+        model2.add_reactions([FBA_rxn])
         FBA_rxn.objective_coefficient = 1.0
         metabolitedict = {}
         metabolitedict[species]=-1.0
