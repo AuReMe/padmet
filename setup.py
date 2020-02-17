@@ -49,7 +49,7 @@ setup(
                        "requests>=2.22.0",
                        "grequests>=0.4.0",
                        'lxml>=4.3.4',
-                       'rpy2>=3.0.5',
+                       'rpy2==3.0.5',
                        'scipy>=1.3.0',
                        ],
  
