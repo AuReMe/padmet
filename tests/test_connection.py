@@ -174,9 +174,9 @@ def test_wikiGenerator():
 
     assert test_organisms == ['fabo']
 
-    assert test_navigations == ['annotation', 'pathwaytools', 'Category:gene', 'Category:reaction',
+    assert sorted(test_navigations) == sorted(['annotation', 'pathwaytools', 'Category:gene', 'Category:reaction',
                                 'MediaWiki:Sidebar', 'Category:pathway', 'Main_Page', 'Category:metabolite',
-                                'Category:organism']
+                                'Category:organism'])
 
     shutil.rmtree('output')
 
