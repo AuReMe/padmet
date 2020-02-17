@@ -172,7 +172,7 @@ def orthogroups_to_sbml(orthogroups_file, all_model_sbml, output_folder, study_i
     for dict_data in all_dict_data:
         dict_data_to_sbml(dict_data, dict_orthogroups=dict_orthogroups)
 
-def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_id, verbose = False):
+def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_id, verbose=False):
     """
     After running orthofinder on n fasta file, read the output files in 'Orthologues'
     Require a folder 'orthology_based_folder' with this archi:
@@ -210,7 +210,7 @@ def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_i
         if True print information
     """
     if verbose:
-        print("Parsing Orthofinder output %s" %orthologue_folder)
+        print("Parsing Orthofinder output {0} for {1}".format(orthologue_folder, study_id))
     #k=orthogroup_id, v = {k = name, v = set of genes}
     all_orgs = set()
     all_orthologue_files = []
@@ -218,7 +218,8 @@ def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_i
         for _folder in _folders:
             all_orgs.add(_folder.replace("Orthologues_",""))
         for _file in _files:
-            all_orthologue_files.append(os.path.join(_path,_file))
+            if study_id in _file:
+                all_orthologue_files.append(os.path.join(_path,_file))
     dict_orthologues = {}
     for org in all_orgs:
         dict_orthologues[org] = dict()
@@ -266,6 +267,7 @@ def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_i
 
     for dict_data in all_dict_data:
         dict_data_to_sbml(dict_data, dict_orthologues=dict_orthologues)
+
 
 def dict_data_to_sbml(dict_data, dict_orthogroups=None, dict_orthologues=None, strict_match=True):
     """
