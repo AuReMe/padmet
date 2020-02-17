@@ -1,0 +1,17 @@
+matrix:
+  include:
+      - os: linux
+
+dist: trusty
+sudo: required
+language: python
+python:
+- "3.6"
+
+# Install packages
+before_script:
+- python3 setup.py develop
+- cd test
+
+script:
+- pytest --disable-pytest-warnings
