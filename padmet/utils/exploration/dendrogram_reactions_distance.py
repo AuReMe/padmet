@@ -339,6 +339,9 @@ def add_dendrogram_node_label(reaction_dendrogram, node_list, reactions_clust, l
         right_coord = (xcoords[3], ycoords[3])
         children_to_parent_coords[(left_coord, right_coord)] = parent_coord
 
+    if all((coord[1]==0 for coords in list(children_to_parent_coords.keys()) for coord in coords)) and all((coords[1]==0 for coords in list(children_to_parent_coords.values()))):
+        return None
+
     # Create a range from the latest leaves to the higher node.
     ids_left = range(len(reaction_dendrogram['leaves']), len(node_list))
 
@@ -364,6 +367,7 @@ def add_dendrogram_node_label(reaction_dendrogram, node_list, reactions_clust, l
                         textcoords='offset points',
                         va='top', ha='center')
 
+    return True
 
 def comparison_cluster(reactions_clust, output_folder_comparison):
     """
@@ -545,7 +549,10 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
     comparison_cluster(reactions_clust, output_folder_comparison)
 
     # Add label contaning cluster name and reaction number to each node.
-    add_dendrogram_node_label(reaction_dendrogram, node_list, reactions_clust, len_longest_cluster_id)
+    check_label = add_dendrogram_node_label(reaction_dendrogram, node_list, reactions_clust, len_longest_cluster_id)
+
+    if not check_label:
+        print('Warning: no label for cluster name have been added.')
 
     # Create dendrogram, bbox option adjsut the figure size.
     plt.savefig(output_folder+'/reaction_dendrogram.png',bbox_inches='tight')
