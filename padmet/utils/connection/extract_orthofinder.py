@@ -174,7 +174,7 @@ def orthogroups_to_sbml(orthogroups_file, all_model_sbml, output_folder, study_i
 
 def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_id, verbose = False):
     """
-    After running orthofinder on n fasta file, read the output file 'Orthogroups.csv'
+    After running orthofinder on n fasta file, read the output files in 'Orthologues'
     Require a folder 'orthology_based_folder' with this archi:
     \model_a
         model_a.sbml
@@ -198,8 +198,8 @@ def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_i
 
     Parameters
     ----------
-    orthogroups_file: str
-        path of Orthofinder output file 'Orthogroups.csv'
+    orthologue_folder: str
+        path of Orthofinder output folder 'Orthologues'
     orthology_based_folder: str
         path of folder with model's sbml
     output: str
@@ -250,7 +250,7 @@ def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_i
                 """
 
     if verbose:
-        print("Start sbml creation...")
+        print("Start sbml creation for " + study_id)
     all_dict_data = []
     if not os.path.exists(output_folder):
         if verbose:
