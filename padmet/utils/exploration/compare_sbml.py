@@ -1,14 +1,106 @@
 # -*- coding: utf-8 -*-
 """
 Description:
-    compare reactions in two sbml.
+    compare reactions in 1-n or 2 sbml.
 
     Returns if a reaction is missing
 
     And if a reaction with the same id is using different species or different reversibility
 
 """
-from cobra.io.sbml import create_cobra_model_from_sbml_file
+import csv
+import os
+import re
+
+from cobra.io.sbml import read_sbml_model
+from padmet.utils.sbmlPlugin import convert_from_coded_id
+from padmet.utils.gbr import compile_input
+
+def compare_multiple_sbml(sbml_path, output_folder):
+    """
+    Compare 1-n sbml, create two output files reactions.tsv and metabolites.tsv
+    with the reactions/metabolites in each sbml
+
+    Parameters
+    ----------
+    sbml_path: str
+        path to a folder containing sbmls or multiple sbml paths separated by a ','
+    output_folder: str
+        path to the output folder
+    """
+    if not os.path.exists(output_folder):
+        print("Creating %s" %output_folder)
+        os.makedirs(output_folder)
+    else:
+        print("%s already exist, old comparison output folders will be overwritten" %output_folder)
+
+    if os.path.isdir(sbml_path):
+        all_files = [os.path.join(sbml_path, f) for f in next(os.walk(sbml_path))[2]]
+    else:
+        all_files = sbml_path.split(",")
+
+    species_columns = [os.path.splitext(os.path.basename(all_file))[0] for all_file in sorted(all_files)]
+    gene_columns = [os.path.splitext(os.path.basename(all_file))[0] + '_genes' for all_file in sorted(all_files)]
+    all_reactions = []
+    all_compounds = []
+    reactions = {}
+    compounds = {}
+    for sbml_file in all_files:
+        sbml_1 = read_sbml_model(sbml_file)
+        reactions[sbml_file] = sbml_1.reactions
+        all_reactions.extend([rxn for rxn in sbml_1.reactions])
+        compounds[sbml_file] = [metabolite.id for metabolite in sbml_1.metabolites]
+        all_compounds.extend([metabolite for metabolite in sbml_1.metabolites])
+
+    all_reactions = set(all_reactions)
+    all_compounds = set(all_compounds)
+
+    reaction_file = output_folder + '/reactions.tsv'
+    with open(reaction_file, 'w') as output_reaction:
+        csvwriter = csv.writer(output_reaction, delimiter='\t')
+        csvwriter.writerow(['reaction', *species_columns, *gene_columns, 'formula'])
+        for reaction in all_reactions:
+            reaction_presents = []
+            reaction_genes = []
+            row = [reaction.id]
+            for sbml_file in sorted(all_files):
+                if reaction.id in [rxn.id for rxn in reactions[sbml_file]]:
+                    reaction_presents.append('present')
+                else:
+                    reaction_presents.append('')
+                species_reaction = reactions[sbml_file].get_by_id(reaction.id)
+                ga_for_gbr = species_reaction.notes['GENE_ASSOCIATION']
+                ga_for_gbr = re.sub(r" or " , "|", ga_for_gbr)
+                ga_for_gbr = re.sub(r" and " , "&", ga_for_gbr)
+                ga_for_gbr = re.sub(r"\s" , "", ga_for_gbr)
+                if re.findall("\||&", ga_for_gbr):
+                    to_compare_ga_subsets = list(compile_input(ga_for_gbr))
+                    genes = []
+                    for to_compare_subset in to_compare_ga_subsets:
+                        for gene in to_compare_subset:
+                            genes.append(gene)
+                else:
+                    genes  = [ga_for_gbr.replace('(', '').replace(')', '')]
+                reaction_genes.append(','.join(genes))
+
+            row = row + reaction_presents + reaction_genes
+            row.append(reaction.reaction)
+
+            csvwriter.writerow(row)
+
+    compounds_file = output_folder + '/metabolites.tsv'
+    with open(compounds_file, 'w') as output_compound:
+        csvwriter = csv.writer(output_compound, delimiter='\t')
+        csvwriter.writerow(['metabolite', *sorted(all_files)])
+        for compound in all_compounds:
+            row = [compound.id]
+            for sbml_file in sorted(all_files):
+                if compound.id in compounds[sbml_file]:
+                    row.append('present')
+                else:
+                    row.append('')
+            csvwriter.writerow(row)
+
 
 def compare_sbml(sbml1_path, sbml2_path):
     """
@@ -22,8 +114,8 @@ def compare_sbml(sbml1_path, sbml2_path):
     sbml2_path: str
         path to the second sbml file to compare
     """
-    sbml_1 = create_cobra_model_from_sbml_file(sbml1_path)
-    sbml_2 = create_cobra_model_from_sbml_file(sbml2_path)
+    sbml_1 = read_sbml_model(sbml1_path)
+    sbml_2 = read_sbml_model(sbml2_path)
     
     print("sbml1:")
     print("metabolites: %s" %(len(sbml_1.metabolites)))
