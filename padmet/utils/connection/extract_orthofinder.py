@@ -218,7 +218,8 @@ def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_i
         for _folder in _folders:
             all_orgs.add(_folder.replace("Orthologues_",""))
         for _file in _files:
-            if study_id in _file:
+            _filename = os.path.splitext(_file)[0]
+            if _filename.endswith(study_id):
                 all_orthologue_files.append(os.path.join(_path,_file))
     dict_orthologues = {}
     for org in all_orgs:
