@@ -269,7 +269,7 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
         3./ extracts all genes ids from specific reaction file with fct extractGenes()
         4./ Run blastp, tblastn, exonerate on gene_id.faa vs target.faa / fna with runAllAnalysis()
         5./ Create analysis output
-        The analysis create a lot of temp files, all are in tmp_folder wich is cleanned after all loop
+        The analysis create a lot of temp files, all are in tmp_folder wich is cleaned after all loop
 
     Parameters
     ----------
@@ -322,7 +322,7 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
             print("Creating output analysis: %s" %analysis_output)
             #Create output file
             analysisOutput(all_analysis_result, analysis_output)
-            cleanTmp(tmp_folder)
+            #cleanTmp(tmp_folder)
 
 def cleanTmp(tmp_folder):
     """
@@ -374,8 +374,7 @@ def runAllAnalysis(dict_args):
     tblastn = dict_args["tblastn"]
     exonerate = dict_args["exonerate"]
     debug = dict_args["debug"]
-        
-    
+
     with open(query_faa, "r") as faa:
         query_seqs = [seq_record for seq_record in SeqIO.parse(faa, "fasta") if seq_record.id.startswith(query_seq_id+"_isoform") or seq_record.id == query_seq_id]
     if len(query_seqs) > 1:
@@ -413,15 +412,33 @@ def runAllAnalysis(dict_args):
                 if debug:
                     print("No hit from tblastn, can't run exonerate")
             if _tblastn_hit:
+                output_folder = output_folder + '/' + query_seq_id + '_' + exonerate_target_id
+                if not os.path.exists(output_folder):
+                    os.mkdir(output_folder)
                 sseq_seq_faa = os.path.join(output_folder,exonerate_target_id+".fna")
                 createSeqFromTblastn(subject_fna, sseq_seq_faa, exonerate_target_id, start_match, end_match)
                 exonerate_output = os.path.join(output_folder, "exonerate_output_%s_vs_%s.txt"%(query_seq_id, exonerate_target_id))
                 exonerate_result = runExonerate(query_seq_faa, sseq_seq_faa, exonerate_output, debug=debug)
+                exonerate_sequence = os.path.join(output_folder, "%s_vs_%s.fasta"%(query_seq_id, exonerate_target_id))
+                extract_sequence(exonerate_output, exonerate_sequence)
                 current_result.update(exonerate_result)
                 current_result['exonerate_hit_range'] = '-'.join([str(hit_range) for hit_range in current_result['exonerate_hit_range']])
         analysis_result.append(current_result)
 
     return analysis_result
+
+
+def extract_sequence(exonerate_output, exonerate_sequence):
+    """
+    Extract protein sequence from exonerate ouput.
+    """
+    with open(exonerate_sequence, 'w') as output_file:
+        with open(exonerate_output, 'r') as input_file:
+            for chunk in input_file.read().split('Fasta_seq'):
+                if '-- completed exonerate analysis' in chunk:
+                    fasta_seq = chunk.split('-- completed exonerate analysis')[0]
+                    output_file.write(fasta_seq)
+
 
 def runSearchOnProteome(proteome_orgA, genome_orgB, output_folder, proteome_orgB=None):
     """
@@ -648,7 +665,7 @@ def runExonerate(query_seq_faa, sseq_seq_faa, output, debug=False):
     exonerate_path = "exonerate"
     print("\tRunning Exonerate %s vs %s" %(os.path.basename(query_seq_faa), os.path.basename(sseq_seq_faa)))
     exonerate_result = {}
-    cmd_args = '{0} --model protein2genome {1} {2} --score 500 --showquerygff True  \
+    cmd_args = '{0} --model protein2genome {1} {2} --score 500 --bestn 1 --percent 50 --showquerygff True  \
     --ryo ">%qi length=%ql alnlen=%qal\n>%ti length=%tl alnlen=%tal\nFasta_seq\n>%ti\n%qs" >> {3}'.format(exonerate_path, query_seq_faa, sseq_seq_faa, output)
     subprocess.run([cmd_args], shell = True)
     try:
