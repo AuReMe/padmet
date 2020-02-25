@@ -422,7 +422,8 @@ def runAllAnalysis(dict_args):
                 exonerate_sequence = os.path.join(output_folder, "%s_vs_%s.fasta"%(query_seq_id, exonerate_target_id))
                 extract_sequence(exonerate_output, exonerate_sequence)
                 current_result.update(exonerate_result)
-                current_result['exonerate_hit_range'] = '-'.join([str(hit_range) for hit_range in current_result['exonerate_hit_range']])
+                if 'exonerate_hit_range' in current_result:
+                    current_result['exonerate_hit_range'] = '-'.join([str(hit_range) for hit_range in current_result['exonerate_hit_range']])
         analysis_result.append(current_result)
 
     return analysis_result
