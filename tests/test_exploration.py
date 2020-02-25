@@ -122,7 +122,7 @@ def test_padmet_stats():
     compute_stats('fabo.padmet')
 
     # Expected stats: nb pathways, nb reactions, nb reactions with gene, nb genes, nb compounds
-    expected_stats = ['1', '10', '7', '8', '25']
+    expected_stats = ['1', '10', '7', '9', '25']
     with open('padmet_stats.tsv', 'r') as reactions_file:
         csvreader = csv.reader(reactions_file, delimiter='\t')
         for row in csvreader:
