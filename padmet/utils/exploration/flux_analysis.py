@@ -68,19 +68,20 @@ def flux_analysis(sbml_file, seeds_file = None, targets_file = None, all_species
     print("Number of genes: %s" %len(model.genes))
     print("Ratio rxn with genes/rxns: %s%%" %(100*len(rxn_with_ga)/len(model.reactions)))
     
-    #
+    # Launch a topoligical analysis if menetools is installed.
     if seeds_file and targets_file:
+        print("#############")
+        print("Analyzing targets")
+        print("#Topological analysis")
         try:
-            print("#############")
-            print("Analyzing targets")
-            print("#Topological analysis")
-            cmd = "menecheck -d %s -s %s -t %s" %(sbml_file, seeds_file, targets_file)
-            out = subprocess.check_output(["/bin/bash", "-i", "-c", cmd])
-            #prod_targets = (i for i in out.splitlines() if i.endswith(" producible targets:")).next()[:-1]
+            from menetools import run_menecheck
+
+            menetools_result = run_menecheck(draft_sbml=sbml_file, seeds_sbml=seeds_file, targets_sbml=targets_file)
             print("Number of targets: %s" %(len(targets)))
-            print(out.decode("UTF-8"))
-        except subprocess.CalledProcessError:
-            print("Menetools are not install, Can't run topological analysis")
+            print("Unproductible targets: " + ",".join(menetools_result[0]))
+            print("Productible targets: " + ",".join(menetools_result[1]))
+        except ImportError:
+            print("Menetools is not installed. Can't run topological analysis.")
         print("#Flux Balance Analysis")
         fba_on_targets(targets, model)
     if all_species:
