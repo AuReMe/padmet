@@ -56,32 +56,28 @@ def metacyc_to_ontology(padmetRef_file, output_file, ontology_root='FRAMES'):
     tree.write(output_file, pretty_print=True)
 
 
-def extract_pwy_ontology(metacyc_ontology_file, padmetRef_file, output_file):
-    onttree = etree.parse(metacyc_ontology_file)
-    ontology_elements = {}
-    for element in onttree.iter():
-        if element.attrib['name'] not in ontology_elements:
-            ontology_elements[element.attrib['name']] = [element]
-        else:
-            ontology_elements[element.attrib['name']].append(element)
-
-    padmetref = PadmetRef(padmetRef_file)
-
-    pwys_id = [node.id for node in padmetref.dicOfNode.values() if node.type == "pathway"]
-
+def add_element_to_tree(element_ids, padmet_instance, ontology_elements, element_type):
     count = 0
-    for pathway_id in pwys_id:
-        pathway_classes = [rlt.id_out for rlt in padmetref.dicOfRelationIn[pathway_id] if rlt.type == "is_a_class"]
-        for pathway_class in pathway_classes:
-            for subclass in ontology_elements[pathway_class]:
-                etree.SubElement(subclass, 'pathway_element_' + str(count), name=pathway_id)
-                count += 1
+    for element_id in element_ids:
+        if element_id in padmet_instance.dicOfRelationIn:
+            if element_type == 'reaction':
+                element_classes = [rlt.id_out for rlt in padmet_instance.dicOfRelationIn[element_id] if rlt.type == "is_in_pathway"]
+            else:
+                element_classes = [rlt.id_out for rlt in padmet_instance.dicOfRelationIn[element_id] if rlt.type == "is_a_class"]
+            for element_class in element_classes:
+                if element_class in ontology_elements:
+                    for subclass in ontology_elements[element_class]:
+                        etree_sublement = etree.SubElement(subclass, element_type + '_element_' + str(count), name=element_id)
+                        if element_id not in ontology_elements:
+                            ontology_elements[element_id] = [etree_sublement]
+                        else:
+                            ontology_elements[element_id].append(etree_sublement)
+                        count += 1
 
-    tree = etree.ElementTree(onttree.getroot())
-    tree.write(output_file, pretty_print=True)
+    return ontology_elements
 
 
-def extract_compound_ontology(metacyc_ontology_file, padmetRef_file, output_file):
+def extract_element_ontology(metacyc_ontology_file, padmetRef_file, output_file):
     onttree = etree.parse(metacyc_ontology_file)
     ontology_elements = {}
     for element in onttree.iter():
@@ -93,15 +89,13 @@ def extract_compound_ontology(metacyc_ontology_file, padmetRef_file, output_file
     padmetref = PadmetRef(padmetRef_file)
 
     compound_ids = [node.id for node in padmetref.dicOfNode.values() if node.type == "compound"]
+    ontology_elements = add_element_to_tree(compound_ids, padmetref, ontology_elements, 'compound')
 
-    count = 0
-    for compound_id in compound_ids:
-        if compound_id in padmetref.dicOfRelationIn:
-            compound_classes = [rlt.id_out for rlt in padmetref.dicOfRelationIn[compound_id] if rlt.type == "is_a_class"]
-            for compound_classe in compound_classes:
-                for subclass in ontology_elements[compound_classe]:
-                    etree.SubElement(subclass, 'compound_element_' + str(count), name=compound_id)
-                    count += 1
+    pathway_ids = [node.id for node in padmetref.dicOfNode.values() if node.type == "pathway"]
+    ontology_elements = add_element_to_tree(pathway_ids, padmetref, ontology_elements, 'pathway')
+
+    reaction_ids = [node.id for node in padmetref.dicOfNode.values() if node.type == "reaction"]
+    ontology_elements = add_element_to_tree(reaction_ids, padmetref, ontology_elements, 'reaction')
 
     tree = etree.ElementTree(onttree.getroot())
     tree.write(output_file, pretty_print=True)
