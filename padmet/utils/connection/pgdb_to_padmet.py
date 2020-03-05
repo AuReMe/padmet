@@ -207,10 +207,10 @@ def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', ext
     
         if verbose: print("parsing reactions")
         reactions_parser(reactions_file, padmet, extract_gene, source, verbose)
-    
+
         if verbose: print("parsing pathways")
         pathways_parser(pathways_file, padmet, verbose)
-    
+
         if extract_gene:
             if verbose: print("parsing genes")
             map_gene_ids = genes_parser(genes_file, padmet, verbose)
@@ -293,9 +293,9 @@ def classes_parser(filePath, padmet, verbose = False):
     with open(filePath, 'r', encoding='windows-1252') as f:
         data = (line for line in f.read().splitlines() if not line.startswith("#") and not line == "//")
         for line in data:
-            try:
-                #if len of value is 0 then ValueError raised
-                attrib, value = line.split(" - ")
+            if len(line.split(" - ")) > 1:
+                attrib = line.split(" - ")[0]
+                value = " - ".join(line.split(" - ")[1:])
                 #delete all tags
                 value = re.sub(regex_purge,"",value)
                 if attrib == "UNIQUE-ID":
@@ -308,8 +308,7 @@ def classes_parser(filePath, padmet, verbose = False):
                         dict_data[current_id][attrib].append(value)
                     except KeyError:
                         dict_data[current_id][attrib] = [value]
-            except ValueError:
-                pass
+
     count = 0
     nb_classes = str(len(list(dict_data.keys())))
     for class_id, dict_values in dict_data.items():
@@ -376,9 +375,9 @@ def reactions_parser(filePath, padmet, extract_gene, source, verbose = False):
         index = -1        
         for line in data:
             index += 1
-            try:
-                #if len of value is 0 then ValueError raised
-                attrib, value = line.split(" - ")
+            if len(line.split(" - ")) > 1:
+                attrib = line.split(" - ")[0]
+                value = " - ".join(line.split(" - ")[1:])
                 #delete all tags
                 value = re.sub(regex_purge,"",value)
                 if attrib == "UNIQUE-ID":
@@ -422,9 +421,6 @@ def reactions_parser(filePath, padmet, extract_gene, source, verbose = False):
                         dict_data[current_id][attrib].append((value, stoichiometry, compartment))
                     except KeyError:
                         dict_data[current_id][attrib] = [(value, stoichiometry, compartment)]
-
-            except ValueError:
-                pass
 
     count = 0
     nb_rxn = str(len(list(dict_data.keys())))
@@ -550,9 +546,10 @@ def pathways_parser(filePath, padmet, verbose = False):
     with open(filePath, 'r', encoding='windows-1252') as f:
         data = (line for line in f.read().splitlines() if not line.startswith("#") and not line == "//")
         for line in data:
-            try:
+            if len(line.split(" - ")) > 1:
                 #if len of value is 0 then ValueError raised
-                attrib, value = line.split(" - ")
+                attrib = line.split(" - ")[0]
+                value = " - ".join(line.split(" - ")[1:])
                 #delete all tags
                 value = re.sub(regex_purge,"",value)
                 if attrib == "UNIQUE-ID":
@@ -560,13 +557,11 @@ def pathways_parser(filePath, padmet, verbose = False):
                     dict_data[current_id] = {}
                 if attrib in ["COMMON-NAME", "TAXONOMIC-RANGE",\
                 "TYPES", "SYNONYMS", "DBLINKS", "IN-PATHWAY", "REACTION-LIST"]:
-                    try:
+                    if attrib in dict_data[current_id]:
                         dict_data[current_id][attrib].append(value)
-                    except KeyError:
+                    else:
                         dict_data[current_id][attrib] = [value]
-            except ValueError:
-                pass
-    
+
     count = 0
     nb_pathways = str(len(list(dict_data.keys())))
     for pathway_id, dict_values in dict_data.items():
@@ -632,9 +627,9 @@ def compounds_parser(filePath, padmet, verbose = False):
     with open(filePath, 'r', encoding='windows-1252') as f:
         data = (line for line in f.read().splitlines() if not line.startswith("#") and not line == "//")
         for line in data:
-            try:
-                #if len of value is 0 then ValueError raised
-                attrib, value = line.split(" - ")
+            if len(line.split(" - ")) > 1:
+                attrib = line.split(" - ")[0]
+                value = " - ".join(line.split(" - ")[1:])
                 #delete all tags
                 value = re.sub(regex_purge,"",value)
                 if attrib == "UNIQUE-ID":
@@ -646,8 +641,6 @@ def compounds_parser(filePath, padmet, verbose = False):
                         dict_data[current_id][attrib].append(value)
                     except KeyError:
                         dict_data[current_id][attrib] = [value]
-            except ValueError:
-                pass
 
     compounds = []
     count = 0
@@ -709,9 +702,9 @@ def rnas_parser(filePath, padmet, verbose = False):
     with open(filePath, 'r', encoding='windows-1252') as f:
         data = (line for line in f.read().splitlines() if not line.startswith("#") and not line == "//")
         for line in data:
-            try:
-                #if len of value is 0 then ValueError raised
-                attrib, value = line.split(" - ")
+            if len(line.split(" - ")) > 1:
+                attrib = line.split(" - ")[0]
+                value = " - ".join(line.split(" - ")[1:])
                 #delete all tags
                 value = re.sub(regex_purge,"",value)
                 if attrib == "UNIQUE-ID":
@@ -722,8 +715,6 @@ def rnas_parser(filePath, padmet, verbose = False):
                         dict_data[current_id][attrib].append(value)
                     except KeyError:
                         dict_data[current_id][attrib] = [value]
-            except ValueError:
-                pass
 
     count = 0
     rna_genes = {}
@@ -757,9 +748,9 @@ def genes_parser(filePath, padmet, verbose = False):
     with open(filePath, 'r', encoding='windows-1252') as f:
         data = (line for line in f.read().splitlines() if not line.startswith("#") and not line == "//")
         for line in data:
-            try:
-                #if len of value is 0 then ValueError raised
-                attrib, value = line.split(" - ")
+            if len(line.split(" - ")) > 1:
+                attrib = line.split(" - ")[0]
+                value = " - ".join(line.split(" - ")[1:])
                 #delete all tags
                 value = re.sub(regex_purge,"",value)
                 if attrib == "UNIQUE-ID":
@@ -770,8 +761,6 @@ def genes_parser(filePath, padmet, verbose = False):
                         dict_data[current_id][attrib].append(value)
                     except KeyError:
                         dict_data[current_id][attrib] = [value]
-            except ValueError:
-                pass
 
     count = 0
     nb_genes = str(len(list(dict_data.keys())))
@@ -844,9 +833,9 @@ def proteins_parser(filePath, padmet, compounds, rnas, id_classes, verbose = Fal
     with open(filePath, 'r', encoding='windows-1252') as f:
         data = (line for line in f.read().splitlines() if not line.startswith("#") and not line == "//")
         for line in data:
-            try:
-                #if len of value is 0 then ValueError raised
-                attrib, value = line.split(" - ")
+            if len(line.split(" - ")) > 1:
+                attrib = line.split(" - ")[0]
+                value = " - ".join(line.split(" - ")[1:])
                 #delete all tags
                 value = re.sub(regex_purge,"",value)
                 if attrib == "UNIQUE-ID":
@@ -858,8 +847,6 @@ def proteins_parser(filePath, padmet, compounds, rnas, id_classes, verbose = Fal
                         dict_data[current_id][attrib].append(value)
                     except KeyError:
                         dict_data[current_id][attrib] = [value]
-            except ValueError:
-                pass
             
     count = 0
     nb_proteins = str(len(list(dict_data.keys())))
@@ -921,9 +908,9 @@ def enzrxns_parser(filePath, padmet, dict_protein_gene_id, source, verbose = Fal
     with open(filePath, 'r', encoding='windows-1252') as f:
         data = (line for line in f.read().splitlines() if not line.startswith("#") and not line == "//")
         for line in data:
-            try:
-                #if len of value is 0 then ValueError raised
-                attrib, value = line.split(" - ")
+            if len(line.split(" - ")) > 1:
+                attrib = line.split(" - ")[0]
+                value = " - ".join(line.split(" - ")[1:])
                 #delete all tags
                 value = re.sub(regex_purge,"",value)
                 if attrib == "UNIQUE-ID":
@@ -934,8 +921,6 @@ def enzrxns_parser(filePath, padmet, dict_protein_gene_id, source, verbose = Fal
                         dict_data[current_id][attrib].append(value)
                     except KeyError:
                         dict_data[current_id][attrib] = [value]
-            except ValueError:
-                pass
 
     count = 0
     nb_enzrxns = str(len(list(dict_data.keys())))
