@@ -60,6 +60,8 @@ def test_pgdb_to_padmet():
 
     assert all_pwys == FABO_PWYS
 
+    assert test_padmetSpec.dicOfNode['FAO-PWY'].misc['COMMON-NAME'][0] == 'fatty acid &beta;-oxidation I - (generic)'
+
     assert set(FABO_RXNS).issubset(set(all_rxns))
 
     assert set(FABO_CPDS).issubset(set(all_cpds))
