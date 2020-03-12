@@ -105,7 +105,7 @@ import libsbml
 from padmet.classes import PadmetRef, Node, Relation, instantiate_padmet
 
 
-def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', extract_gene=False, no_orphan=False, enhanced_db=False, padmetRef_file=None, verbose=False):
+def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', extract_gene=False, no_orphan=False, no_self_producing_rxn=True, enhanced_db=False, padmetRef_file=None, verbose=False):
     """
     Parameters
     ----------
@@ -121,6 +121,8 @@ def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', ext
         if true extract genes information
     no_orphan: bool
         if true, remove reactions without genes associated
+    no_self_producing_rxn: bool
+        if true, remove reactions with no reactants (auto-producing reactions)
     enhanced_db: bool
         if true, read metabolix-reactions.xml sbml file and add information in final padmet
     padmetRef_file: str
@@ -251,12 +253,13 @@ def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', ext
         if verbose:
             print("%s/%s orphan genes (not linked to any reactions) deleted" %(count, len(all_genes)))
 
-    rxns = [node.id for node in list(padmet.dicOfNode.values()) if node.type == "reaction"]
-    for rxn_id in rxns:
-        cp_rlts = set([rlt.type for rlt in padmet.dicOfRelationIn[rxn_id] if rlt.type in ["consumes","produces"]])
-        if len(cp_rlts) == 1:
-            print("rxn only consume or produce, transport ???: %s" %rxn_id)
-            padmet.delNode(rxn_id)
+    if no_self_producing_rxn:
+        rxns = [node.id for node in list(padmet.dicOfNode.values()) if node.type == "reaction"]
+        for rxn_id in rxns:
+            cp_rlts = set([rlt.type for rlt in padmet.dicOfRelationIn[rxn_id] if rlt.type in ["consumes","produces"]])
+            if len(cp_rlts) == 1:
+                print("rxn only consume or produce, transport ???: %s" %rxn_id)
+                padmet.delNode(rxn_id)
 
     return padmet
 
