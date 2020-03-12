@@ -665,7 +665,7 @@ class PadmetSpec:
 
     def updateFromPadmet(self, padmet):
         """
-        update padmet from an other padmet file
+        update padmet from another padmet file
         
         Parameters
         ----------
@@ -674,10 +674,26 @@ class PadmetSpec:
        
         """
         for k, v in list(padmet.dicOfNode.items()):
+            already_present = None
             try:
                 self.dicOfNode[k]
+                already_present = True
             except KeyError:
                 self.dicOfNode[k] = v
+                if v.type == 'reaction':
+                    for rlt in padmet.dicOfRelationIn[k]:
+                        if rlt.type in ["consumes","produces"]:
+                            self._addRelation(rlt)
+            if v.type == "reaction" and already_present:
+                if k in self.dicOfNode:
+                    first_rxn = get_rxn(k, padmet)
+                    second_rxn = get_rxn(k, self)
+                    same_rxn, different_reversibility = compare_rxn(first_rxn, second_rxn)
+                    if same_rxn:
+                        if different_reversibility:
+                            self.dicOfNode[k].misc["DIRECTION"] = ["REVERSIBLE"]
+                    else:
+                        raise Exception("Can't copy reaction {0}: not the same reactants and products in reaction.".format(k))
 
         for rlt in padmet.getAllRelation():
             if rlt.type == "is_linked_to":
@@ -692,6 +708,8 @@ class PadmetSpec:
                     )
                 except (IndexError, KeyError) as e:
                     self._addRelation(rlt)
+            elif rlt.type in ['produces', 'consumes']:
+                pass
             else:
                 self._addRelation(rlt)
 
@@ -1878,3 +1896,38 @@ class PadmetSpec:
                         reconstructionData,
                         [reconstructionData_rlt],
                     )
+
+def get_rxn(rxn_id, padmet):
+    rxn_informaitons = {}
+    rxn_informaitons['DIRECTION'] = padmet.dicOfNode[rxn_id].misc['DIRECTION']
+
+    rxn_informaitons['REACTANTS'] = [(rlt.id_out, rlt.misc['STOICHIOMETRY']) for rlt in padmet.dicOfRelationIn[rxn_id] if rlt.type in ["consumes"]]
+    rxn_informaitons['PRODUCTS'] = [(rlt.id_out, rlt.misc['STOICHIOMETRY']) for rlt in padmet.dicOfRelationIn[rxn_id] if rlt.type in ["produces"]]
+
+    return rxn_informaitons
+
+def compare_rxn(rxn_1, rxn_2):
+    same_rxn = None
+    different_reversibility = None
+
+    if rxn_1['DIRECTION'] == rxn_2['DIRECTION']:
+        if sorted(rxn_1['REACTANTS']) == sorted(rxn_2['REACTANTS']):
+            if sorted(rxn_1['PRODUCTS']) == sorted(rxn_2['PRODUCTS']):
+                same_rxn = True
+    else:
+        if 'REVERSIBLE' in [rxn_1['DIRECTION'][0], rxn_2['DIRECTION'][0]]:
+            different_reversibility = True
+            if sorted(rxn_1['REACTANTS']) == sorted(rxn_2['REACTANTS']):
+                if sorted(rxn_1['PRODUCTS']) == sorted(rxn_2['PRODUCTS']):
+                    same_rxn = True
+            if not same_rxn:
+                if sorted(rxn_1['REACTANTS']) == sorted(rxn_2['PRODUCTS']):
+                    if sorted(rxn_1['PRODUCTS']) == sorted(rxn_2['REACTANTS']):
+                        same_rxn = True
+        if (rxn_1['DIRECTION'][0] == 'LEFT-TO-RIGHT' and rxn_2['DIRECTION'][0] == 'RIGHT-TO-LEFT') or (rxn_1['DIRECTION'][0] == 'RIGHT-TO-LEFT' and rxn_2['DIRECTION'][0] == 'LEFT-TO-RIGHT'):
+            different_reversibility = True
+            if sorted(rxn_1['REACTANTS']) == sorted(rxn_2['PRODUCTS']):
+                if sorted(rxn_1['PRODUCTS']) == sorted(rxn_2['REACTANTS']):
+                    same_rxn = True
+
+    return same_rxn, different_reversibility
