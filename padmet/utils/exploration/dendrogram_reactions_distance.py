@@ -30,30 +30,6 @@ from scipy.cluster.hierarchy import dendrogram, fcluster, linkage, to_tree
 from scipy.spatial.distance import pdist, squareform
 
 
-
-def dendrogram_biopython(condensed_distance_matrix_jaccard, organisms):
-    """
-    Create a lower triangle matrix. Then create a biopython dendrogram.
-
-    Parameters
-    ----------
-    condensed_distance_matrix_jaccard: ndarray
-        Condensed Jaccard distance matrix
-    organisms: list
-        organisms names
-
-    """
-    from Bio.Phylo.TreeConstruction import DistanceTreeConstructor, DistanceMatrix
-    from Bio.Phylo import draw_ascii
-
-    lower_triangle_matrix = [list(v[:i+1]) for i, v in enumerate(squareform(condensed_distance_matrix_jaccard))]
-    constructor = DistanceTreeConstructor()
-    dm = DistanceMatrix(organisms, lower_triangle_matrix)
-    tree = constructor.nj(dm)
-    draw_ascii(tree)
-    dm.format_phylip(open('test.phy', 'w'))
-
-
 def pvclust_dendrogram(condensed_distance_matrix_jaccard, organisms, output_folder):
     """
     Using a distance matrix, pvclust R package (with rpy2 package) create a dendrogram with bootstrap values.
@@ -70,8 +46,11 @@ def pvclust_dendrogram(condensed_distance_matrix_jaccard, organisms, output_fold
     """
     from rpy2.robjects.packages import importr
     from rpy2.robjects import pandas2ri
+
     pvclust = importr("pvclust")
     grdevices = importr('grDevices')
+    ape = importr('ape')
+
     # Make pandas dataframe compatible with R dataframe.
     pandas2ri.activate()
 
@@ -80,13 +59,19 @@ def pvclust_dendrogram(condensed_distance_matrix_jaccard, organisms, output_fold
     redudant_distance_matrix_df = pa.DataFrame(squareform(condensed_distance_matrix_jaccard), index=organisms)
     redudant_distance_matrix_df = redudant_distance_matrix_df.transpose()
 
+    redudant_distance_matrix_df.to_csv('dataframe_test.tsv', sep='\t')
     # Launch pvclust on the data silently and in parallel.
     result = pvclust.pvclust(redudant_distance_matrix_df, method_dist="cor", method_hclust="complete", nboot=10000, quiet=True, parallel=True)
 
     # Create the dendrogram picture.
-    grdevices.png(file=output_folder+"/"+"pvclust_reaction_dendorgram.png", width=2048, height=2048, pointsize=24)
+    grdevices.png(file=output_folder+"/"+"pvclust_reaction_dendrogram.png", width=2048, height=2048, pointsize=24)
     pvclust.plot_pvclust(result)
     grdevices.dev_off()
+
+    # Dendrogram to newick
+    hclust_result = result.rx2("hclust")
+    phylo_result = ape.as_phylo(hclust_result)
+    ape.write_tree(phylo_result, file=output_folder+"/"+"dendrogram.nwk", tree_names=True)
 
 
 def hclust_to_xml(linkage_matrix):
@@ -288,7 +273,7 @@ def create_intervene_graph(absence_presence_matrix, reactions_dataframe, temp_da
 
 def add_dendrogram_node_label(reaction_dendrogram, node_list, reactions_clust, len_longest_cluster_id):
     """
-    Using cluster nodes, add label and reactions number on each node of teh dendrogram.
+    Using cluster nodes, add label and reactions number on each node of the dendrogram.
     This function comes from this answer on stackoverflow: https://stackoverflow.com/a/43519473 
 
     Parameters
@@ -424,6 +409,40 @@ def absent_and_specific_reactions(reactions_dataframe, output_folder_tree_cluste
                                         len(list(reactions_in_species.intersection(reactions_absent_in_others))),
                                         len(list(reactions_not_in_species.intersection(reactions_in_others)))])
     specific_output.close()
+
+
+def create_pvclust_dendrogram(reaction_file, output_folder):
+    # Check if output_folder exists, if not create it.
+    if not os.path.isdir(output_folder):
+        os.mkdir(output_folder)
+
+    # Read the reactions file with pandas.
+    all_reactions_dataframe = pa.read_csv(reaction_file, sep='\t')
+    # Keep column containing absence-presence of reactions.
+    # (columns with (sep=;) are column with gene name linked to reactions)
+    # (columns with _formula contain the reaction formula)
+    columns = [column for column in all_reactions_dataframe.columns if '(sep=;)' not in column]
+    columns = [column for column in columns if '_formula' not in column]
+    reactions_dataframe = all_reactions_dataframe[columns].copy()
+
+    reactions_dataframe.set_index('reaction', inplace=True)
+
+    # Translate 'present'/(nan) data into a True/False absence-presence matrix.
+    for column in reactions_dataframe.columns.tolist():
+        reactions_dataframe[column] = [True if data == 'present' else False for data in reactions_dataframe[column]]
+
+    # Transpose the matrix to have species as index and reactions as columns.
+    absence_presence_matrix = reactions_dataframe.transpose()
+
+    # Compute a distance matrix using the Jaccard distance between species and condense it.
+    condensed_distance_matrix_jaccard = pdist(absence_presence_matrix, metric='jaccard')
+
+    # Extract organisms.
+    organisms = absence_presence_matrix.index.tolist()
+
+    # Create pvclust dendrogram.
+    pvclust_dendrogram(condensed_distance_matrix_jaccard, organisms, output_folder)
+
 
 def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, padmetRef_file=None, pvclust=None, verbose=False):
     """
