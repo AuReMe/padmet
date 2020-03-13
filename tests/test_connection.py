@@ -260,6 +260,26 @@ def test_padmet_to_padmet():
     os.remove('fabo.padmet')
 
 
+def test_padmet_to_padmet_reversibility():
+    """
+    Test an issue encountered when a reaction is defined in a direction in one padmet.
+    And in another the same reaction is defined as reversible.
+    In old padmet this leads to the reaction having all of its reactants/products as reactants and also as products.
+    """
+    # Read padmet file
+    padmet_to_padmet('test_data/padmet', 'fabo.padmet')
+
+    expected_padmet = PadmetSpec('fabo.padmet')
+
+    reactants = [(rlt.id_out, rlt.misc['STOICHIOMETRY']) for rlt in expected_padmet.dicOfRelationIn['ENOYL-COA-HYDRAT-RXN'] if rlt.type in ['consumes']]
+    products = [(rlt.id_out, rlt.misc['STOICHIOMETRY']) for rlt in expected_padmet.dicOfRelationIn['ENOYL-COA-HYDRAT-RXN'] if rlt.type in ['produces']]
+    print(reactants)
+    assert sorted(reactants) == [('TRANS-D2-ENOYL-COA', ['1']), ('WATER', ['1'])]
+    assert sorted(products) == [('L-3-HYDROXYACYL-COA', ['1'])]
+
+    os.remove('fabo.padmet')
+
+
 def test_padmet_to_matrix():
     fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb')
     padmet_to_matrix(fabo_padmetSpec, 'matrix.tsv')
