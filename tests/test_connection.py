@@ -271,11 +271,11 @@ def test_padmet_to_padmet_reversibility():
 
     expected_padmet = PadmetSpec('fabo.padmet')
 
-    reactants = [(rlt.id_out, rlt.misc['STOICHIOMETRY']) for rlt in expected_padmet.dicOfRelationIn['ENOYL-COA-HYDRAT-RXN'] if rlt.type in ['consumes']]
-    products = [(rlt.id_out, rlt.misc['STOICHIOMETRY']) for rlt in expected_padmet.dicOfRelationIn['ENOYL-COA-HYDRAT-RXN'] if rlt.type in ['produces']]
-    print(reactants)
-    assert sorted(reactants) == [('TRANS-D2-ENOYL-COA', ['1']), ('WATER', ['1'])]
-    assert sorted(products) == [('L-3-HYDROXYACYL-COA', ['1'])]
+    reactants = [rlt.id_out for rlt in expected_padmet.dicOfRelationIn['ENOYL-COA-HYDRAT-RXN'] if rlt.type in ['consumes']]
+    products = [rlt.id_out for rlt in expected_padmet.dicOfRelationIn['ENOYL-COA-HYDRAT-RXN'] if rlt.type in ['produces']]
+
+    assert sorted(reactants) == ['TRANS-D2-ENOYL-COA', 'WATER'] or sorted(products) == ['TRANS-D2-ENOYL-COA', 'WATER']
+    assert sorted(products) == ['L-3-HYDROXYACYL-COA'] or sorted(reactants) == ['L-3-HYDROXYACYL-COA']
 
     os.remove('fabo.padmet')
 
