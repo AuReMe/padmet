@@ -372,6 +372,35 @@ def comparison_cluster(reactions_clust, output_folder_comparison):
         test.close()
 
 
+def getNewick(node, newick, parentdist, leaf_names):
+    """
+    Create a newick file from the root node of the dendrogram.
+    This function comes from this answer on stackoverflow: https://stackoverflow.com/a/31878514.
+
+    Parameters
+    ----------
+    node: scipy.cluster.hierarchy.ClusterNode
+        root ClusterNode of the scipy tree
+    newick: str
+        newick string
+    parentdist: str
+        root ClusterNode distance from the linkage matrix
+    leaf_names: list
+        list of organism names
+    """
+    if node.is_leaf():
+        return "%s:%.2f%s" % (leaf_names[node.id], parentdist - node.dist, newick)
+    else:
+        if len(newick) > 0:
+            newick = "):%.2f%s" % (parentdist - node.dist, newick)
+        else:
+            newick = ");"
+        newick = getNewick(node.get_left(), newick, node.dist, leaf_names)
+        newick = getNewick(node.get_right(), ",%s" % (newick), node.dist, leaf_names)
+        newick = "(%s" % (newick)
+        return newick
+
+
 def absent_and_specific_reactions(reactions_dataframe, output_folder_tree_cluster, output_folder_specific, output_folder_absent, organisms):
     """
     Compare all cluster one against another.
@@ -509,6 +538,13 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
     # Extract organisms.
     organisms = absence_presence_matrix.index.tolist()
 
+    # Create Newick tree
+    tree = to_tree(linkage_matrix,False)
+    newick_tree = getNewick(tree, "", tree.dist, organisms)
+    newick_path = os.path.join(output_folder,'newick.txt')
+    with open(newick_path, 'w') as f:
+        f.write(newick_tree)
+
     # Specific reactions for each species.
     absent_and_specific_reactions(reactions_dataframe, output_folder_tree_cluster, output_folder_specific, output_folder_absent, organisms)
 
@@ -579,3 +615,5 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
     if upset_cluster:
         dendrogram_fclusters = create_cluster(reactions_dataframe, absence_presence_matrix, linkage_matrix)
         create_intervene_graph(absence_presence_matrix, reactions_dataframe, temp_data_folder, path_to_intervene, output_folder_upset, dendrogram_fclusters, upset_cluster, verbose)
+
+    plt.clf()
