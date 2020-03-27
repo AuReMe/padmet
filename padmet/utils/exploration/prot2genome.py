@@ -27,7 +27,7 @@ from multiprocessing import Pool
 #TODO:
 #Seq to gbk, match to faa
 
-def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=True, debug=False):
+def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=True, keep_tmp=False, debug=False):
     """
     This function fit an AuCoMe run. Select a aucome run folder and then the function will:
     1./ For each couple of studied organisms, extract specific reactions
@@ -50,6 +50,8 @@ def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=
         If true run tblastn during analysis
     exonerate: bool
         If true run exonerate during analysis, tblastn must also be True
+    keep_tmp: bool
+        If true keep temporary files of analysis (with predicted gene sequence)
     debug: bool
         if true, print all raw informations of analysis
     """
@@ -73,7 +75,7 @@ def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=
     print("Extracting specific reactions...")
     mp_extractReactions(padmet_folder, spec_reactions_folder, pool)
     print("Running blast analysis...")
-    mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, blast_analysis_folder, tmp_folder, pool, blastp, tblastn, exonerate, debug)
+    mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, blast_analysis_folder, tmp_folder, pool, blastp, tblastn, exonerate, keep_tmp, debug)
     print("Extracting reactions to add...")
     extractAnalysis(blast_analysis_folder, spec_reactions_folder, reactions_to_add_folder)
     print("Creating padmet files...")
@@ -255,7 +257,7 @@ def extractReactions(dict_args):
 
 
 ##### run all analysis in multiprocess #####
-def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folder, tmp_folder, pool, blastp, tblastn, exonerate, debug):
+def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folder, tmp_folder, pool, blastp, tblastn, exonerate, keep_tmp, debug):
     """
     Run different blast analysis based on files representing specific reactions of 2 padmet files.
     For each specific reaction file in spec_reactions_folder (ex: org_a_vs_org_b.csv):
@@ -289,6 +291,8 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
         If true run tblastn during analysis
     exonerate: bool
         If true run exonerate during analysis, tblastn must also be True
+    keep_tmp: bool
+        If true keep temporary files of analysis (with predicted gene sequence)
     debug: bool
         if true, print all raw informations of analysis
     """
@@ -322,7 +326,8 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
             print("Creating output analysis: %s" %analysis_output)
             #Create output file
             analysisOutput(all_analysis_result, analysis_output)
-            #cleanTmp(tmp_folder)
+            if not keep_tmp:
+                cleanTmp(tmp_folder)
 
 def cleanTmp(tmp_folder):
     """
