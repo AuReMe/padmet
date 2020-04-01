@@ -10,6 +10,7 @@ Description:
 import csv
 import itertools
 import os
+import shutil
 import subprocess
 import sys
 
@@ -329,6 +330,7 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
             if not keep_tmp:
                 cleanTmp(tmp_folder)
 
+
 def cleanTmp(tmp_folder):
     """
     Remove all files from tmp folder
@@ -338,9 +340,13 @@ def cleanTmp(tmp_folder):
     tmp_folder: str
         path to tmp folder where to create faa of each gene to analyse
     """
-    for the_file in os.listdir(tmp_folder):
-        file_path = os.path.join(tmp_folder, the_file)
-        os.unlink(file_path)
+    for tmp_folder_file in os.listdir(tmp_folder):
+        folder_file_path = os.path.join(tmp_folder, tmp_folder_file)
+        if os.path.isfile(folder_file_path):
+            os.unlink(folder_file_path)
+        if os.path.isdir(folder_file_path):
+            shutil.rmtree(folder_file_path)
+
 
 def extractGenes(reactions_file):
     """
@@ -356,6 +362,7 @@ def extractGenes(reactions_file):
         reader = csv.DictReader(csvfile, delimiter="\t")
         [all_query_seq_ids.update(line["genes_ids"].split(";")) for line in reader]
     return all_query_seq_ids
+
 
 def runAllAnalysis(dict_args):
     """
@@ -554,6 +561,7 @@ def runBlastp(query_seq_faa, subject_faa, header=["sseqid", "evalue", "bitscore"
         result = {}
     return result
 
+
 def runTblastn(query_seq_faa, subject_fna, header=["sseqid", "evalue", "bitscore", "sstart", "send"], debug=False):
     """
     Run tblastn on querry_seq vs subectj fna and return output based on header
@@ -602,6 +610,7 @@ def runTblastn(query_seq_faa, subject_fna, header=["sseqid", "evalue", "bitscore
         result = {}
     return result
 
+
 def createSeqFromTblastn(subject_fna, sseq_seq_faa, exonerate_target_id, start_match, end_match):
     """
     Use the result from the tBlastn to extract a region from the subject genome.
@@ -644,6 +653,7 @@ def createSeqFromTblastn(subject_fna, sseq_seq_faa, exonerate_target_id, start_m
                 seq_location = FeatureLocation(start_match, end_match)
                 sseq_seq.seq = seq_location.extract(sseq_seq.seq)
             SeqIO.write(sseq_seq, sseq_seq_faa, "fasta")
+
 
 def runExonerate(query_seq_faa, sseq_seq_faa, output, debug=False):
     """
@@ -695,6 +705,7 @@ def runExonerate(query_seq_faa, sseq_seq_faa, output, debug=False):
         if debug:
             print("\t\tNo HSP")
     return exonerate_result
+
 
 ##### extract analysis results #####
 def extractAnalysis(blast_analysis_folder, spec_reactions_folder, output_folder):
@@ -760,7 +771,6 @@ def extractAnalysis(blast_analysis_folder, spec_reactions_folder, output_folder)
                 if rate > 0.0:
                     line = {'idRef': reaction_id, 'Comment': 'Has Orthologues with %s'%";".join(org_with_orthologues),'Action':'add'}
                     writer.writerow(line)
-
 
 
 def analysisOutput(analysis_result, analysis_output):
