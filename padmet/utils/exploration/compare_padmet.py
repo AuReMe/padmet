@@ -36,13 +36,14 @@ def extract_information_padmet(file_path, padmetRef, verbose):
     #dict_cpds
     padmet = PadmetSpec(file_path)
     basename_file = os.path.basename(file_path).replace(".padmet","")
-    if verbose: print("reading %s" %basename_file)
+    log_padmet = ""
+    log_padmet += "reading %s\n" %basename_file
     count_elem[basename_file] = {"genes":0,"reactions":0,"pathways":0,"metabolites":0}
 
     #genes
     all_genes = set([node.id for node in list(padmet.dicOfNode.values()) if node.type == "gene"])
     count_elem[basename_file]["genes"] = len(all_genes)
-    if verbose: print("\t%s genes..." %len(all_genes))
+    log_padmet += "\t%s genes...\n" %len(all_genes)
     for gene_id in all_genes:
         #get for each gene, the reactiosn associated to and add in dict_gene: dict_gene[gene_id] = {padmet_file_name: set of rxn assoc}
         rxn_assoc = set([rlt.id_in for rlt in padmet.dicOfRelationOut.get(gene_id,[]) if rlt.type == "is_linked_to"])
@@ -54,7 +55,7 @@ def extract_information_padmet(file_path, padmetRef, verbose):
     #reactions
     all_rxns = set([node.id for node in list(padmet.dicOfNode.values()) if node.type == "reaction"])
     count_elem[basename_file]["reactions"] = len(all_rxns)
-    if verbose: print("\t%s reactions..." %len(all_rxns))
+    log_padmet += "\t%s reactions...\n" %len(all_rxns)
     for rxn_id in all_rxns:
         try:
             dict_rxns[rxn_id][basename_file] = {"genes_associated":"", "formula":""}
@@ -87,7 +88,7 @@ def extract_information_padmet(file_path, padmetRef, verbose):
         pwy_in = set([rlt.id_out for rlt in padmet.dicOfRelationIn[rxn_id] if rlt.type == "is_in_pathway"])
         all_pwys.update(pwy_in)
     count_elem[basename_file]["pathways"] = len(all_pwys)
-    if verbose: print("\t%s pathways..." %len(all_pwys))
+    log_padmet += "\t%s pathways...\n" %len(all_pwys)
     for pwy_id in all_pwys:
         #get for each pwy, the reactions associated to and add in dict_gene: dict_gene[gene_id] = {padmet_file_name: set of rxn assoc}
         try:
@@ -105,7 +106,7 @@ def extract_information_padmet(file_path, padmetRef, verbose):
     #metabolites
     all_cpd = set([rlt.id_out for rlt in padmet.getAllRelation() if rlt.type in ["consumes","produces"]])
     count_elem[basename_file]["metabolites"] = len(all_cpd)
-    if verbose: print("\t%s metabolites..." %len(all_cpd))
+    log_padmet += "\t%s metabolites...\n" %len(all_cpd)
     for cpd_id in all_cpd:
         #get for each cpd, the reactions consuming/producing the cpd
         rxn_consume = set([rlt.id_in for rlt in padmet.dicOfRelationOut[cpd_id] if rlt.type == "consumes"])
@@ -123,6 +124,8 @@ def extract_information_padmet(file_path, padmetRef, verbose):
         except KeyError:
             dict_cpds[cpd_id] = {basename_file: {"rxn_consume":rxn_consume, "rxn_produce":rxn_produce}}
 
+    if verbose:
+        print(log_padmet)
     return dict_genes, dict_rxns, dict_pwys, dict_cpds
 
 
