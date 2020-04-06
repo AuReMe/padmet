@@ -202,9 +202,57 @@ def create_cluster(reactions_dataframe, absence_presence_matrix, linkage_matrix)
     return dendrogram_fclusters
 
 
+def create_supervenn(absence_presence_matrix, reactions_dataframe, output_folder_upset, dendrogram_fclusters, k, verbose=False):
+    """
+    Create an supervenn graph.
+
+    Parameters
+    ----------
+    absence_presence_matrix: pandas.DataFrame
+        transposition of the reactions dataframe
+    reactions_dataframe: pandas.DataFrame
+        dataframe containing absence/presence of reactions in organism
+    output_folder_upset: str
+        path to output folder
+    dendrogram_fclusters: dictionary
+        {number used to split the linkage matrix: ndarray with the corresponding clusters}
+    k: int
+        number of cluster to create
+    """
+    if k < 2:
+        print('supervenn needs at least 2 clusters to work.')
+        return
+    # Extract species in each cluster.
+    results = dendrogram_fclusters[k]
+
+    species = absence_presence_matrix.index.tolist()
+
+    cluster_species = dict(zip(species, results))
+    cluster_classes = defaultdict(list)
+
+    for key, value in cluster_species.items():
+        cluster_classes[value].append(key)
+
+    # For each group, extract the reactions present in its species to create supervenn sets.
+    supervenn_sets = []
+    supervenn_labels = []
+    for cluster in cluster_classes:
+        reactions_temp = []
+        for species in cluster_classes[cluster]:
+            species_reactions_dataframe = reactions_dataframe[reactions_dataframe[species] == True]
+            reactions_temp.extend(species_reactions_dataframe.index.tolist())
+        cluster_reactions[cluster] = set(reactions_temp)
+
+    supervenn(supervenn_sets, supervenn_labels, sets_ordering='minimize gaps')
+    plt.savefig(output_folder_upset + '/supervenn.png', bbox_inches='tight')
+    plt.clf()
+
+    return
+
+
 def create_intervene_graph(absence_presence_matrix, reactions_dataframe, temp_data_folder, path_to_intervene, output_folder_upset, dendrogram_fclusters, k, verbose=False):
     """
-    Create an upset graph.
+    Create an upset graph. Deprecated function, no we use supervenn look at create_supervenn function.
 
     Parameters
     ----------
@@ -611,9 +659,8 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
 
     # Create dendrogram, bbox option adjsut the figure size.
     plt.savefig(output_folder+'/reaction_dendrogram.png',bbox_inches='tight')
+    plt.clf()
 
     if upset_cluster:
         dendrogram_fclusters = create_cluster(reactions_dataframe, absence_presence_matrix, linkage_matrix)
-        create_intervene_graph(absence_presence_matrix, reactions_dataframe, temp_data_folder, path_to_intervene, output_folder_upset, dendrogram_fclusters, upset_cluster, verbose)
-
-    plt.clf()
+        create_supervenn(absence_presence_matrix, reactions_dataframe, output_folder_upset, dendrogram_fclusters, k, verbose)
