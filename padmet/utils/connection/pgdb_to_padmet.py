@@ -240,7 +240,8 @@ def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', ext
         all_reactions = [node for node in list(padmet.dicOfNode.values()) if node.type == "reaction"]
         rxn_to_del = [r for r in all_reactions if not any([rlt for rlt in padmet.dicOfRelationIn[r.id] if rlt.type == "is_linked_to"])]
         for rxn in rxn_to_del:
-            padmet.delNode(rxn.id)
+            if 'SPONTANEOUS' not in rxn.misc:
+                padmet.delNode(rxn.id)
         if verbose:
             print("%s/%s orphan reactions (without gene association) deleted" %(len(rxn_to_del), len(all_reactions)))
         all_genes_linked = set([rlt.id_out for rlt in padmet.getAllRelation() if rlt.type == "is_linked_to"])
@@ -252,7 +253,6 @@ def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', ext
             padmet.dicOfNode.pop(gene_id)
         if verbose:
             print("%s/%s orphan genes (not linked to any reactions) deleted" %(count, len(all_genes)))
-
     if no_self_producing_rxn:
         rxns = [node.id for node in list(padmet.dicOfNode.values()) if node.type == "reaction"]
         for rxn_id in rxns:
@@ -424,6 +424,9 @@ def reactions_parser(filePath, padmet, extract_gene, source, verbose = False):
                         dict_data[current_id][attrib].append((value, stoichiometry, compartment))
                     except KeyError:
                         dict_data[current_id][attrib] = [(value, stoichiometry, compartment)]
+                elif 'SPONTANEOUS' in attrib:
+                    if value == 'T':
+                        dict_data[current_id]['SPONTANEOUS'] = value
 
     count = 0
     nb_rxn = str(len(list(dict_data.keys())))
@@ -457,6 +460,10 @@ def reactions_parser(filePath, padmet, extract_gene, source, verbose = False):
                     rxn_node.misc["DIRECTION"] = ["RIGHT-TO-LEFT"] 
             except KeyError:
                 rxn_node.misc["DIRECTION"] = ["REVERSIBLE"]
+            try:
+                rxn_node.misc["SPONTANEOUS"] = dict_values["SPONTANEOUS"]
+            except KeyError:
+                pass
             """
             try:
                 rxn_node.misc["COMPARTMENT"] = dict_values["RXN-LOCATIONS"]
