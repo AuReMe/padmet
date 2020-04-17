@@ -193,8 +193,12 @@ def extractReactions(dict_args):
     padmet_a = PadmetSpec(path_a)
     padmet_b = PadmetSpec(path_b)
 
-    rxn_spec_to_a = set([node.id for node in padmet_a.dicOfNode.values() if node.type == "reaction"]).difference(set([node.id for node in padmet_b.dicOfNode.values() if node.type == "reaction"]))     
-    rxn_spec_to_b = set([node.id for node in padmet_b.dicOfNode.values() if node.type == "reaction"]).difference(set([node.id for node in padmet_a.dicOfNode.values() if node.type == "reaction"]))     
+    # Get reactions from organism without spontaneous reactions.
+    a_rxns = set([node.id for node in padmet_a.dicOfNode.values() if node.type == "reaction" and 'SPONTANEOUS' not in node.misc])
+    b_rxns = set([node.id for node in padmet_b.dicOfNode.values() if node.type == "reaction" and 'SPONTANEOUS' not in node.misc])
+
+    rxn_spec_to_a = a_rxns.difference(b_rxns)
+    rxn_spec_to_b = b_rxns.difference(a_rxns)
 
     genes_assoc_spec_to_a = set()
     for rxn_id in rxn_spec_to_a:
