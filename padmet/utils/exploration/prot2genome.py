@@ -89,7 +89,7 @@ def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=
 def mp_createPadmet(reactions_to_add_folder, padmet_folder, output_folder, padmetRef, pool, verbose=False):
     """
     Update all padmet in padmet_folder with reactions to add from file in reactiosn_to_add_folder, the informations of the reactions are extracted from padmetRef as unique source
-    ex: for padmet_folder/org_a.padmet, select reactions_to_add_folder/org_a.csv, add each reactions listed in this file based on padmetRef to create  output_folder/org_a.padmet
+    ex: for padmet_folder/org_a.padmet, select reactions_to_add_folder/org_a.tsv, add each reactions listed in this file based on padmetRef to create  output_folder/org_a.padmet
     Create the padmet files in multiprocess, the more cpu the more new padmet files will be created faster
 
     Parameters
@@ -115,7 +115,7 @@ def mp_createPadmet(reactions_to_add_folder, padmet_folder, output_folder, padme
             dict_args = {}
             org_id = os.path.splitext(padmet_file)[0]
             padmet_to_update = os.path.join(padmet_folder, padmet_file)
-            reactions_to_add_path = os.path.join(reactions_to_add_folder, org_id+".csv")
+            reactions_to_add_path = os.path.join(reactions_to_add_folder, org_id+".tsv")
             output = os.path.join(output_folder, padmet_file)
             dict_args = {"reactions_to_add_path": reactions_to_add_path, "padmet_to_update": padmet_to_update, "output":output, "padmetRef":padmetRef, "verbose": verbose}
             all_dict_args.append(dict_args)
@@ -144,7 +144,7 @@ def createPadmet(dict_args):
 def mp_extractReactions(padmet_folder, output_folder, pool):
     """
     From a folder of padmet files, create all dual combination and extract specific reactions to create a file in output_folder
-    ex: in padmet_folder: org_a.padmet, org_b.padmet, create: output_folder: org_a_vs_org_b.csv and org_b_vs_org_a.csv
+    ex: in padmet_folder: org_a.padmet, org_b.padmet, create: output_folder: org_a_vs_org_b.tsv and org_b_vs_org_a.tsv
 
     Parameters
     ----------
@@ -163,8 +163,8 @@ def mp_extractReactions(padmet_folder, output_folder, pool):
     for (org_a, org_b) in all_combi:
         path_a = os.path.join(padmet_folder,org_a)
         path_b = os.path.join(padmet_folder,org_b)
-        output_a = os.path.join(output_folder, "%s_VS_%s.csv"%(os.path.splitext(org_a)[0], os.path.splitext(org_b)[0]))
-        output_b = os.path.join(output_folder, "%s_VS_%s.csv"%(os.path.splitext(org_b)[0], os.path.splitext(org_a)[0]))
+        output_a = os.path.join(output_folder, "%s_VS_%s.tsv"%(os.path.splitext(org_a)[0], os.path.splitext(org_b)[0]))
+        output_b = os.path.join(output_folder, "%s_VS_%s.tsv"%(os.path.splitext(org_b)[0], os.path.splitext(org_a)[0]))
         if not os.path.isfile(output_a) and not os.path.isfile(output_b):
             dict_args = {"org_a": org_a, "path_a": path_a, "output_a": output_a, "org_b": org_b, "path_b": path_b, "output_b": output_b}
             all_dict_args.append(dict_args)
@@ -265,14 +265,14 @@ def extractReactions(dict_args):
 def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folder, tmp_folder, pool, blastp, tblastn, exonerate, keep_tmp, debug):
     """
     Run different blast analysis based on files representing specific reactions of 2 padmet files.
-    For each specific reaction file in spec_reactions_folder (ex: org_a_vs_org_b.csv):
+    For each specific reaction file in spec_reactions_folder (ex: org_a_vs_org_b.tsv):
         1./ search for:
             faa file of org_a (studied_organisms_folder/org_a/org_a.faa)
             gbk file of org_b (studied_organisms_folder/org_b/org_b.gbk)
             faa file of org_b (studied_organisms_folder/org_b/org_b.faa)
             fna file of org_b (studied_organisms_folder/org_b/org_b.fna)
                 if fna doesn't exist create it
-        2./ if output file (blast_analysis_folder/org_a_VS_org_b.csv) doesn't already exist run analysis
+        2./ if output file (blast_analysis_folder/org_a_VS_org_b.tsv) doesn't already exist run analysis
         3./ extracts all genes ids from specific reaction file with fct extractGenes()
         4./ Run blastp, tblastn, exonerate on gene_id.faa vs target.faa / fna with runAllAnalysis()
         5./ Create analysis output
@@ -302,8 +302,8 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
         if true, print all raw informations of analysis
     """
     for rxn_file in [os.path.join(spec_reactions_folder, i) for i in next(os.walk(spec_reactions_folder))[2]]:
-        org_a, org_b = os.path.basename(rxn_file).replace(".csv","").split("_VS_")
-        analysis_output = os.path.join(output_folder, "%s_VS_%s.csv"%(org_a, org_b))
+        org_a, org_b = os.path.basename(rxn_file).replace(".tsv","").split("_VS_")
+        analysis_output = os.path.join(output_folder, "%s_VS_%s.tsv"%(org_a, org_b))
         query_faa = os.path.join(studied_organisms_folder, org_a, "%s.faa"%org_a)
         subject_gbk = os.path.join(studied_organisms_folder, org_b, "%s.gbk"%org_b)
         subject_faa = os.path.join(studied_organisms_folder, org_b, "%s.faa"%org_b)
@@ -732,7 +732,7 @@ def extractAnalysis(blast_analysis_folder, spec_reactions_folder, output_folder)
     # {org_id: {org_id:set(genes_ids,...), }, }
     orthologue_dict = {}
     for analysis_file in [os.path.join(blast_analysis_folder, i) for i in next(os.walk(blast_analysis_folder))[2]]:
-        org_b, org_a = os.path.basename(analysis_file).replace(".csv","").split("_VS_")
+        org_b, org_a = os.path.basename(analysis_file).replace(".tsv","").split("_VS_")
         try:
             orthologue_dict[org_a][org_b] = set()
         except KeyError:
@@ -747,7 +747,7 @@ def extractAnalysis(blast_analysis_folder, spec_reactions_folder, output_folder)
     # {org_id: {reaction_id:{org_id:{total_genes: set(genes_ids), orthologues: set(genes_ids)}}}
     reactions_dict = {}
     for rxn_file in [os.path.join(spec_reactions_folder, i) for i in next(os.walk(spec_reactions_folder))[2]]:
-        org_b, org_a = os.path.basename(rxn_file).replace(".csv","").split("_VS_")
+        org_b, org_a = os.path.basename(rxn_file).replace(".tsv","").split("_VS_")
         if org_a not in reactions_dict.keys():
             reactions_dict[org_a] = dict()
         all_orthologues = orthologue_dict[org_a][org_b]
@@ -763,7 +763,7 @@ def extractAnalysis(blast_analysis_folder, spec_reactions_folder, output_folder)
                     reactions_dict[org_a][reaction_id] = {org_b: {'total_genes': genes_ids, 'orthologues': orthologues}}
                     
     for org_a, org_dict in reactions_dict.items():
-        output_file = os.path.join(output_folder, "%s.csv"%org_a)
+        output_file = os.path.join(output_folder, "%s.tsv"%org_a)
         with open(output_file, 'w') as csvfile:
             fieldnames = ['idRef', 'Comment', 'Genes', 'Action']
             writer = csv.DictWriter(csvfile,fieldnames, delimiter="\t")

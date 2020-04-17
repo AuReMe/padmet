@@ -3,7 +3,7 @@
 
 """
 Description:
-    Use reactions.csv file from compare_padmet.py to create a dendrogram using a Jaccard distance.
+    Use reactions.tsv file from compare_padmet.py to create a dendrogram using a Jaccard distance.
     
     From the matrix absence/presence of reactions in different species computes a Jaccard distance between these species.
     Apply a hierarchical clustering on these data with a complete linkage. Then create a dendrogram.

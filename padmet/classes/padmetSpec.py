@@ -900,16 +900,16 @@ class PadmetSpec:
     def network_report(self, output_dir, padmetRef_file=None, verbose=False):
         """
         Summurizes the network in a folder (output_dir) of 4 files.
-        all_pathways.csv: report on the pathways of the network.
+        all_pathways.tsv: report on the pathways of the network.
         PadmetRef is used to recover the total reactions of a pathways. (sep = "\t")
         line = dbRef_id, Common name, Number of reactions found,
             Total number of reaction, Ratio (Reaction found / Total)
-        all_reactions.csv: report on the reactions of the network.  (sep = "\t")
+        all_reactions.tsv: report on the reactions of the network.  (sep = "\t")
         line = dbRef_id, Common name, formula (with id),
             formula (with common name), in pathways, associated genes, sources
-        all_metabolites.csv: report on the metabolites of the network. (sep = "\t")
+        all_metabolites.tsv: report on the metabolites of the network. (sep = "\t")
         line = dbRef_id, Common name, Produced (p), Consumed (c), Both (cp)
-        all_genes.csv: report on the genes of the network. (sep= "\t")
+        all_genes.tsv: report on the genes of the network. (sep= "\t")
         line = "id", "Common name", "linked reactions"
 
         Parameters
@@ -924,10 +924,10 @@ class PadmetSpec:
         os.system("mkdir -p " + output_dir)
         if not output_dir.endswith("/"):
             output_dir += "/"
-        all_pathways = output_dir + "all_pathways.csv"
-        all_reactions = output_dir + "all_reactions.csv"
-        all_metabolites = output_dir + "all_metabolites.csv"
-        all_genes = output_dir + "all_genes.csv"
+        all_pathways = output_dir + "all_pathways.tsv"
+        all_reactions = output_dir + "all_reactions.tsv"
+        all_metabolites = output_dir + "all_metabolites.tsv"
+        all_genes = output_dir + "all_genes.tsv"
 
         if padmetRef_file is not None:
             padmetRef = PadmetRef(padmetRef_file)
