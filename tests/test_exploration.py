@@ -35,7 +35,7 @@ def test_compare_padmet():
 
     genes_fabo_1 = []
     genes_fabo_2 = []
-    with open('output/genes.csv', 'r') as genes_file:
+    with open('output/genes.tsv', 'r') as genes_file:
         csvreader = csv.reader(genes_file, delimiter='\t')
         for row in csvreader:
             if row[1] == 'present':
@@ -49,7 +49,7 @@ def test_compare_padmet():
 
     reactions_fabo_1 = []
     reactions_fabo_2 = []
-    with open('output/reactions.csv', 'r') as reactions_file:
+    with open('output/reactions.tsv', 'r') as reactions_file:
         csvreader = csv.reader(reactions_file, delimiter='\t')
         for row in csvreader:
             if row[1] == 'present':
@@ -66,7 +66,7 @@ def test_compare_padmet():
 
     pathway_fabo_1 = []
     pathway_fabo_2 = []
-    with open('output/pathways.csv', 'r') as pathways_file:
+    with open('output/pathways.tsv', 'r') as pathways_file:
         csvreader = csv.reader(pathways_file, delimiter='\t')
         for row in csvreader:
             if row[0] != 'pathway':
@@ -88,7 +88,7 @@ def test_compare_padmet():
 
     metabolites_fabo_1 = []
     metabolites_fabo_2 = []
-    with open('output/metabolites.csv', 'r') as metabolites_file:
+    with open('output/metabolites.tsv', 'r') as metabolites_file:
         csvreader = csv.reader(metabolites_file, delimiter='\t')
         for row in csvreader:
             if row[1] != 'fabo_1_rxn_consume' or row[1] != '':

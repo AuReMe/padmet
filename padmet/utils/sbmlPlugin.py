@@ -245,8 +245,9 @@ def convert_from_coded_id(
         uncoded += "_" + compart
 
     if _type == "R":
-        uncoded += "_" + compart
-        compart = None
+        if compart:
+            uncoded += "_" + compart
+            compart = None
 
     return (uncoded, _type, compart)
 
