@@ -212,7 +212,7 @@ def convert_from_coded_id(
     codepat = re.compile(ascii_pattern)
     # replace ascii by the not allowed char of sbml
     coded = codepat.sub(ascii_replace, coded)
-    str_reg = "(?P<_type>^[{0}{1}]_)(?P<_id>.*)(?P<compart>_.*)".format(
+    str_reg = "(?P<_type>^[{0}{1}]_)(?P<_id>.*)(?P<compart>_[a-z]$)".format(
         species_tag, reaction_tag
     )
     reg_expr = re.compile(str_reg)
@@ -243,11 +243,6 @@ def convert_from_coded_id(
 
     if compart and compart_in_id:
         uncoded += "_" + compart
-
-    if _type == "R":
-        if compart:
-            uncoded += "_" + compart
-            compart = None
 
     return (uncoded, _type, compart)
 
