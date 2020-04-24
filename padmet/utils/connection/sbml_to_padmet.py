@@ -26,7 +26,7 @@ Description:
     a new reaction in padmetSpec with the arg -f
 
 """
-from padmet.classes import PadmetSpec, PadmetRef,instantiate_padmet
+from padmet.classes import PadmetSpec, PadmetRef, instantiate_padmet
 from datetime import datetime
 import os
         
@@ -91,6 +91,11 @@ def sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=None, output=None, 
     
     #TODO
     """
+    print('sbml_to_padmet decodes reactions and metabolites using regular expression.')
+    print('The reaction/metabolites IDs format used by sbml_to_padmet is: prefix + "_" + ID + "_" + optional_suffix. ')
+    print('prefix is a one character indicating the type, like R for reaction or M for metabolite.')
+    print('optional_suffix is a one or two characters indicating the compartment.')
+
     if output is None:
         output = padmetSpec_file
     #if sbml is a dir: sbml_files are all files with extension .sbml or .xml within dir
