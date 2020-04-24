@@ -6,6 +6,7 @@ Description:
 """
 import csv
 import json
+import os
 
 from padmet.classes import Relation, instantiate_padmet
 
@@ -14,7 +15,8 @@ def modelSeed_to_padmet(rxn_file, pwy_file, output, verbose=False):
     #TODO
     """
     global list_of_relation
-    padmetRef = instantiate_padmet("PadmetRef", None, "MODELSEED", "1.0", verbose)
+    padmet_id = os.path.splitext(os.path.basename(output))[0]
+    padmetRef = instantiate_padmet("PadmetRef", None, padmet_id, "MODELSEED", "1.0", verbose)
 
     list_of_relation = []
     

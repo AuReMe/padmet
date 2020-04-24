@@ -8,6 +8,7 @@ from padmet.classes.padmetSpec import PadmetSpec
 from padmet.utils import sbmlPlugin
 from padmet.utils.connection.pgdb_to_padmet import from_pgdb_to_padmet
 from padmet.utils.connection.sbmlGenerator import padmet_to_sbml
+from padmet.utils.connection.sbml_to_sbml import from_sbml_to_sbml
 from padmet.utils.connection.sbml_to_padmet import sbml_to_padmetSpec
 from padmet.utils.connection.wikiGenerator import wikiGenerator
 from padmet.utils.connection.sbml_to_curation_form import sbml_to_curation
@@ -50,6 +51,28 @@ def extract_data_padmet(test_padmetSpec):
     all_genes = [node.id for node in test_padmetSpec.dicOfNode.values() if node.type == "gene"]
 
     return all_pwys, all_cpds, all_rxns, all_genes
+
+
+def extract_data_sbml(sbml_filepath):
+    reader = libsbml.SBMLReader()
+    document = reader.readSBML(sbml_filepath)
+    model = document.getModel()
+
+    compounds = model.getListOfSpecies()
+    reactions = model.getListOfReactions()
+    genes = []
+    for reactionSBML in reactions:
+        notes = sbmlPlugin.parseNotes(reactionSBML)
+        if "GENE_ASSOCIATION" in list(notes.keys()):
+            # Using sbmlPlugin to recover all genes associated to the reaction
+            for gene in sbmlPlugin.parseGeneAssoc(notes["GENE_ASSOCIATION"][0]):
+                if gene not in genes:
+                    genes.append(gene)
+
+    id_compounds = [sbmlPlugin.convert_from_coded_id(compound.id)[0] for compound in compounds]
+    id_reactions = [sbmlPlugin.convert_from_coded_id(reaction.id)[0] for reaction in reactions]
+
+    return genes, id_compounds, id_reactions
 
 
 def test_pgdb_to_padmet():
@@ -101,22 +124,8 @@ def test_pgdb_to_padmet_no_orphan_with_genes():
 def test_sbmlGenerator():
     fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
     padmet_to_sbml(fabo_padmetSpec, 'fabo.sbml')
-    reader = libsbml.SBMLReader()
-    document = reader.readSBML('fabo.sbml')
-    model = document.getModel()
 
-    compounds = model.getListOfSpecies()
-    reactions = model.getListOfReactions()
-    genes = []
-    for reactionSBML in reactions:
-        notes = sbmlPlugin.parseNotes(reactionSBML)
-        if "GENE_ASSOCIATION" in list(notes.keys()):
-            # Using sbmlPlugin to recover all genes associated to the reaction
-            for gene in sbmlPlugin.parseGeneAssoc(notes["GENE_ASSOCIATION"][0]):
-                if gene not in genes:
-                    genes.append(gene)
-    id_compounds = [sbmlPlugin.convert_from_coded_id(compound.id)[0] for compound in compounds]
-    id_reactions = [sbmlPlugin.convert_from_coded_id(reaction.id)[0] for reaction in reactions]
+    genes, id_compounds, id_reactions = extract_data_sbml('fabo.sbml')
 
     assert set(FABO_RXNS).issubset(set(id_reactions))
 
@@ -145,6 +154,31 @@ def test_sbml_to_padmet():
 
     os.remove('fabo.sbml')
     os.remove('fabo.padmet')
+
+
+def test_sbml_to_sbml():
+    fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
+    padmet_to_sbml(fabo_padmetSpec, 'fabo.sbml')
+    from_sbml_to_sbml('fabo.sbml', 'fabo_2.sbml', 2, cpu=1)
+
+    sbml_3_genes, sbml_3_compounds, sbml_3_reactions = extract_data_sbml('fabo.sbml')
+
+    sbml_2_genes, sbml_2_compounds, sbml_2_reactions = extract_data_sbml('fabo_2.sbml')
+
+    assert set(FABO_RXNS).issubset(set(sbml_2_reactions))
+
+    assert set(FABO_CPDS).issubset(set(sbml_2_compounds))
+
+    assert set(FABO_GENES).issubset(set(sbml_2_genes))
+
+    assert set(sbml_3_reactions).issubset(set(sbml_2_reactions))
+
+    assert set(sbml_3_compounds).issubset(set(sbml_2_compounds))
+
+    assert set(sbml_3_genes).issubset(set(sbml_2_genes))
+
+    os.remove('fabo.sbml')
+    os.remove('fabo_2.sbml')
 
 
 def test_wikiGenerator():

@@ -105,7 +105,7 @@ import libsbml
 from padmet.classes import PadmetRef, Node, Relation, instantiate_padmet
 
 
-def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', extract_gene=False, no_orphan=False, no_self_producing_rxn=True, enhanced_db=False, padmetRef_file=None, verbose=False):
+def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA', source='GENOME', extract_gene=False, no_orphan=False, no_self_producing_rxn=True, enhanced_db=False, padmetRef_file=None, verbose=False, output_file=None):
     """
     Parameters
     ----------
@@ -129,21 +129,28 @@ def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', ext
         path to padmetRef corresponding to metacyc in padmet format
     verbose: bool
         if True print information
-    
+    output_file: str
+        pathname of padmet output file
+
     Returns
     -------
     padmet.padmetRef:
         padmet instance with pgdb within pgdb data
     """
     global regex_purge, regex_xref, list_of_relation, def_compart_in, def_compart_out
-    regex_purge = re.compile("<.*?>|\|")
-    regex_xref = re.compile('^\((?P<DB>\S*)\s*"(?P<ID>\S*)"')
+    regex_purge = re.compile(r"<.*?>|\|")
+    regex_xref = re.compile(r'^\((?P<DB>\S*)\s*"(?P<ID>\S*)"')
     list_of_relation = []
     def_compart_in = "c"
     def_compart_out = "e"
     #parsing args
     source = source.upper()
-    
+
+    if output_file:
+        padmet_id = os.path.splitext(os.path.basename(output_file))[0]
+    else:
+        padmet_id = None
+
     classes_file, compounds_file, proteins_file, reactions_file, enzrxns_file, pathways_file = \
     [os.path.join(pgdb_folder,_file) for _file in ["classes.dat", "compounds.dat", "proteins.dat", "reactions.dat", "enzrxns.dat", "pathways.dat"]]
     if enhanced_db:
@@ -158,7 +165,7 @@ def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', ext
     if padmetRef_file:
         padmetRef = PadmetRef(padmetRef_file)
 
-        padmet = instantiate_padmet("PadmetSpec", padmetRef_file, db, version, verbose)
+        padmet = instantiate_padmet("PadmetSpec", padmetRef_file, padmet_id, db, version, verbose)
 
         with open(reactions_file, 'r') as f:
             rxns_id = [line.split(" - ")[1] for line in f.read().splitlines() if line.startswith("UNIQUE-ID")]
@@ -196,7 +203,7 @@ def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', ext
             enzrxns_parser(enzrxns_file, padmet, mapped_dict_protein_gene_id, source, verbose)
 
     else:
-        padmet = instantiate_padmet("PadmetRef", None, db, version, verbose)
+        padmet = instantiate_padmet("PadmetRef", None, padmet_id, db, version, verbose)
 
         if verbose: print("parsing classes")
         id_classes = classes_parser(classes_file, padmet, verbose)
@@ -260,6 +267,9 @@ def from_pgdb_to_padmet(pgdb_folder, db='NA', version='NA', source='GENOME', ext
             if len(cp_rlts) == 1:
                 print("rxn only consume or produce, transport ???: %s" %rxn_id)
                 padmet.delNode(rxn_id)
+
+    if output_file:
+        padmet.generateFile(output_file)
 
     return padmet
 

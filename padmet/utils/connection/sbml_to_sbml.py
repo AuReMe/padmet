@@ -27,8 +27,9 @@ def run_sbml_to_sbml(multiprocess_data):
     bool:
         True if sbml file exists
     """
+    padmet_id = os.path.splitext(os.path.basename(multiprocess_data['sbml_output_file']))[0]
     padmet = sbml_to_padmet(sbml=multiprocess_data['sbml_file'], db=None, version=None, source_tool=None,
-                            source_category=None, source_id=None, mapping=None, verbose=None)
+                            source_category=None, source_id=None, mapping=None, verbose=None, padmet_id=padmet_id)
     sbmlGenerator.padmet_to_sbml(padmet, multiprocess_data['sbml_output_file'], sbml_lvl=multiprocess_data['new_sbml_level'], verbose=False)
 
     if multiprocess_data['sbml_output_file'] and not os.access(multiprocess_data['sbml_output_file'], os.W_OK):
@@ -41,7 +42,7 @@ def run_sbml_to_sbml(multiprocess_data):
     else:  # path is accessible
         return True
 
-def sbml_to_padmet(sbml, db, version, source_tool, source_category, source_id, mapping, verbose):
+def sbml_to_padmet(sbml, db, version, source_tool, source_category, source_id, mapping, verbose, padmet_id):
     """
     #TODO
     """
@@ -55,7 +56,7 @@ def sbml_to_padmet(sbml, db, version, source_tool, source_category, source_id, m
     else:
         raise TypeError("%s is not a dir or a file" %(sbml))
 
-    padmet_to_update = instantiate_padmet("PadmetSpec", None, db, version, verbose)
+    padmet_to_update = instantiate_padmet("PadmetSpec", None, padmet_id, db, version, verbose)
 
     #if sbml is a directory, recover all file path in a list. if no => only one file: create a list with only this file
     sbml_mapping_dict = {}

@@ -54,7 +54,8 @@ def sbml_to_padmetRef(sbml, padmetRef_file, output=None, db="NA", version="NA", 
     if os.path.isfile(padmetRef_file):
         padmet_to_update = PadmetRef(padmetRef_file)
     else:
-        padmet_to_update = instantiate_padmet("PadmetRef", None, db, version, verbose)
+        padmet_id = os.path.splitext(os.path.basename(output))[0]
+        padmet_to_update = instantiate_padmet("PadmetRef", None, padmet_id, db, version, verbose)
 
     for sbml_file in sbml_files:
         if verbose:
@@ -114,7 +115,8 @@ def sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=None, output=None, 
     if os.path.isfile(padmetSpec_file):
         padmet_to_update = PadmetSpec(padmetSpec_file)
     else:
-        padmet_to_update = instantiate_padmet("PadmetSpec", padmetRef_file, db, version, verbose)
+        padmet_id = os.path.splitext(os.path.basename(output))[0]
+        padmet_to_update = instantiate_padmet("PadmetSpec", padmetRef_file, padmet_id, db, version, verbose)
 
     #if sbml is a directory, recover all file path in a list. if no => only one file: create a list with only this file
     #sbml_mapping_dict = {'/path/to/my_sbml1.sbml': '/path/to/my_sbml1_dict.csv' // None}  

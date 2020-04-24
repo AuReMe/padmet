@@ -536,7 +536,8 @@ def runBlastp(query_seq_faa, subject_faa, header=["sseqid", "evalue", "bitscore"
     dict
         dict of the best blastp hit, add 'blastp_' tag, or empty dict if no hit
     """
-    print("\tRunning Blastp %s vs %s" %(os.path.basename(query_seq_faa), os.path.basename(subject_faa)))
+    if debug:
+        print("\tRunning Blastp %s vs %s" %(os.path.basename(query_seq_faa), os.path.basename(subject_faa)))
     outfmt_arg = '"%s %s"'%(6, " ".join(header))
     output = NcbiblastpCommandline(query=query_seq_faa, subject=subject_faa, evalue=1e-20, outfmt=outfmt_arg)()[0]
     output = [line.split("\t") for line in output.splitlines()]

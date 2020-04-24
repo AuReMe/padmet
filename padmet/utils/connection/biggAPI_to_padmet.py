@@ -22,6 +22,7 @@ from padmet.classes import Relation, instantiate_padmet
 
 import requests
 import grequests
+import os
 
 def biggAPI_to_padmet(output, pwy_file=None, verbose=False):
     """
@@ -48,7 +49,8 @@ def biggAPI_to_padmet(output, pwy_file=None, verbose=False):
     verbose: bool
         if True print information
     """
-    padmetRef = instantiate_padmet("PadmetRef", None, "BIGG", "1.5", verbose)
+    padmet_id = os.path.splitext(os.path.basename(output))[0]
+    padmetRef = instantiate_padmet("PadmetRef", None, padmet_id, "BIGG", "1.5", verbose)
 
     list_of_relation = []
     if verbose: print("Getting all reactions ids")

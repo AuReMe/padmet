@@ -7,7 +7,7 @@ from padmet.classes import PadmetRef, PadmetSpec
 from datetime import datetime
 
 
-def instantiate_padmet(padmet_type, padmetRef_file=None, db='NA', version='NA', verbose=None):
+def instantiate_padmet(padmet_type, padmetRef_file=None, padmet_id=None, db='NA', version='NA', verbose=None):
     now = datetime.now()
     today_date = now.strftime("%Y-%m-%d")
     padmet_version = pkg_resources.require("padmet")[0].version
@@ -48,5 +48,8 @@ def instantiate_padmet(padmet_type, padmetRef_file=None, db='NA', version='NA', 
         padmet.setPolicy(POLICY_IN_ARRAY)
         if verbose: print("setting dbInfo")
         padmet.setInfo(dbNotes)
+
+    if padmet_id:
+        padmet.info["DB_info"]["ID"] = padmet_id
 
     return padmet
