@@ -56,12 +56,11 @@ def pvclust_dendrogram(condensed_distance_matrix_jaccard, organisms, output_fold
 
     # Make the distance matrix compatible with pvclust.
     # Make the condensed matrix redundant and then transpose it.
-    redudant_distance_matrix_df = pa.DataFrame(squareform(condensed_distance_matrix_jaccard), index=organisms)
-    redudant_distance_matrix_df = redudant_distance_matrix_df.transpose()
+    redundant_distance_matrix_df = pa.DataFrame(squareform(condensed_distance_matrix_jaccard), index=organisms)
+    redundant_distance_matrix_df = redundant_distance_matrix_df.transpose()
 
-    redudant_distance_matrix_df.to_csv('dataframe_test.tsv', sep='\t')
     # Launch pvclust on the data silently and in parallel.
-    result = pvclust.pvclust(redudant_distance_matrix_df, method_dist="cor", method_hclust="complete", nboot=10000, quiet=True, parallel=True)
+    result = pvclust.pvclust(redundant_distance_matrix_df, method_dist="cor", method_hclust="complete", nboot=10000, quiet=True, parallel=True)
 
     # Create the dendrogram picture.
     grdevices.png(file=output_folder+"/"+"pvclust_reaction_dendrogram.png", width=2048, height=2048, pointsize=24)

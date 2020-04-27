@@ -123,7 +123,7 @@ def rxn_creator(data_file, padmetSpec, output, padmetRef=None, source=None, tool
             continue
 
         if verbose:
-            print("adding reaction %s" %reaction_id)
+            print("Adding reaction %s" %reaction_id)
         reaction_rev = reaction_data["reversible"][0].lower()
         if reaction_rev.upper() == "TRUE":
             reaction_rev = "REVERSIBLE"
