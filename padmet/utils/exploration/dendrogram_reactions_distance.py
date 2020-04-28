@@ -30,14 +30,14 @@ from scipy.cluster.hierarchy import dendrogram, fcluster, linkage, to_tree
 from scipy.spatial.distance import pdist, squareform
 
 
-def pvclust_dendrogram(condensed_distance_matrix_jaccard, organisms, output_folder):
+def pvclust_dendrogram(reactions_dataframe, organisms, output_folder):
     """
     Using a distance matrix, pvclust R package (with rpy2 package) create a dendrogram with bootstrap values.
 
     Parameters
     ----------
-    condensed_distance_matrix_jaccard: ndarray
-        Condensed Jaccard distance matrix
+    reactions_dataframe: pandas.DataFrame
+        Reactions absence/presence matrix
     organisms: list
         organisms names
     output_folder: str
@@ -54,13 +54,8 @@ def pvclust_dendrogram(condensed_distance_matrix_jaccard, organisms, output_fold
     # Make pandas dataframe compatible with R dataframe.
     pandas2ri.activate()
 
-    # Make the distance matrix compatible with pvclust.
-    # Make the condensed matrix redundant and then transpose it.
-    redundant_distance_matrix_df = pa.DataFrame(squareform(condensed_distance_matrix_jaccard), index=organisms)
-    redundant_distance_matrix_df = redundant_distance_matrix_df.transpose()
-
     # Launch pvclust on the data silently and in parallel.
-    result = pvclust.pvclust(redundant_distance_matrix_df, method_dist="cor", method_hclust="complete", nboot=10000, quiet=True, parallel=True)
+    result = pvclust.pvclust(reactions_dataframe, method_dist="binary", method_hclust="complete", nboot=10000, quiet=True, parallel=True)
 
     # Create the dendrogram picture.
     grdevices.png(file=output_folder+"/"+"pvclust_reaction_dendrogram.png", width=2048, height=2048, pointsize=24)
@@ -70,7 +65,7 @@ def pvclust_dendrogram(condensed_distance_matrix_jaccard, organisms, output_fold
     # Dendrogram to newick
     hclust_result = result.rx2("hclust")
     phylo_result = ape.as_phylo(hclust_result)
-    ape.write_tree(phylo_result, file=output_folder+"/"+"dendrogram.nwk", tree_names=True)
+    ape.write_tree(phylo_result, file=output_folder+"/"+"dendrogram.nwk", tree_names=True, digits=2)
 
 
 def hclust_to_xml(linkage_matrix):
@@ -505,19 +500,13 @@ def create_pvclust_dendrogram(reaction_file, output_folder):
 
     # Translate 'present'/(nan) data into a True/False absence-presence matrix.
     for column in reactions_dataframe.columns.tolist():
-        reactions_dataframe[column] = [True if data == 'present' else False for data in reactions_dataframe[column]]
-
-    # Transpose the matrix to have species as index and reactions as columns.
-    absence_presence_matrix = reactions_dataframe.transpose()
-
-    # Compute a distance matrix using the Jaccard distance between species and condense it.
-    condensed_distance_matrix_jaccard = pdist(absence_presence_matrix, metric='jaccard')
+        reactions_dataframe[column] = [1 if data == 'present' else 0 for data in reactions_dataframe[column]]
 
     # Extract organisms.
     organisms = absence_presence_matrix.index.tolist()
 
     # Create pvclust dendrogram.
-    pvclust_dendrogram(condensed_distance_matrix_jaccard, organisms, output_folder)
+    pvclust_dendrogram(reactions_dataframe, organisms, output_folder)
 
 
 def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, padmetRef_file=None, pvclust=None, verbose=False):
@@ -596,8 +585,13 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
     absent_and_specific_reactions(reactions_dataframe, output_folder_tree_cluster, output_folder_specific, output_folder_absent, organisms)
 
     if pvclust:
+        pvclust_reactions_dataframe = all_reactions_dataframe[columns].copy()
+
+        pvclust_reactions_dataframe.set_index('reaction', inplace=True)
+        for column in pvclust_reactions_dataframe.columns.tolist():
+            pvclust_reactions_dataframe[column] = [1 if data == 'present' else 0 for data in pvclust_reactions_dataframe[column]]
         # Create pvclust dendrogram.
-        pvclust_dendrogram(condensed_distance_matrix_jaccard, organisms, output_folder)
+        pvclust_dendrogram(pvclust_reactions_dataframe, organisms, output_folder)
 
     # Extract all the nodes inside the clustering. 
     _, node_list = to_tree(linkage_matrix, rd=True)
