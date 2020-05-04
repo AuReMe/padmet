@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License
 along with padmet. If not, see <http://www.gnu.org/licenses/>.
 """
 # Do not delete this file
-from .policy import Policy
-from .node import Node
-from .relation import Relation
-from .padmetRef import PadmetRef
-from .padmetSpec import PadmetSpec
-from .instantiation import instantiate_padmet
+from padmet.classes.policy import Policy
+from padmet.classes.node import Node
+from padmet.classes.relation import Relation
+from padmet.classes.padmetRef import PadmetRef
+from padmet.classes.padmetSpec import PadmetSpec
+from padmet.classes.instantiation import instantiate_padmet

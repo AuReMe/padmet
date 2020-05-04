@@ -1,14 +1,44 @@
 # -*- coding: utf-8 -*-
 """
 Description:
-    #TODO
+    From modelSeed reactions and pathways files creates a padmet file.
 
+::
+
+    usage:
+        padmet modelSeed_to_padmet --output=FILE --rxn_file=FILE --pwy_file=FILE [-v]
+
+    options:
+        -h --help     Show help.
+        --output=FILE    path of the padmet file to create
+        --rxn_file=FILE   path to json file of modelSeed reactions
+        --pwy_file=FILE   path to pathway reactions association from modelSeed
+        -v   print info.
 """
+import docopt
 import csv
 import json
 import os
 
 from padmet.classes import Relation, instantiate_padmet
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def modelSeed_to_padmet_cli(command_args):
+    #parsing args
+    args = docopt.docopt(__doc__, argv=command_args)
+    output = args["--output"]
+    verbose = args["-v"]
+    rxn_file = args["--rxn_file"]
+    pwy_file = args["--pwy_file"]
+    modelSeed_to_padmet(rxn_file, pwy_file, output, verbose)
+
 
 def modelSeed_to_padmet(rxn_file, pwy_file, output, verbose=False):
     """

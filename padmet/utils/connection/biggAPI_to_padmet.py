@@ -17,12 +17,43 @@ Description:
 
     5./ Also extract xrefs
 
+::
+
+    usage:
+        padmet biggAPI_to_padmet --output=FILE [--pwy_file=FILE] [-v]
+
+    options:
+        -h --help     Show help.
+        --output=FILE    path to output, the padmet file.
+        --pwy_file=FILE   add kegg pathways from pathways file, line:'pwy_id, pwy_name, x, rxn_id'.
+        -v   print info.
 """
+from gevent import monkey as curious_george
+curious_george.patch_all(thread=False, select=False)
+
 from padmet.classes import Relation, instantiate_padmet
 
+import docopt
 import requests
 import grequests
 import os
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def biggAPI_to_padmet_cli(command_args):
+    #parsing args
+    args = docopt.docopt(__doc__, argv=command_args)
+    output = args["--output"]
+    verbose = args["-v"]
+    pwy_file = args["--pwy_file"]
+    biggAPI_to_padmet(output, pwy_file, verbose)
+
 
 def biggAPI_to_padmet(output, pwy_file=None, verbose=False):
     """

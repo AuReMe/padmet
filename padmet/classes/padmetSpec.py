@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from . import Policy
-from . import Node
-from . import Relation
-from . import PadmetRef
-from ..utils import sbmlPlugin
+from padmet.classes.policy import Policy
+from padmet.classes.node import Node
+from padmet.classes.relation import Relation
+from padmet.classes.padmetRef import PadmetRef
+from padmet.utils import sbmlPlugin
+
 import libsbml
 import os
 

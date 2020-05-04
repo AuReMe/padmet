@@ -7,7 +7,17 @@ Description:
 
     And if a reaction with the same id is using different species or different reversibility
 
+::
+
+    usage:
+        padmet compare_sbml --sbml1=FILE --sbml2=FILE
+
+    option:
+        -h --help    Show help.
+        --sbml1=FILE    path of the first sbml file
+        --sbml2=FILE    path of the second sbml file
 """
+import docopt
 import csv
 import os
 import re
@@ -15,6 +25,21 @@ import re
 from cobra.io.sbml import read_sbml_model
 from padmet.utils.sbmlPlugin import convert_from_coded_id
 from padmet.utils.gbr import compile_input
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def compare_sbml_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    sbml1_path = args["--sbml1"]
+    sbml2_path = args["--sbml2"]
+    compare_sbml(sbml1_path, sbml2_path)
+
 
 def compare_multiple_sbml(sbml_path, output_folder):
     """

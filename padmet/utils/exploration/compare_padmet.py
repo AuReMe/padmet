@@ -15,12 +15,42 @@ Description:
         fieldnames = ['metabolite', padmet_a_rxn_consume, padmet_a_rxn_produce, padmet_b_rxn_consume, padmet_rxn_produce]
         line = [cpd-1, rxn-1,'',rxn-1,'']
 
+::
+
+    usage:
+        padmet compare_padmet --padmet=FILES/DIR --output=DIR [--padmetRef=FILE] [-v]
+
+    option:
+        -h --help    Show help.
+        --padmet=FILES/DIR    pathname of the padmet files, sep all files by ',', ex: /path/padmet1.padmet;/path/padmet2.padmet OR a folder
+        --output=DIR    pathname of the output folder
+        --padmetRef=FILE    pathanme of the database ref in padmet
 """
+import docopt
 import csv
 import os
 
 from multiprocessing import Pool
 from padmet.classes import PadmetSpec
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def compare_padmet_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    output = args["--output"]
+    verbose = args["-v"]
+    if args["--padmetRef"]:
+        padmetRef = PadmetRef(args["--padmetRef"])
+    else:
+        padmetRef = None
+    padmet_path = args["--padmet"]
+    compare_padmet(padmet_path, output, padmetRef, verbose)
 
 
 def extract_information_padmet(file_path, padmetRef, verbose):

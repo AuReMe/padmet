@@ -94,15 +94,66 @@ Description:
     SYNONYMS (0-n) => create new node name, create rlt (node has_name name)
     IN-PATHWAY (0-n) => check or create new node pathway, create rlt (node is_in_pathway name)
     REACTION-LIST (0-n) => check or create new node pathway, create rlt (node is_in_pathway name)
-    
 
+::
+
+    usage:
+        padmet pgdb_to_padmet --pgdb=DIR --output=FILE [--version=V] [--db=ID] [--padmetRef=FILE] [--source=STR] [-v] [--enhance]
+        padmet pgdb_to_padmet --pgdb=DIR --output=FILE --extract-gene [--no-orphan] [--keep-self-rxn] [--version=V] [--db=ID] [--padmetRef=FILE] [--source=STR] [-v] [--enhance]
+
+    options:
+        -h --help     Show help.
+        --version=V    Xcyc version [default: N.A].
+        --db=ID    Biocyc database corresponding to the pgdb (metacyc, ecocyc, ...) [default: N.A].
+        --output=FILE    padmet file corresponding to the DB.
+        --pgdb=DIR    directory containg all the .dat files of metacyc (data).
+        --padmetRef=FILE    padmet of reference.
+        --source=STR    Tag associated to the source of the reactions, used to ensure traceability [default: GENOME].
+        --enhance    use the metabolic-reactions.xml file to enhance the database.
+        --extract-gene    extract genes from genes_file (use if its a specie's pgdb, if metacyc, do not use).
+        --no-orhpan    remove reactions without gene associaiton (use if its a specie's pgdb, if metacyc, do not use).
+        --keep-self-rxn    remove reactions with no reactants (use if its a specie's pgdb, if metacyc, do not use).
+        -v   print info.
 """
+import docopt
+import libsbml
 import re
 import os
-import padmet.utils.sbmlPlugin as sbmlPlugin
-import libsbml
 
 from padmet.classes import PadmetRef, Node, Relation, instantiate_padmet
+import padmet.utils.sbmlPlugin as sbmlPlugin
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def pgdb_to_padmet_cli(command_args):
+    #parsing args
+    args = docopt.docopt(__doc__, argv=command_args)
+    version = args["--version"]
+    db = args["--db"]
+    source = args["--source"]
+    output = args["--output"]
+    pgdb_folder = args["--pgdb"]
+    enhanced_db = args["--enhance"]
+    extract_gene = args["--extract-gene"]
+    no_orphan = args["--no-orphan"]
+    keep_self_producing_rxn = args["--keep-self-rxn"]
+    padmetRef_file = args["--padmetRef"]
+    verbose = args["-v"]
+
+    if keep_self_producing_rxn:
+        no_self_producing_rxn = False
+    else:
+        no_self_producing_rxn = True
+
+    from_pgdb_to_padmet(pgdb_folder=pgdb_folder, db=db , version=version, source=source, extract_gene=extract_gene,
+                                                no_orphan=no_orphan, no_self_producing_rxn=no_self_producing_rxn, enhanced_db=enhanced_db,
+                                                padmetRef_file=padmetRef_file, verbose=verbose, output_file=output)
 
 
 def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA', source='GENOME', extract_gene=False, no_orphan=False, no_self_producing_rxn=True, enhanced_db=False, padmetRef_file=None, verbose=False, output_file=None):

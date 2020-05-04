@@ -14,8 +14,37 @@ Description:
     is_a(compound_id, class_id).
     is_a(pathway_id, pathway_id).
 
+::
+
+    usage:
+        padmet padmet_to_asp --padmet=FILE --output=FILE [-v]
+
+    option:
+        -h --help     Show help.
+        --padmet=FILE    path to padmet file to convert.
+        --output=FILE    path to output file in lp format.
+        -v    print info.
 """
+import docopt
+
 from padmet.classes import PadmetSpec
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def padmet_to_asp_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    padmet_file = args["--padmet"]
+    output = args["--output"]
+    verbose = args["-v"]
+
+    padmet_to_asp(padmet_file, output, verbose)
+
 
 def padmet_to_asp(padmet_file, output, verbose = False):
     """

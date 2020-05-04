@@ -4,10 +4,35 @@
 Description:
     Prot2Genome contains functions used for blast analysis and padmet enrichment
     
+::
+
+usage:
+    padmet prot2genome --query_faa=FILE --query_ids=FILE/STR --subject_gbk=FILE --subject_fna=FILE --subject_faa=FILE --output_folder=FILE [--cpu=INT] [blastp] [tblastn] [debug]
+    padmet prot2genome --query_faa=FILE --query_ids=FILE/STR --subject_gbk=FILE --subject_fna=FILE --subject_faa=FILE --output_folder=FILE --exonerate=PATH  [--cpu=INT] [blastp] [tblastn] [debug]
+    padmet prot2genome --padmet=FOLDER --output=FOLDER
+    padmet prot2genome --studied_organisms=FOLDER --output=FOLDER
+    padmet prot2genome --run=FOLDER --padmetRef=FILE [--cpu=INT] [debug]
+
+    From aucome run fromAucome():
+        -1. Extract specifique reactions in spec_reactions folder with extractReactions()
+        -2. Extract genes from spec_reactions files with extractGenes()
+        -3. Run tblastn + exonerate with runAllAnalysis()
     
+options:
+    --query_faa=FILE #TODO.
+    --query_ids=FILE/STR #TODO.
+    --subject_gbk=FILE #TODO.
+    --subject_fna=FILE #TODO.
+    --subject_faa=FILE #TODO.
+    --output_folder=FILE #TODO.
+    --cpu=INT     Number of cpu to use for the multiprocessing (if none use 1 cpu). [default: 1]
+    blastp #TODO.
+    tblastn #TODO.
+    debug #TODO.
 """
 
 import csv
+import docopt
 import itertools
 import os
 import shutil
@@ -21,6 +46,31 @@ from Bio import SeqIO
 from padmet.classes import PadmetSpec
 from padmet.utils.management import manual_curation
 from multiprocessing import Pool
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def prot2genome_cli(command_args):
+    """
+    """
+    global exonerate_path
+    args = docopt.docopt(__doc__, argv=command_args)
+
+    print("Test running exonerate...")
+    subprocess.run(["exonerate"], shell = True)
+
+    run_folder = args["--run"]
+    cpu =  int(args["--cpu"])
+    padmetRef = args["--padmetRef"]
+    debug = args["debug"]
+
+    if run_folder:
+        fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=True, debug=debug)
 
 
 #Utilise gbk to faa, ajouter une option pour faire un fichier fasta une sequence.

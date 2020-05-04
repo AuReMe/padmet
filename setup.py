@@ -25,7 +25,6 @@ class PyTest(TestCommand):
 ################################################################################
  
 setup(
- 
     name='padmet',
     version="4.0",
  
@@ -66,4 +65,9 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
+    entry_points={
+        'console_scripts': [
+            'padmet = padmet.__main__:main'
+        ],
+    },
 )

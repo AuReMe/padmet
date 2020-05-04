@@ -15,3 +15,8 @@ You should have received a copy of the GNU General Public License
 along with padmet. If not, see <http://www.gnu.org/licenses/>.
 """
 # Do not delete this file
+import padmet.utils.connection
+import padmet.utils.exploration
+import padmet.utils.management
+
+from padmet.utils import gbr, sbmlPlugin

@@ -11,7 +11,7 @@ compounds: skyblue
 ::
 
     usage:
-        visu_path.py --padmetSpec=FILE --padmetRef=FILE --pathway=ID
+        padmet visu_path --padmetSpec=FILE --padmetRef=FILE --pathway=ID
     
     options:
         -h --help     Show help.
@@ -20,14 +20,23 @@ compounds: skyblue
         --pathway=ID    pathway id to visualize.
 
 """
-from padmet.classes import PadmetRef, PadmetSpec
-import networkx as nx
-from networkx.drawing.nx_agraph import graphviz_layout
-import matplotlib.pylab as plt
 import docopt
+import matplotlib.pylab as plt
+import networkx as nx
 
-def main():
-    args = docopt.docopt(__doc__)
+from padmet.classes import PadmetRef, PadmetSpec
+from networkx.drawing.nx_agraph import graphviz_layout
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def visu_path_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
     
     padmet_ref = PadmetRef(args["--padmetRef"])
     padmet = PadmetSpec(args["--padmetSpec"])

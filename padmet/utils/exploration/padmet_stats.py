@@ -10,13 +10,38 @@ Description:
     Create a tsv file named padmet_stats.tsv where the script have been
     launched.
 
+::
+
+usage:
+    padmet padmet_stats --padmet=FILE
+
+option:
+    -h --help    Show help.
+    -p --padmet=FILE    padmet file or folder containing padmet(s).
 """
 
 import csv
+import docopt
 import os
 import pandas as pa
 
 from padmet.classes import PadmetSpec
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def padmet_stats_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+
+    padmet_file_folder = args['--padmet']
+
+    compute_stats(padmet_file_folder)
+
 
 def compute_stats(padmet_file_folder):
     """

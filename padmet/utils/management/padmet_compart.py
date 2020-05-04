@@ -10,7 +10,56 @@ Description:
     
     3./ change compartment id with 3rd usage
 
+::
+
+    usage:
+        padmet padmet_compart --padmet=FILE
+        padmet padmet_compart --padmet=FILE --remove=STR [--output=FILE] [-v]
+        padmet padmet_compart --padmet=FILE --old=STR --new=STR [--output=FILE] [-v]
+
+    options:
+        -h --help     Show help.
+        --padmet=FILE    pathname of the padmet file
+        --remove=STR    compartment id to remove
+        --old=STR    compartment id to change to new id
+        --new=STR    new compartment id
+        --output=FILE    new padmet pathname, if none, overwritting the original padmet
+        -v   print info
 """
+import docopt
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def padmet_compart_cli(command_args):
+    #parsing args
+    args = docopt.docopt(__doc__, argv=command_args)
+    padmet_file = args["--padmet"]
+    old_compart = args["--old"]
+    new_compart = args["--new"]
+    new_padmet = args["--output"]
+    to_remove = args["--remove"]
+    verbose = args["-v"]
+    if new_padmet is None:
+        new_padmet = args["--padmet"]
+    padmet = PadmetSpec(padmet_file)
+
+    if to_remove:
+        padmet = remove_compart(padmet, to_remove, verbose = False)
+        padmet.generateFile(new_padmet)
+
+    elif old_compart and new_compart:
+        padmet = replace_compart(padmet, old_compart, new_compart, verbose)
+        padmet.generateFile(new_padmet)
+    else:
+        print("List of compartments:")
+        print(list(padmet.get_all_compart()))
+
 
 def remove_compart(padmet, to_remove, verbose = False):
     """
@@ -40,9 +89,9 @@ def remove_compart(padmet, to_remove, verbose = False):
         padmet.delCompart(compart, verbose)
     return padmet
 
-def remplace_compart(padmet, old_compart, new_compart, verbose = False):    
+def replace_compart(padmet, old_compart, new_compart, verbose = False):
     """
-    Remplace compartment 'old_compart' by 'new_compart'.
+    Replace compartment 'old_compart' by 'new_compart'.
 
     Parameters
     ----------

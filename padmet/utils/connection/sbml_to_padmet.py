@@ -25,10 +25,61 @@ Description:
     Finally if a reaction from sbml is not in padmetRef, it is possible to force the copy and creating
     a new reaction in padmetSpec with the arg -f
 
+::
+
+    usage:
+        padmet sbml_to_padmet --sbml=DIR/FILE --padmetRef=FILE [--output=FILE] [--db=STR] [--version=STR] [-v]
+        padmet sbml_to_padmet --sbml=DIR/FILE --padmetSpec=FILE [--output=FILE] [--source_tool=STR] [--source_category=STR] [--source_id=STR] [-v]
+        padmet sbml_to_padmet --sbml=DIR/FILE --padmetSpec=FILE  --padmetRef=FILE  [--mapping=DIR/FILE] [--mapping_tag=STR] [--output=FILE] [--source_tool=STR] [--source_category=STR] [--source_id=STR] [-v] [-f]
+
+    options:
+        -h --help     Show help.
+        --padmetSpec=FILE    path to the padmet file to update with the sbml. If there's no padmetSpec, just specify the output
+        --padmetRef=FILE    path to the padmet file representing to the database of reference (ex: metacyc_18.5.padmet)
+        --sbml=FILE    1 sbml file to convert into padmetSpec (ex: my_network.xml/sbml) OR a directory with n SBML
+        --output=FILE   pathanme to the new padmet file
+        --mapping=FILE    dictionnary of association id_origin id_ref
+        --mapping_tag=STR    if sbml is a folder, use a tag to define mapping files ex: org1.sbml and org1_dict.csv, '_dict.csv' will be the mapping tag. [default: _dict.csv]
+        --db=STR    database name
+        --version=STR    database version
+        -v   print info
 """
-from padmet.classes import PadmetSpec, PadmetRef, instantiate_padmet
-from datetime import datetime
+import docopt
 import os
+
+from datetime import datetime
+from padmet.classes import PadmetSpec, PadmetRef, instantiate_padmet
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def sbml_to_padmet_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    padmetRef_file = args["--padmetRef"]
+    sbml = args["--sbml"]
+    output = args["--output"]
+    verbose = args["-v"]
+    db = args["--db"]
+    if not db: db = "NA"
+    version = args["--version"]
+    if not version: version = "NA"
+    padmetSpec_file = args["--padmetSpec"]
+    source_tool = args["--source_tool"]
+    source_category = args["--source_category"]
+    mapping = args["--mapping"]
+    mapping_tag = args["--mapping_tag"]
+
+
+    if padmetSpec_file:
+        sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=padmetRef_file, output=output, mapping=mapping, mapping_tag=mapping_tag, source_tool=source_tool, source_category=source_category, db=db, version=version, verbose=verbose)
+    else:
+        sbml_to_padmetRef(sbml, padmetRef_file, output, db, version, verbose)
+
         
 def sbml_to_padmetRef(sbml, padmetRef_file, output=None, db="NA", version="NA", verbose=False):
     """
@@ -92,10 +143,11 @@ def sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=None, output=None, 
     
     #TODO
     """
-    print('sbml_to_padmet decodes reactions and metabolites using regular expression.')
-    print('The reaction/metabolites IDs format used by sbml_to_padmet is: prefix + "_" + ID + "_" + optional_suffix. ')
-    print('prefix is a one character indicating the type, like R for reaction or M for metabolite.')
-    print('optional_suffix is a one or two characters indicating the compartment.')
+    if verbose:
+        print('sbml_to_padmet decodes reactions and metabolites using regular expression.')
+        print('The reaction/metabolites IDs format used by sbml_to_padmet is: prefix + "_" + ID + "_" + optional_suffix. ')
+        print('prefix is a one character indicating the type, like R for reaction or M for metabolite.')
+        print('optional_suffix is a one or two characters indicating the compartment.')
 
     if output is None:
         output = padmetSpec_file

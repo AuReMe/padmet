@@ -4,9 +4,36 @@ Description:
     From the padmetRef of MetaCyc creates the MetaCyc ontology.
     At this moment, all the element of the tree begins with a ont_ and all the '+' or '-' are removed.
     This is a limitation from lxml tag.
+
+::
+
+    usage:
+        padmet get_metacyc_to_ontology -p=FILE -o=FILE
+
+    options:
+        -h --help     Show help.
+        -p=FILE    path of the padmet file of MetaCyc
+        -o=FILE   pathname of the XML output file
 """
+import docopt
 from lxml import etree
 from padmet.classes.padmetRef import PadmetRef
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def get_metacyc_ontology_cli(command_args):
+    #parsing args
+    args = docopt.docopt(__doc__, argv=command_args)
+    padmetRef_file = args["-p"]
+    output_file = args["-o"]
+    metacyc_to_ontology(padmetRef_file, output_file, ontology_root='FRAMES')
+
 
 def metacyc_to_ontology(padmetRef_file, output_file, ontology_root='FRAMES'):
     """

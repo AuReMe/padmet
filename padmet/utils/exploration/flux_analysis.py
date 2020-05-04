@@ -17,12 +17,43 @@ Description:
     3./ If --all_species: will test flux reachability of all the compounds in the
     metabolic network (may take several minutes)
 
+::
+
+    usage:
+        padmet flux_analysis --sbml=FILE
+        padmet flux_analysis --sbml=FILE --seeds=FILE --targets=FILE
+        padmet flux_analysis --sbml=FILE --all_species
+
+    option:
+        -h --help    Show help.
+        --sbml=FILE    pathname to the sbml file to test for fba and fva.
+        --seeds=FILE    pathname to the sbml file containing the seeds (medium).
+        --targets=FILE    pathname to the sbml file containing the targets.
+        --all_species    allow to make FBA on all the metabolites of the given model.
 """
+import docopt
+
 from padmet.utils.sbmlPlugin import convert_from_coded_id
 from cobra import Reaction
 from cobra import flux_analysis as cobra_flux_analysis
 from cobra.io.sbml import read_sbml_model
-import subprocess
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def flux_analysis_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    sbml_file = args["--sbml"]
+    seeds_file = args["--seeds"]
+    targets_file = args["--targets"]
+    all_species = args["--all_species"]
+    flux_analysis(sbml_file, seeds_file, targets_file, all_species)
+
 
 def flux_analysis(sbml_file, seeds_file = None, targets_file = None, all_species = False):
     """

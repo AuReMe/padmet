@@ -8,9 +8,42 @@ Description:
     
     padmetRef can be use to ensure data uniformization.
 
+::
+
+    usage:
+        padmet padmet_to_padmet --to_add=FILE/DIR --output=FILE [--padmetRef=FILE]  [-v]
+
+    options:
+        -h --help     Show help.
+        --to_add=FILE/DIR    path to the padmet file to add (sep: ;) or path to folder of padmet files.
+        --output=FILE   path to the new padmet file
+        --padmetRef=FILE    path to the padmet file representing to the database of reference (ex: metacyc_18.5.padmet)
+        -v   print info
 """
-from padmet.classes import PadmetSpec
+import docopt
 import os
+
+from padmet.classes import PadmetSpec
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def padmet_to_padmet_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    if args["--padmetRef"]:
+        padmetRef = PadmetRef(args["--padmetRef"])
+    else:
+        padmetRef = None
+    output = args["--output"]
+    verbose = args["-v"]
+    to_add = args["--to_add"]
+    padmet_to_padmet(to_add, output, padmetRef, verbose)
+
 
 def padmet_to_padmet(to_add, output, verbose=False):
     """

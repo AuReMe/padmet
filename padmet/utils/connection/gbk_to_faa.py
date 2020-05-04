@@ -3,12 +3,41 @@
 Description:
     convert GBK to FAA with Bio package
 
+::
+
+    usage:
+        padmet gbk_to_faa    --gbk=FILE --output=FILE [--qualifier=STR] [-v]
+
+    option:
+        -h --help    Show help.
+        --gbk=FILE    path to the gbk file.
+        --output=FILE    path to the output, a FAA file.
+        --qualifier=STR    the qualifier of the gene id [default: locus_tag].
+        -v   print info
 """
+import docopt
 
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet.IUPAC import protein
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def gbk_to_faa_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    gbk_file = args["--gbk"]
+    output = args["--output"]
+    qualifier = args["--qualifier"]
+    verbose = args["-v"]
+    gbk_to_faa(gbk_file, output, qualifier, verbose)
+
 
 def gbk_to_faa(gbk_file, output, qualifier='locus_tag', verbose=True):
     """

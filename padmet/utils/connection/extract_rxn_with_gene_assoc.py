@@ -5,9 +5,37 @@ Description:
 
     Need for a reaction, in section 'note', 'GENE_ASSOCIATION': ....
 
+::
+
+    usage:
+        padmet extract_rxn_with_gene_assoc --sbml=FILE --output=FILE [-v]
+
+    options:
+        -h --help     Show help.
+        --sbml=FILE    path to the sbml file
+        --output=FILE    path to the sbml output (with only rxn with genes assoc)
+        -v   print info
 """
+import docopt
 import libsbml
 from padmet.utils.sbmlPlugin import parseNotes
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def extract_rxn_with_gene_assoc_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    sbml = args["--sbml"]
+    output = args["--output"]
+    verbose = args["-v"]
+
+    extract_rxn_with_gene_assoc(sbml, output, verbose)
+
 
 def extract_rxn_with_gene_assoc(sbml, output, verbose=False):
     """

@@ -49,14 +49,55 @@ Description:
         if yes: add the reaction to the new sbml and change genes ids by study org genes ids
         
         Create the new sbml file.
-    
+
+::
+
+    usage:
+        padmet extract_orthofinder --sbml=FILE/DIR --orthologues=DIR --study_id=STR --output=DIR [--workflow=STR] [-v]
+        padmet extract_orthofinder --sbml=DIR --orthogroups=FILE --study_id=STR --output=DIR [--workflow=STR] [-v]
+
+    option:
+        -h --help    Show help.
+        --sbml=DIR   Folder with sub folder named as models name within sbml file name as model_name.sbml
+        --orthogroups=FILE   Output file of Orthofinder run Orthogroups.tsv
+        --orthologues=DIR   Output directory of Orthofinder run Orthologues
+        --study_id=ID   name of the studied organism
+        --workflow=ID   worklow id in ['aureme','aucome']. specific run architecture where to search sbml files
+       --output=DIR   folder where to create all sbml output files
+        -v   print info
 """
+import docopt
 import re
 import csv
 import libsbml
+import os
+
 from padmet.utils import sbmlPlugin as sp
 from padmet.utils import gbr
-import os
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def extract_orthofinder_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    verbose = args["-v"]
+    sbml = args["--sbml"]
+    orthogroups_file = args["--orthogroups"]
+    orthologue_folder = args["--orthologues"]
+    output_folder = args["--output"]
+    study_id = args["--study_id"]
+    workflow = args["--workflow"]
+    all_model_sbml = get_sbml_files(sbml, workflow, verbose)
+    if orthogroups_file:
+        orthogroups_to_sbml(orthogroups_file, all_model_sbml, output_folder, study_id, verbose)
+    elif orthologue_folder:
+        orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_id, verbose)
+
 
 def get_sbml_files(sbml, workflow = None, verbose = False):
     """
