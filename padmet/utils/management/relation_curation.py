@@ -20,6 +20,8 @@
 """
 import docopt
 
+from padmet.classes import PadmetSpec
+
 
 def command_help():
     """

@@ -38,7 +38,7 @@ import csv
 import docopt
 import os
 
-from padmet.classes import Relation
+from padmet.classes import Relation, PadmetSpec
 from padmet.utils.sbmlPlugin import parseGeneAssoc
 
 

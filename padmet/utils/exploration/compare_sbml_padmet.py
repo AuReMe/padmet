@@ -16,6 +16,8 @@ Description:
 import docopt
 import padmet.utils.sbmlPlugin as sp
 
+from padmet.classes import PadmetSpec
+
 
 def command_help():
     """

@@ -21,7 +21,7 @@ Description:
 
     usage:
         padmet flux_analysis --sbml=FILE
-        padmet flux_analysis --sbml=FILE --seeds=FILE --targets=FILE
+        padmet flux_analysis --sbml=FILE --seeds=FILE --targets=FILE [--all_species]
         padmet flux_analysis --sbml=FILE --all_species
 
     option:

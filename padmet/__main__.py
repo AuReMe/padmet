@@ -52,49 +52,12 @@ management:
     padmet_medium    For a given set of compounds, create 2 reactions for each compounds to maintain consistency of the network for flux analysis.
     relation_curation    Manually curate PADmet relation
 
-See 'aucome <command> -h' for more information on a specific command.
+See 'padmet <command> -h' for more information on a specific command.
 """
 import docopt
+import importlib
 import sys
 
-from padmet.utils.connection import pgdb_to_padmet
-from padmet.utils.connection import biggAPI_to_padmet
-from padmet.utils.connection import check_orthology_input
-from padmet.utils.connection import enhanced_meneco_output
-from padmet.utils.connection import extract_orthofinder
-from padmet.utils.connection import extract_rxn_with_gene_assoc
-from padmet.utils.connection import gbk_to_faa
-from padmet.utils.connection import gene_to_targets
-from padmet.utils.connection import get_metacyc_ontology
-from padmet.utils.connection import modelSeed_to_padmet
-from padmet.utils.connection import padmet_to_asp
-from padmet.utils.connection import padmet_to_matrix
-from padmet.utils.connection import padmet_to_padmet
-from padmet.utils.connection import padmet_to_tsv
-from padmet.utils.connection import sbml_to_curation_form
-from padmet.utils.connection import sbml_to_padmet
-from padmet.utils.connection import sbml_to_sbml
-from padmet.utils.connection import sbmlGenerator
-from padmet.utils.connection import wikiGenerator
-
-from padmet.utils.exploration import compare_padmet
-from padmet.utils.exploration import compare_sbml
-from padmet.utils.exploration import compare_sbml_padmet
-from padmet.utils.exploration import convert_sbml_db
-from padmet.utils.exploration import dendrogram_reactions_distance
-from padmet.utils.exploration import flux_analysis
-from padmet.utils.exploration import get_pwy_from_rxn
-from padmet.utils.exploration import padmet_stats
-from padmet.utils.exploration import prot2genome
-from padmet.utils.exploration import visu_path
-from padmet.utils.exploration import report_network
-
-from padmet.utils.management import manual_curation
-from padmet.utils.management import padmet_compart
-from padmet.utils.management import padmet_medium
-from padmet.utils.management import relation_curation
-
-from padmet.utils import gbr
 
 def main(args=None):
     args = docopt.docopt(__doc__, options_first=True)
@@ -103,57 +66,56 @@ def main(args=None):
     command_args = args.pop('<args>')
 
     commands_path = {
-        'gbr': gbr,
-        'biggAPI_to_padmet': biggAPI_to_padmet,
-        'check_orthology_input': check_orthology_input,
-        'enhanced_meneco_output': enhanced_meneco_output,
-        'extract_orthofinder': extract_orthofinder,
-        'extract_rxn_with_gene_assoc': extract_rxn_with_gene_assoc,
-        'gbk_to_faa': gbk_to_faa,
-        'gene_to_targets': gene_to_targets,
-        'get_metacyc_ontology': get_metacyc_ontology,
-        'modelSeed_to_padmet': modelSeed_to_padmet,
-        'padmet_to_asp': padmet_to_asp,
-        'padmet_to_matrix': padmet_to_matrix,
-        'padmet_to_padmet': padmet_to_padmet,
-        'padmet_to_tsv': padmet_to_tsv,
-        'pgdb_to_padmet': pgdb_to_padmet,
-        'sbml_to_curation_form': sbml_to_curation_form,
-        'sbml_to_padmet': sbml_to_padmet,
-        'sbml_to_sbml': sbml_to_sbml,
-        'sbmlGenerator': sbmlGenerator,
-        'wikiGenerator': wikiGenerator,
-        'compare_padmet': compare_padmet,
-        'compare_sbml': compare_sbml,
-        'compare_sbml_padmet': compare_sbml_padmet,
-        'convert_sbml_db': convert_sbml_db,
-        'dendrogram_reactions_distance': dendrogram_reactions_distance,
-        'flux_analysis': flux_analysis,
-        'get_pwy_from_rxn': get_pwy_from_rxn,
-        'padmet_stats': padmet_stats,
-        'prot2genome': prot2genome,
-        'visu_path': visu_path,
-        'report_network': report_network,
-        'manual_curation': manual_curation,
-        'padmet_compart': padmet_compart,
-        'padmet_medium': padmet_medium,
-        'relation_curation': relation_curation,
+        'utils': ['gbr'] ,
+        'utils.connection': [
+            'biggAPI_to_padmet', 'check_orthology_input',
+            'enhanced_meneco_output', 'extract_orthofinder',
+            'extract_rxn_with_gene_assoc', 'gbk_to_faa',
+            'gene_to_targets', 'get_metacyc_ontology',
+            'modelSeed_to_padmet', 'padmet_to_asp',
+            'padmet_to_matrix', 'padmet_to_padmet',
+            'padmet_to_tsv', 'pgdb_to_padmet',
+            'sbml_to_curation_form', 'sbml_to_padmet',
+            'sbml_to_sbml', 'sbmlGenerator',
+            'wikiGenerator',
+            ],
+        'utils.exploration': [
+            'compare_padmet', 'compare_sbml',
+            'compare_sbml_padmet', 'convert_sbml_db',
+            'dendrogram_reactions_distance', 'flux_analysis',
+            'get_pwy_from_rxn', 'padmet_stats',
+            'prot2genome', 'visu_path',
+            'report_network',
+            ],
+        'utils.management': [
+            'manual_curation', 'padmet_compart',
+            'padmet_medium', 'relation_curation',
+        ]
     }
 
     if command:
-        if command not in commands_path:
+
+        # Find the import path of the module
+        command_import_path = None
+        for import_path in commands_path:
+            if command in commands_path[import_path]:
+                command_import_path = import_path
+
+        if not command_import_path:
             sys.exit(command + ' not a valid command.')
 
+        # Import the corresponding module
+        command_import = importlib.import_module('.'+command, 'padmet.'+command_import_path)
         if '-h' in command_args:
             # Return help for the command
-            getattr(commands_path[command], 'command_help')()
+            getattr(command_import, 'command_help')()
             sys.exit()
 
         # Add command to command_args to be parse by docopt.
         command_args.insert(0,command)
 
         # Call the Command-line function of the script
-        getattr(commands_path[command], command + '_cli')(command_args)
+        getattr(command_import, command + '_cli')(command_args)
 
 
 if __name__ == "__main__":

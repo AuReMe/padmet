@@ -2,6 +2,7 @@ import csv
 import libsbml
 import os
 import shutil
+import subprocess
 
 from Bio import SeqIO
 from padmet.classes.padmetSpec import PadmetSpec
@@ -92,8 +93,43 @@ def test_pgdb_to_padmet():
     assert set(FABO_GENES).issubset(set(all_genes))
 
 
+def test_pgdb_to_padmet_cli():
+
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene'])
+
+    test_padmetSpec = PadmetSpec('test.padmet')
+
+    all_pwys, all_cpds, all_rxns, all_genes = extract_data_padmet(test_padmetSpec)
+
+    assert all_pwys == FABO_PWYS
+
+    assert test_padmetSpec.dicOfNode['FAO-PWY'].misc['COMMON-NAME'][0] == 'fatty acid &beta;-oxidation I - (generic)'
+
+    assert set(FABO_RXNS).issubset(set(all_rxns))
+
+    assert set(FABO_CPDS).issubset(set(all_cpds))
+
+    assert set(FABO_GENES).issubset(set(all_genes))
+
+    os.remove('test.padmet')
+
+
 def test_pgdb_to_padmet_without_genes():
     test_padmetSpec = from_pgdb_to_padmet('test_data/pgdb')
+    all_pwys, all_cpds, all_rxns, all_genes = extract_data_padmet(test_padmetSpec)
+    assert all_pwys == FABO_PWYS
+
+    assert set(FABO_RXNS).issubset(set(all_rxns))
+
+    assert set(FABO_CPDS).issubset(set(all_cpds))
+
+    assert all_genes == []
+
+
+def test_pgdb_to_padmet_without_genes_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet'])
+
+    test_padmetSpec = PadmetSpec('test.padmet')
 
     all_pwys, all_cpds, all_rxns, all_genes = extract_data_padmet(test_padmetSpec)
     assert all_pwys == FABO_PWYS
@@ -103,6 +139,8 @@ def test_pgdb_to_padmet_without_genes():
     assert set(FABO_CPDS).issubset(set(all_cpds))
 
     assert all_genes == []
+
+    os.remove('test.padmet')
 
 
 def test_pgdb_to_padmet_no_orphan_with_genes():
@@ -121,6 +159,26 @@ def test_pgdb_to_padmet_no_orphan_with_genes():
     assert 'b24589' not in all_genes
 
 
+def test_pgdb_to_padmet_no_orphan_with_genes_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene', '--no-orphan'])
+
+    test_padmetSpec = PadmetSpec('test.padmet')
+
+    all_pwys, all_cpds, all_rxns, all_genes = extract_data_padmet(test_padmetSpec)
+
+    assert all_pwys == FABO_PWYS
+
+    # 2.3.1.49-RXN is added as it has no association with genes
+    assert '2.3.1.49-RXN' not in all_rxns
+
+    assert set(FABO_CPDS).issubset(set(all_cpds))
+
+    # b24589 is a manually added genes without association to a reaction
+    assert 'b24589' not in all_genes
+
+    os.remove('test.padmet')
+
+
 def test_sbmlGenerator():
     fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
     padmet_to_sbml(fabo_padmetSpec, 'fabo.sbml')
@@ -133,6 +191,24 @@ def test_sbmlGenerator():
 
     assert set(FABO_GENES).issubset(set(genes))
 
+    os.remove('fabo.sbml')
+
+
+def test_sbmlGenerator_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene'])
+    fabo_padmetSpec = PadmetSpec('test.padmet')
+
+    subprocess.call(['padmet', 'sbmlGenerator', '--padmet', 'test.padmet', '--output', 'fabo.sbml', '--sbml_lvl', '3'])
+
+    genes, id_compounds, id_reactions = extract_data_sbml('fabo.sbml')
+
+    assert set(FABO_RXNS).issubset(set(id_reactions))
+
+    assert set(FABO_CPDS).issubset(set(id_compounds))
+
+    assert set(FABO_GENES).issubset(set(genes))
+
+    os.remove('test.padmet')
     os.remove('fabo.sbml')
 
 
@@ -153,6 +229,29 @@ def test_sbml_to_padmet():
     assert set(FABO_GENES).issubset(set(all_genes))
 
     os.remove('fabo.sbml')
+    os.remove('fabo.padmet')
+
+
+def test_sbml_to_padmet_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene'])
+
+    subprocess.call(['padmet', 'sbmlGenerator', '--padmet', 'test.padmet', '--output', 'fabo.sbml', '--sbml_lvl', '3'])
+
+    subprocess.call(['padmet', 'sbml_to_padmet', '--sbml', 'fabo.sbml', '--padmetSpec', 'fabo.padmet'])
+
+    fabo_padmet = PadmetSpec('fabo.padmet')
+    all_pwys, all_cpds, all_rxns, all_genes = extract_data_padmet(fabo_padmet)
+
+    assert all_pwys == []
+
+    assert set(FABO_RXNS).issubset(set(all_rxns))
+
+    assert set(FABO_CPDS).issubset(set(all_cpds))
+
+    assert set(FABO_GENES).issubset(set(all_genes))
+
+    os.remove('fabo.sbml')
+    os.remove('test.padmet')
     os.remove('fabo.padmet')
 
 
@@ -181,10 +280,74 @@ def test_sbml_to_sbml():
     os.remove('fabo_2.sbml')
 
 
+def test_sbml_to_sbml_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene'])
+
+    subprocess.call(['padmet', 'sbmlGenerator', '--padmet', 'test.padmet', '--output', 'fabo.sbml', '--sbml_lvl', '3'])
+
+    subprocess.call(['padmet', 'sbml_to_sbml', '--input', 'fabo.sbml', '--output', 'fabo_2.sbml', '--new_sbml_lvl', '2', '--cpu', '1'])
+
+    sbml_3_genes, sbml_3_compounds, sbml_3_reactions = extract_data_sbml('fabo.sbml')
+
+    sbml_2_genes, sbml_2_compounds, sbml_2_reactions = extract_data_sbml('fabo_2.sbml')
+
+    assert set(FABO_RXNS).issubset(set(sbml_2_reactions))
+
+    assert set(FABO_CPDS).issubset(set(sbml_2_compounds))
+
+    assert set(FABO_GENES).issubset(set(sbml_2_genes))
+
+    assert set(sbml_3_reactions).issubset(set(sbml_2_reactions))
+
+    assert set(sbml_3_compounds).issubset(set(sbml_2_compounds))
+
+    assert set(sbml_3_genes).issubset(set(sbml_2_genes))
+
+    os.remove('fabo.sbml')
+    os.remove('fabo_2.sbml')
+    os.remove('test.padmet')
+
+
 def test_wikiGenerator():
     fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
     fabo_padmetSpec.generateFile('fabo.padmet')
     wikiGenerator('fabo.padmet', 'output', 'TEST', None, None, None, False)
+
+    os.remove('fabo.padmet')
+
+    test_genes = [gene for gene in os.listdir('output/genes')]
+
+    test_cpds = [metabolite for metabolite in os.listdir('output/metabolites')]
+
+    test_reactions = [reaction for reaction in os.listdir('output/reactions')]
+
+    test_pathways = [pathway for pathway in os.listdir('output/pathways')]
+
+    test_organisms = [organism for organism in os.listdir('output/organisms')]
+
+    test_navigations = [navigation for navigation in os.listdir('output/navigation')]
+
+    assert test_pathways == FABO_PWYS
+
+    assert set(FABO_RXNS).issubset(set(test_reactions))
+
+    assert set(FABO_CPDS).issubset(set(test_cpds))
+
+    assert set(FABO_GENES).issubset(set(test_genes))
+
+    assert test_organisms == ['fabo']
+
+    assert sorted(test_navigations) == sorted(['annotation', 'pathwaytools', 'Category:gene', 'Category:reaction',
+                                'MediaWiki:Sidebar', 'Category:pathway', 'Main_Page', 'Category:metabolite',
+                                'Category:organism'])
+
+    shutil.rmtree('output')
+
+
+def test_wikiGenerator_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'fabo.padmet', '--extract-gene'])
+
+    subprocess.call(['padmet', 'wikiGenerator', '--padmet', 'fabo.padmet', '--output', 'output', '--wiki_id', 'TEST'])
 
     os.remove('fabo.padmet')
 
@@ -233,8 +396,49 @@ def test_sbml_to_curation_form():
     os.remove('form.txt')
 
 
+def test_sbml_to_curation_form_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene'])
+
+    subprocess.call(['padmet', 'sbmlGenerator', '--padmet', 'test.padmet', '--output', 'fabo.sbml', '--sbml_lvl', '3'])
+
+    rxns = ['ACYLCOADEHYDROG-RXN', 'ACYLCOASYN-RXN', 'ENOYL-COA-HYDRAT-RXN']
+    id_reactions = ['R_'+sbmlPlugin.convert_to_coded_id(reaction) for reaction in rxns]
+
+    with open('reactions.txt', 'w') as tmp_file:
+        for id_reaction in id_reactions:
+            tmp_file.write(id_reaction+'\n')
+
+    subprocess.call(['padmet', 'sbml_to_curation_form', '--sbml', 'fabo.sbml', '--output', 'form.txt', '--rxn_file', 'reactions.txt'])
+
+    os.remove('test.padmet')
+    os.remove('fabo.sbml')
+    os.remove('reactions.txt')
+
+    with open('form.txt', 'r') as form_file:
+        form_str = form_file.read()
+        for rxn in rxns:
+            assert rxn in form_str
+
+    os.remove('form.txt')
+
+
 def test_gbk_to_fasta():
     gbk_to_faa('test_data/gbk/fatty_acid_beta_oxydation_I_1.gbk', 'fatty_acid_beta_oxydation_I_1.faa', 'locus_tag')
+
+    records = [record for record in SeqIO.parse('fatty_acid_beta_oxydation_I_1.faa', 'fasta')]
+
+    expected_records = [record for record in SeqIO.parse('test_data/gbk/fatty_acid_beta_oxydation_I_1.faa', 'fasta')]
+
+    for index, record in enumerate(records):
+        assert record.id == expected_records[index].id
+        assert record.seq == expected_records[index].seq
+
+    os.remove('fatty_acid_beta_oxydation_I_1.faa')
+
+
+def test_gbk_to_fasta_cli():
+    subprocess.call(['padmet', 'gbk_to_faa', '--gbk', 'test_data/gbk/fatty_acid_beta_oxydation_I_1.gbk',
+                        '--output', 'fatty_acid_beta_oxydation_I_1.faa', '--qualifier', 'locus_tag'])
 
     records = [record for record in SeqIO.parse('fatty_acid_beta_oxydation_I_1.faa', 'fasta')]
 
@@ -251,6 +455,23 @@ def test_gene_to_targets():
     fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
 
     gene_to_targets(fabo_padmetSpec, 'test_data/genes_to_targets.txt', 'targets.txt')
+
+    expected_tagerts = sorted(['PROTON', '3-KETOACYL-COA', 'CIS-DELTA3-ENOYL-COA', 'PPI', 'NADH',
+                        'D-3-HYDROXYACYL-COA', 'TRANS-D2-ENOYL-COA', 'L-3-HYDROXYACYL-COA',
+                        'Saturated-Fatty-Acyl-CoA', 'AMP'])
+
+    with open('targets.txt', 'r') as target_file:
+        found_targets = sorted(target_file.read().split('\n'))
+    os.remove('targets.txt')
+    assert found_targets == expected_tagerts
+
+
+def test_gene_to_targets_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene'])
+
+    subprocess.call(['padmet', 'gene_to_targets', '--padmetSpec', 'test.padmet', '--genes', 'test_data/genes_to_targets.txt', '--output', 'targets.txt'])
+
+    os.remove('test.padmet')
 
     expected_tagerts = sorted(['PROTON', '3-KETOACYL-COA', 'CIS-DELTA3-ENOYL-COA', 'PPI', 'NADH',
                         'D-3-HYDROXYACYL-COA', 'TRANS-D2-ENOYL-COA', 'L-3-HYDROXYACYL-COA',
@@ -294,6 +515,45 @@ def test_padmet_to_padmet():
     os.remove('fabo.padmet')
 
 
+def test_padmet_to_padmet_cli():
+    # Using inpu data, create 2 padmets and delete one reaction in each.
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene'])
+    fabo_1_padmetSpec = PadmetSpec('test.padmet')
+    fabo_1_padmetSpec.delNode('ACYLCOASYN-RXN')
+    fabo_1_padmetSpec.generateFile('fabo_1.padmet')
+
+    _, _, all_rxns, _ = extract_data_padmet(fabo_1_padmetSpec)
+
+    os.remove('test.padmet')
+
+    assert not set(FABO_RXNS).issubset(set(all_rxns))
+
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene'])
+    fabo_2_padmetSpec = PadmetSpec('test.padmet')
+    fabo_2_padmetSpec.delNode('ACYLCOADEHYDROG-RXN')
+    fabo_2_padmetSpec.generateFile('fabo_2.padmet')
+
+    _, _, all_rxns, _ = extract_data_padmet(fabo_2_padmetSpec)
+
+    os.remove('test.padmet')
+
+    assert not set(FABO_RXNS).issubset(set(all_rxns))
+
+    # By merging them we should retrieve the two deleted reactions
+    padmet_to_padmet('fabo_1.padmet,fabo_2.padmet', 'fabo.padmet')
+    subprocess.call(['padmet', 'padmet_to_padmet', '--to_add', 'fabo_1.padmet,fabo_2.padmet', '--output', 'fabo.padmet'])
+
+    expected_padmet = PadmetSpec('fabo.padmet')
+
+    _, _, all_rxns, _ = extract_data_padmet(expected_padmet)
+
+    assert set(FABO_RXNS).issubset(set(all_rxns))
+
+    os.remove('fabo_1.padmet')
+    os.remove('fabo_2.padmet')
+    os.remove('fabo.padmet')
+
+
 def test_padmet_to_padmet_reversibility():
     """
     Test an issue encountered when a reaction is defined in a direction in one padmet.
@@ -302,6 +562,26 @@ def test_padmet_to_padmet_reversibility():
     """
     # Read padmet file
     padmet_to_padmet('test_data/padmet', 'fabo.padmet')
+
+    expected_padmet = PadmetSpec('fabo.padmet')
+
+    reactants = [rlt.id_out for rlt in expected_padmet.dicOfRelationIn['ENOYL-COA-HYDRAT-RXN'] if rlt.type in ['consumes']]
+    products = [rlt.id_out for rlt in expected_padmet.dicOfRelationIn['ENOYL-COA-HYDRAT-RXN'] if rlt.type in ['produces']]
+
+    assert sorted(reactants) == ['TRANS-D2-ENOYL-COA', 'WATER'] or sorted(products) == ['TRANS-D2-ENOYL-COA', 'WATER']
+    assert sorted(products) == ['L-3-HYDROXYACYL-COA'] or sorted(reactants) == ['L-3-HYDROXYACYL-COA']
+
+    os.remove('fabo.padmet')
+
+
+def test_padmet_to_padmet_reversibility_cli():
+    """
+    Test an issue encountered when a reaction is defined in a direction in one padmet.
+    And in another the same reaction is defined as reversible.
+    In old padmet this leads to the reaction having all of its reactants/products as reactants and also as products.
+    """
+    # Read padmet file
+    subprocess.call(['padmet', 'padmet_to_padmet', '--to_add', 'test_data/padmet', '--output', 'fabo.padmet'])
 
     expected_padmet = PadmetSpec('fabo.padmet')
 
@@ -332,6 +612,27 @@ def test_padmet_to_matrix():
     os.remove('matrix.tsv')
 
 
+def test_padmet_to_matrix_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet'])
+
+    subprocess.call(['padmet', 'padmet_to_matrix', '--padmet', 'test.padmet', '--output', 'matrix.tsv'])
+
+    os.remove('test.padmet')
+
+    expected_matrix = []
+    with open('test_data/stoechiometry_matrix.tsv', 'r') as expected_output:
+        expected_matrix_reader = csv.reader(expected_output, delimiter='\t')
+        expected_matrix = [row for row in expected_matrix_reader]
+
+    found_matrix = []
+    with open('matrix.tsv', 'r') as found_output:
+        found_matrix_reader = csv.reader(found_output, delimiter='\t')
+        found_matrix = [row for row in found_matrix_reader]
+
+    assert found_matrix == expected_matrix
+    os.remove('matrix.tsv')
+
+
 def test_extract_rxn_with_gene_assoc():
     fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
     padmet_to_sbml(fabo_padmetSpec, 'fabo.sbml')
@@ -345,6 +646,28 @@ def test_extract_rxn_with_gene_assoc():
     reactions = model.getListOfReactions()
     id_reactions = [sbmlPlugin.convert_from_coded_id(reaction.id)[0] for reaction in reactions]
 
+    os.remove('fabo.sbml')
+    os.remove('fabo_rxn_with_genes.sbml')
+
+    assert '2.3.1.49-RXN' not in id_reactions
+
+
+def test_extract_rxn_with_gene_assoc_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene'])
+
+    subprocess.call(['padmet', 'sbmlGenerator', '--padmet', 'test.padmet', '--output', 'fabo.sbml'])
+
+    # Extract reactions with only genes association so 2.3.1.49-RXN should not be here.
+    subprocess.call(['padmet', 'extract_rxn_with_gene_assoc', '--sbml', 'fabo.sbml', '--output', 'fabo_rxn_with_genes.sbml'])
+
+
+    reader = libsbml.SBMLReader()
+    document = reader.readSBML('fabo_rxn_with_genes.sbml')
+    model = document.getModel()
+    reactions = model.getListOfReactions()
+    id_reactions = [sbmlPlugin.convert_from_coded_id(reaction.id)[0] for reaction in reactions]
+
+    os.remove('test.padmet')
     os.remove('fabo.sbml')
     os.remove('fabo_rxn_with_genes.sbml')
 

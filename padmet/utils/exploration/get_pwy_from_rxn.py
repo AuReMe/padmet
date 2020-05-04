@@ -16,9 +16,10 @@ Description:
         --padmetRef=FILE    pathname of the padmet representing the database.
         --output=FILE    pathname of the file with line = pathway id, all reactions id, reactions ids from reaction file, ratio. sep = "\t"
 """
-
+import csv
 import docopt
 
+from padmet.classes import PadmetSpec
 
 def command_help():
     """
@@ -83,13 +84,14 @@ def dict_pwys_to_file(dict_pwy, output):
         path to output file
 
     """
-    with open(output, 'w') as f:
+    with open(output, 'w') as output_file:
+        csvwriter = csv.writer(output_file, delimiter='\t')
         header = ["pathway_id","total_rxn","rxn_from_list","ratio"]
-        f.write("\t".join(header)+"\n")
+        csvwriter.writerow(header)
         for pwy_id, pwy_data in dict_pwy.items():
             total_rxn = pwy_data['total_rxn']
             rxn_from_list = pwy_data['rxn_from_list']
             ratio = pwy_data['ratio']
 
             line = [pwy_id, ";".join(total_rxn), ";".join(rxn_from_list),str(ratio)]
-            f.write("\t".join(line)+"\n")
+            csvwriter.writerow(line)

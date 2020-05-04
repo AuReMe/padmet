@@ -41,8 +41,8 @@ def sbml_to_curation_form_cli(command_args):
     if args["--rxn_id"]:
         rxn_list = [args["--rxn_id"]]
     if args["--rxn_file"]:
-        with open(args["--rxn_id"], 'r') as f:
-            rxn_list = f.read.splitlines()
+        with open(args["--rxn_file"], 'r') as f:
+            rxn_list = f.read().splitlines()
     output = args["--output"]
     comment = args["--comment"]
     verbose = args["-v"]
