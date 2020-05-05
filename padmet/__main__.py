@@ -12,45 +12,45 @@ utils:
     gbr    Extract 'AND' and 'OR' from gene string
 
 connection:
-    biggAPI_to_padmet    Create Padmet from BIGG API
+    biggAPI_to_padmet    Create PADMet file from BIGG API
     check_orthology_input    Check proteomes for AuReMe
     check_orthology_input    Check proteomes for AuReMe
     enhanced_meneco_output    Extract meneco output and add reaction informations
     extract_orthofinder    Extract result from OrthoFinder and creates SBML outputs
     extract_rxn_with_gene_assoc    Extract from a SBML the reactions with gene association
     gbk_to_faa    Extract the proteome from a genbank file
-    gene_to_targets    From a list of genes and a PADmet extract the targets linked to each gene
-    get_metacyc_ontology    From a PADmet Ref file of MetaCyc create an XML ontology file
-    modelSeed_to_padmet    Create a PADmet file from modelSeed reactions and pathways files
-    padmet_to_asp    Convert PADmet to ASP
-    padmet_to_matrix    Create a a stoichiometry matrix from a PADmet file
-    padmet_to_padmet    Merge multiple PADmets into one PADmet file
-    padmet_to_tsv    Convert a PADmet file into AskOmics compatible tsv files
-    pgdb_to_padmet    Create PADmet from dat files
+    gene_to_targets    From a list of genes and a PADMet extract the targets linked to each gene
+    get_metacyc_ontology    From a PADMet Ref file of MetaCyc create an XML ontology file
+    modelSeed_to_padmet    Create a PADMet file from modelSeed reactions and pathways files
+    padmet_to_asp    Convert PADMet to ASP
+    padmet_to_matrix    Create a a stoichiometry matrix from a PADMet file
+    padmet_to_padmet    Merge multiple PADMets into one PADMet file
+    padmet_to_tsv    Convert a PADMet file into AskOmics compatible tsv files
+    pgdb_to_padmet    Create PADMet from dat files
     sbml_to_curation    Extract reaction(s) from SBML file into an AuReMe compatible form
-    sbml_to_padmet    Convert a SBML file into a PADmet file
+    sbml_to_padmet    Convert a SBML file into a PADMet file
     sbml_to_sbml    Convert a SBML file into another SBML (level change)
-    sbmlGenerator    Create a SBML file using a PADmet file
-    wikiGenerator    Create Wiki files using a PADmet file
+    sbmlGenerator    Create a SBML file using a PADMet file
+    wikiGenerator    Create Wiki files using a PADMet file
 
 exploration:
-    compare_padmet    Compare n PADmet files
+    compare_padmet    Compare n PADMet files
     compare_sbml    Compare n SBML files
-    compare_sbml_padmet    Compare a SBML file with a PADmet file
+    compare_sbml_padmet    Compare a SBML file with a PADMet file
     convert_sbml_db    Use MetaNetX to convert a SBML from one database to another database
     dendrogram_reactions_distance    Create a reaction absence/presence dendrogram using reactions.tsv file (from compare_padmet)
     flux_analysis    Run Flux Balance Analysis on a defined reaction
-    get_pwy_from_rxn    Return Pathway using a list of reactions from a PADmet Ref file
-    padmet_stats    Compute stats on a PADmet file
+    get_pwy_from_rxn    Return Pathway using a list of reactions from a PADMet Ref file
+    padmet_stats    Compute stats on a PADMet file
     prot2genome    Perfoms the structural annotation of AuCoMe
-    report_network    Creates reports for a PADmet file
-    visu_path    Allows to visualize a pathway in PADmet network
+    report_network    Creates reports for a PADMet file
+    visu_path    Allows to visualize a pathway in PADMet network
 
 management:
-    manual_curation    Update a PADmet Spec by filling specific forms
-    padmet_compart    For a given padmet file, check and update compartment
+    manual_curation    Update a PADMet Spec by filling specific forms
+    padmet_compart    For a given PADMet file, check and update compartment
     padmet_medium    For a given set of compounds, create 2 reactions for each compounds to maintain consistency of the network for flux analysis.
-    relation_curation    Manually curate PADmet relation
+    relation_curation    Manually curate PADMet relation
 
 See 'padmet <command> -h' for more information on a specific command.
 """

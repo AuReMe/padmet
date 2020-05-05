@@ -31,11 +31,15 @@ def command_help():
 def get_pwy_from_rxn_cli(command_args):
     args = docopt.docopt(__doc__, argv=command_args)
     reaction_file = args["--reaction_file"]
-    with open(reaction_file, 'r') as f:
-        reactions = set(f.read().splitlines())
     padmet_file = args["--padmetRef"]
     output = args["--output"]
     padmet = PadmetSpec(padmet_file)
+    get_pwy_from_rxn(padmet, reaction_file, output)
+
+
+def get_pwy_from_rxn(padmet, reaction_file, output):
+    with open(reaction_file, 'r') as f:
+        reactions = set(f.read().splitlines())
     dict_pwy = extract_pwys(padmet, reactions)
     dict_pwys_to_file(dict_pwy, output)
 

@@ -41,7 +41,10 @@ def visu_path_cli(command_args):
     padmet_ref = PadmetRef(args["--padmetRef"])
     padmet = PadmetSpec(args["--padmetSpec"])
     pathway_id = args["--pathway"]
-    
+    visu_path(padmet, padmet_ref, pathway_id)
+
+
+def visu_path(padmet, padmet_ref, pathway_id):
     #get all reactions in pathway
     try:
         all_reactions = [rlt.id_in for rlt in padmet_ref.dicOfRelationOut.get(pathway_id,None)
@@ -102,7 +105,8 @@ def visu_path_cli(command_args):
     
     #save_plot(plt, 'pathway_' + pathway_id)
     plt.show()
-    
+
+
 def save_plot(plot, filepath):
     """Saves plot in multiple formats
 
