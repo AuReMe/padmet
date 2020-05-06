@@ -1,5 +1,20 @@
 [![PyPI version](https://img.shields.io/pypi/v/padmet.svg)](https://pypi.org/project/padmet/) [![GitHub license](https://img.shields.io/github/license/AuReMe/padmet.svg)](https://github.com/AuReMe/padmet/blob/master/LICENSE) [![Documentation Status](https://readthedocs.org/projects/padmet/badge/?version=latest)](https://padmet.readthedocs.io/en/latest/?badge=latest) [![Build Status](https://travis-ci.org/AuReMe/padmet.svg?branch=master)](https://travis-ci.org/AuReMe/padmet)
 
+# PADMet
+
+PADMet is a python library to manage metabolic networks.
+
+## Table of contents
+- [PADMet](#padmet)
+  - [Table of contents](#table-of-contents)
+  - [Description](#description)
+  - [Installation](#installation)
+    - [Installation with pip](#installation-with-pip)
+  - [Use](#use)
+    - [Entrypoint](#entrypoint)
+    - [Python import](#python-import)
+    - [Corresponding functions](#corresponding-functions)
+
 ## Description
 
 The PADMet package allows conciliating genomics and metabolic network information used to produce a genome-scale constraint-based metabolic model within a database that traces all the reconstruction process steps. It allows representing the metabolic model in the form of a Wiki containing all the used/traced information. Other standard outputs are made available with the package. 
@@ -17,44 +32,6 @@ pip install padmet
 ## Use
 
 PADMet can be used either by using its entrypoint or by making an import in python.
-
-| script                        | function to import                                                                                | command-line                       |
-|-------------------------------|---------------------------------------------------------------------------------------------------|------------------------------------|
-| biggAPI_to_padmet             | ```from padmet.utils.connection.biggAPI_to_padmet import biggAPI_to_padmet```                     | padmet biggAPI_to_padmet           |
-| check_orthology_input         | ```from padmet.utils.connection.check_orthology_input import check_orthology_input```             | padmet check_orthology_input       |
-| enhanced_meneco_output        | ```from padmet.utils.connection.enhanced_meneco_output import check_orthology_input```            | padmet enhanced_meneco_output      |
-| extract_orthofinder           | ```from padmet.utils.connection.extract_orthofinder import orthogroups_to_sbml```                 | padmet extract_orthofinder         |
-| extract_orthofinder           | ```from padmet.utils.connection.extract_orthofinder import orthologue_to_sbml```                  | padmet extract_orthofinder         |
-| extract_rxn_with_gene_assoc   | ```from padmet.utils.connection.extract_rxn_with_gene_assoc import extract_rxn_with_gene_assoc``` | padmet extract_rxn_with_gene_assoc |
-| gbk_to_faa                    | ```from padmet.utils.connection.gbk_to_faa import gbk_to_faa```                                   | padmet gbk_to_faa                  |
-| gene_to_targets               | ```from padmet.utils.connection.gene_to_targets import gene_to_targets```                         | padmet gene_to_targets             |
-| get_metacyc_ontology          | ```from padmet.utils.connection.get_metacyc_ontology import metacyc_to_ontology```                | padmet get_metacyc_ontology        |
-| modelSeed_to_padmet           | ```from padmet.utils.connection.modelSeed_to_padmet import modelSeed_to_padmet```                 | padmet modelSeed_to_padmet         |
-| padmet_to_asp                 | ```from padmet.utils.connection.padmet_to_asp import padmet_to_asp```                             | padmet padmet_to_asp               |
-| padmet_to_matrix              | ```from padmet.utils.connection.padmet_to_matrix import padmet_to_matrix```                       | padmet padmet_to_matrix            |
-| padmet_to_padmet              | ```from padmet.utils.connection.padmet_to_padmet import padmet_to_padmet```                       | padmet padmet_to_padmet            |
-| padmet_to_tsv                 | ```from padmet.utils.connection.padmet_to_tsv import padmet_to_tsv```                             | padmet padmet_to_tsv               |
-| pgdb_to_padmet                | ```from padmet.utils.connection.pgdb_to_padmet import from_pgdb_to_padmet```                      | padmet pgdb_to_padmet              |
-| sbmlGenerator                 | ```from padmet.utils.connection.sbmlGenerator import padmet_to_sbml```                            | padmet sbmlGenerator               |
-| sbml_to_curation_form         | ```from padmet.utils.connection.sbml_to_curation_form import sbml_to_curation```                  | padmet sbml_to_curation_form       |
-| sbml_to_padmet                | ```from padmet.utils.connection.sbml_to_padmet import sbml_to_padmetSpec```                       | padmet sbml_to_padmet              |
-| sbml_to_sbml                  | ```from padmet.utils.connection.sbml_to_sbml import from_sbml_to_sbml```                          | padmet sbml_to_sbml                |
-| wikiGenerator                 | ```from padmet.utils.connection.wikiGenerator import wikiGenerator```                             | padmet wikiGenerator               |
-| compare_padmet                | ```from padmet.utils.exploration.compare_padmet import compare_padmet```                          | padmet compare_padmet              |
-| compare_sbml                  | ```from padmet.utils.exploration.compare_sbml import compare_sbml```                              | padmet compare_sbml                |
-| compare_sbml_padmet           | ```from padmet.utils.exploration.compare_sbml_padmet import compare_sbml_padmet```                | padmet compare_sbml_padmet         |
-| convert_sbml_db               | ```from padmet.utils.exploration.convert_sbml_db import map_sbml```                               | padmet convert_sbml_db             |
-| dendrogram_reactions_distance | ```from padmet.utils.exploration.dendrogram_reactions_distance import reaction_figure_creation``` |padmet dendrogram_reactions_distance|
-| flux_analysis                 | ```from padmet.utils.exploration.flux_analysis import flux_analysis```                            | padmet flux_analysis               |
-| get_pwy_from_rxn              | ```from padmet.utils.exploration.get_pwy_from_rxn import get_pwy_from_rxn```                      | padmet get_pwy_from_rxn            |
-| padmet_stats                  | ```from padmet.utils.exploration.padmet_stats import compute_stats```                             | padmet padmet_stats                |
-| prot2genome                   | ```from padmet.utils.exploration.prot2genome import fromAucome```                                 | padmet prot2genome                 |
-| report_network                | ```padmetSpec.network_report(output_dir, padmetRef_file, verbose)```                              | padmet report_network              |
-| visu_path                     | ```from padmet.utils.exploration.visu_path import visu_path```                                    | padmet visu_path                   |
-| manual_curation               |                                                                                                   | padmet manual_curation             |
-| padmet_compart                |                                                                                                   | padmet padmet_compart              |
-| padmet_medium                 | ```from padmet.utils.exploration.padmet_medium import manage_medium```                            | padmet padmet_medium               |
-| relation_curation             | ```from padmet.utils.exploration.relation_curation import get_relations```                        | padmet relation_curation           |
 
 ### Entrypoint
 
@@ -123,3 +100,42 @@ from padmet.utils.connection.pgdb_to_padmet import from_pgdb_to_padmet
 padmet_instance = from_pgdb_to_padmet(pgdb_folder, extract_gene=True)
 ```
 
+### Corresponding functions
+
+| script                        | function to import                                                                                | command-line                       |
+|-------------------------------|---------------------------------------------------------------------------------------------------|------------------------------------|
+| biggAPI_to_padmet             | ```from padmet.utils.connection.biggAPI_to_padmet import biggAPI_to_padmet```                     | padmet biggAPI_to_padmet           |
+| check_orthology_input         | ```from padmet.utils.connection.check_orthology_input import check_orthology_input```             | padmet check_orthology_input       |
+| enhanced_meneco_output        | ```from padmet.utils.connection.enhanced_meneco_output import check_orthology_input```            | padmet enhanced_meneco_output      |
+| extract_orthofinder           | ```from padmet.utils.connection.extract_orthofinder import orthogroups_to_sbml```                 | padmet extract_orthofinder         |
+| extract_orthofinder           | ```from padmet.utils.connection.extract_orthofinder import orthologue_to_sbml```                  | padmet extract_orthofinder         |
+| extract_rxn_with_gene_assoc   | ```from padmet.utils.connection.extract_rxn_with_gene_assoc import extract_rxn_with_gene_assoc``` | padmet extract_rxn_with_gene_assoc |
+| gbk_to_faa                    | ```from padmet.utils.connection.gbk_to_faa import gbk_to_faa```                                   | padmet gbk_to_faa                  |
+| gene_to_targets               | ```from padmet.utils.connection.gene_to_targets import gene_to_targets```                         | padmet gene_to_targets             |
+| get_metacyc_ontology          | ```from padmet.utils.connection.get_metacyc_ontology import metacyc_to_ontology```                | padmet get_metacyc_ontology        |
+| modelSeed_to_padmet           | ```from padmet.utils.connection.modelSeed_to_padmet import modelSeed_to_padmet```                 | padmet modelSeed_to_padmet         |
+| padmet_to_asp                 | ```from padmet.utils.connection.padmet_to_asp import padmet_to_asp```                             | padmet padmet_to_asp               |
+| padmet_to_matrix              | ```from padmet.utils.connection.padmet_to_matrix import padmet_to_matrix```                       | padmet padmet_to_matrix            |
+| padmet_to_padmet              | ```from padmet.utils.connection.padmet_to_padmet import padmet_to_padmet```                       | padmet padmet_to_padmet            |
+| padmet_to_tsv                 | ```from padmet.utils.connection.padmet_to_tsv import padmet_to_tsv```                             | padmet padmet_to_tsv               |
+| pgdb_to_padmet                | ```from padmet.utils.connection.pgdb_to_padmet import from_pgdb_to_padmet```                      | padmet pgdb_to_padmet              |
+| sbmlGenerator                 | ```from padmet.utils.connection.sbmlGenerator import padmet_to_sbml```                            | padmet sbmlGenerator               |
+| sbml_to_curation_form         | ```from padmet.utils.connection.sbml_to_curation_form import sbml_to_curation```                  | padmet sbml_to_curation_form       |
+| sbml_to_padmet                | ```from padmet.utils.connection.sbml_to_padmet import sbml_to_padmetSpec```                       | padmet sbml_to_padmet              |
+| sbml_to_sbml                  | ```from padmet.utils.connection.sbml_to_sbml import from_sbml_to_sbml```                          | padmet sbml_to_sbml                |
+| wikiGenerator                 | ```from padmet.utils.connection.wikiGenerator import wikiGenerator```                             | padmet wikiGenerator               |
+| compare_padmet                | ```from padmet.utils.exploration.compare_padmet import compare_padmet```                          | padmet compare_padmet              |
+| compare_sbml                  | ```from padmet.utils.exploration.compare_sbml import compare_sbml```                              | padmet compare_sbml                |
+| compare_sbml_padmet           | ```from padmet.utils.exploration.compare_sbml_padmet import compare_sbml_padmet```                | padmet compare_sbml_padmet         |
+| convert_sbml_db               | ```from padmet.utils.exploration.convert_sbml_db import map_sbml```                               | padmet convert_sbml_db             |
+| dendrogram_reactions_distance | ```from padmet.utils.exploration.dendrogram_reactions_distance import reaction_figure_creation``` |padmet dendrogram_reactions_distance|
+| flux_analysis                 | ```from padmet.utils.exploration.flux_analysis import flux_analysis```                            | padmet flux_analysis               |
+| get_pwy_from_rxn              | ```from padmet.utils.exploration.get_pwy_from_rxn import get_pwy_from_rxn```                      | padmet get_pwy_from_rxn            |
+| padmet_stats                  | ```from padmet.utils.exploration.padmet_stats import compute_stats```                             | padmet padmet_stats                |
+| prot2genome                   | ```from padmet.utils.exploration.prot2genome import fromAucome```                                 | padmet prot2genome                 |
+| report_network                | ```padmetSpec.network_report(output_dir, padmetRef_file, verbose)```                              | padmet report_network              |
+| visu_path                     | ```from padmet.utils.exploration.visu_path import visu_path```                                    | padmet visu_path                   |
+| manual_curation               |                                                                                                   | padmet manual_curation             |
+| padmet_compart                |                                                                                                   | padmet padmet_compart              |
+| padmet_medium                 | ```from padmet.utils.exploration.padmet_medium import manage_medium```                            | padmet padmet_medium               |
+| relation_curation             | ```from padmet.utils.exploration.relation_curation import get_relations```                        | padmet relation_curation           |
