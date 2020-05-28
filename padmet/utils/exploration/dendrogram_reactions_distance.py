@@ -535,7 +535,7 @@ def create_pvclust_dendrogram(reaction_file, output_folder):
         reactions_dataframe[column] = [1 if data == 'present' else 0 for data in reactions_dataframe[column]]
 
     # Extract organisms.
-    organisms = absence_presence_matrix.index.tolist()
+    organisms = reactions_dataframe.index.tolist()
 
     # Create pvclust dendrogram.
     pvclust_dendrogram(reactions_dataframe, organisms, output_folder)
