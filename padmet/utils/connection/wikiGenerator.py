@@ -26,7 +26,7 @@ import os
 import shutil
 import re
 
-from padmet.classes import PadmetSpec
+from padmet.classes import PadmetRef, PadmetSpec
 from itertools import chain
 import matplotlib as mpl
 mpl.use('Agg')

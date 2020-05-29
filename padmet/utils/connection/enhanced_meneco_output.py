@@ -29,6 +29,8 @@ Description:
         --output=FILE    path to tsv output file
 """
 import docopt
+
+from padmet.classes import PadmetRef
 from padmet.utils.sbmlPlugin import get_all_decoded_version
 
 

@@ -38,7 +38,7 @@ Description:
 """
 import docopt
 
-from padmet.classes import PadmetSpec
+from padmet.classes import PadmetRef, PadmetSpec
 
 
 def command_help():

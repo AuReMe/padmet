@@ -32,7 +32,7 @@ import libsbml
 import re
 
 import padmet.utils.sbmlPlugin as sp
-from padmet.classes import PadmetSpec
+from padmet.classes import PadmetRef, PadmetSpec
 from padmet.utils.gbr import compile_input
 
 #default variables
@@ -67,7 +67,7 @@ def sbmlGenerator_cli(command_args):
         else:
             padmet_to_sbml(padmet_file, output, model_id, obj_fct, sbml_lvl, mnx_chem_prop, mnx_chem_xref, verbose)
     elif args["--reaction"]:
-        padmetRef = args["--padmetRef"]
+        padmetRef = PadmetRef(args["--padmetRef"])
         reactions = args["--reaction"]
         reaction_to_sbml(reactions, output, padmetRef, verbose)
     elif args["--compound"]:

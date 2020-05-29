@@ -31,8 +31,7 @@ import csv
 import os
 
 from multiprocessing import Pool
-from padmet.classes import PadmetSpec
-from padmet.classes import PadmetRef
+from padmet.classes import PadmetRef, PadmetSpec
 
 
 def command_help():
