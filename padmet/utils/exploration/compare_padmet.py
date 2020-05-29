@@ -32,6 +32,7 @@ import os
 
 from multiprocessing import Pool
 from padmet.classes import PadmetSpec
+from padmet.classes import PadmetRef
 
 
 def command_help():
