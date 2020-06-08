@@ -12,12 +12,12 @@ Description:
 ::
 
     usage:
-        padmet dendrogram_reactions_distance --reactions=FILE --output=FILE [--padmetRef=STR] [--pvclust] [--upset=INT] [-v]
+        padmet dendrogram_reactions_distance --reactions=FILE --output=FOLDER [--padmetRef=STR] [--pvclust] [--upset=INT] [-v]
 
     option:
         -h --help    Show help.
-        -r --reactions=FILE    pathname of the file containing reactions in each species of the comparison.
-        -o --output=FOLDER    path to the output folder.
+        --reactions=FILE    pathname of the file containing reactions in each species of the comparison.
+        --output=FOLDER    path to the output folder.
         --pvclust    launch pvclust dendrogram using R
         --padmetRef=STR    path to the padmet Ref file
         -u --upset=INT    number of cluster in the upset graph.
@@ -575,6 +575,9 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
             os.mkdir(folder)
 
     path_to_intervene = 'intervene'
+
+    if not os.path.exists(reaction_file):
+        raise FileNotFoundError("No reactions.tsv file accessible at " + reaction_file)
 
     # Read the reactions file with pandas.
     all_reactions_dataframe = pa.read_csv(reaction_file, sep='\t')

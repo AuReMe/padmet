@@ -18,6 +18,8 @@ Description:
 """
 import docopt
 import libsbml
+import os
+
 from padmet.utils.sbmlPlugin import parseNotes
 
 
@@ -49,6 +51,9 @@ def extract_rxn_with_gene_assoc(sbml, output, verbose=False):
     output: str
         pathname of the output sbml
     """
+    if not os.path.exists(sbml):
+        raise FileNotFoundError("No SBML file (--sbml/sbml) accessible at " + sbml)
+
     reader = libsbml.SBMLReader()
     sbml_document = reader.readSBML(sbml)
     for i in range(sbml_document.getNumErrors()):

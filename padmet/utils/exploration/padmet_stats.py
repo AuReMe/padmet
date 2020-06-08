@@ -58,7 +58,7 @@ def compute_stats(padmet_file_folder):
     elif os.path.isfile(padmet_file_folder):
         padmet_type = "file"
     else:
-        raise TypeError("%s is not a dir or a file" %(padmet_file_folder))
+        raise TypeError("%s is not a dir or a file or is not accessible." %(padmet_file_folder))
 
     output_file = open('padmet_stats.tsv', 'w')
     output_writer = csv.writer(output_file, delimiter='\t')

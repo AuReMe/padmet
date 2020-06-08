@@ -18,6 +18,7 @@ Description:
 """
 import csv
 import docopt
+import os
 
 from padmet.classes import PadmetSpec
 
@@ -38,6 +39,9 @@ def get_pwy_from_rxn_cli(command_args):
 
 
 def get_pwy_from_rxn(padmet, reaction_file, output):
+    if not os.path.exists(reaction_file):
+        raise FileNotFoundError("No reaction file accessible at " + reaction_file)
+
     with open(reaction_file, 'r') as f:
         reactions = set(f.read().splitlines())
     dict_pwy = extract_pwys(padmet, reactions)

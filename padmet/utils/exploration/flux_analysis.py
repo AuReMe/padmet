@@ -32,6 +32,7 @@ Description:
         --all_species    allow to make FBA on all the metabolites of the given model.
 """
 import docopt
+import os
 
 from padmet.utils.sbmlPlugin import convert_from_coded_id
 from cobra import Reaction
@@ -86,7 +87,17 @@ def flux_analysis(sbml_file, seeds_file = None, targets_file = None, all_species
         
     """
     if targets_file:
+        if not os.path.exists(targets_file):
+            raise FileNotFoundError("No target SBML file accessible at " + targets_file)
         targets = read_sbml_model(targets_file).metabolites
+
+    if seeds_file:
+        if not os.path.exists(seeds_file):
+            raise FileNotFoundError("No seeds SBML file accessible at " + seeds_file)
+
+    if not os.path.exists(sbml_file):
+        raise FileNotFoundError("No target SBML file accessible at " + sbml_file)
+
     model=read_sbml_model(sbml_file)
     
     #nb metabolites

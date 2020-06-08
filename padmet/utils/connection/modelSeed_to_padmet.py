@@ -49,7 +49,13 @@ def modelSeed_to_padmet(rxn_file, pwy_file, output, verbose=False):
     padmetRef = instantiate_padmet("PadmetRef", None, padmet_id, "MODELSEED", "1.0", verbose)
 
     list_of_relation = []
-    
+
+    if not os.path.exists(rxn_file):
+        raise FileNotFoundError("No json file of modelSeed reactions (--rxn_file/rxn_file) accessible at " + rxn_file)
+
+    if not os.path.exists(pwy_file):
+        raise FileNotFoundError("No pathway reactions association file from modelSeed (--pwy_file/pwy_file) accessible at " + pwy_file)
+
     rxn_data = json.load(open(rxn_file))
     #remove biomass rxn:
     rxn_data.pop("rxn12985")

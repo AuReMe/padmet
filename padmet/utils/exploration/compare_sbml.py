@@ -10,12 +10,12 @@ Description:
 ::
 
     usage:
-        padmet compare_sbml --sbml1=FILE --sbml2=FILE
+        padmet compare_sbml --sbml=FILES/DIR --output=DIR
 
     option:
         -h --help    Show help.
-        --sbml1=FILE    path of the first sbml file
-        --sbml2=FILE    path of the second sbml file
+        --sbml FILES/DIR    pathname of the sbml files, sep all files by ',', ex: /path/sbml1.sbml;/path/sbml2.sbml OR a folder
+        --output DIR    pathname of the output folder
 """
 import docopt
 import csv
@@ -36,9 +36,9 @@ def command_help():
 
 def compare_sbml_cli(command_args):
     args = docopt.docopt(__doc__, argv=command_args)
-    sbml1_path = args["--sbml1"]
-    sbml2_path = args["--sbml2"]
-    compare_sbml(sbml1_path, sbml2_path)
+    sbml_path = args["--sbml"]
+    output_folder = args["--output"]
+    compare_multiple_sbml(sbml_path, output_folder)
 
 
 def compare_multiple_sbml(sbml_path, output_folder):
@@ -59,13 +59,16 @@ def compare_multiple_sbml(sbml_path, output_folder):
     else:
         print("%s already exist, old comparison output folders will be overwritten" %output_folder)
 
+    if not os.path.exists(sbml_path):
+        raise FileNotFoundError("No SBML file or directory (--sbml/sbml_path) accessible at " + sbml_path)
+
     if os.path.isdir(sbml_path):
         all_files = [os.path.join(sbml_path, f) for f in next(os.walk(sbml_path))[2]]
     else:
         all_files = sbml_path.split(",")
 
     species_columns = [os.path.splitext(os.path.basename(all_file))[0] for all_file in sorted(all_files)]
-    gene_columns = [os.path.splitext(os.path.basename(all_file))[0] + '_genes' for all_file in sorted(all_files)]
+    gene_columns = [os.path.splitext(os.path.basename(all_file))[0] + '_genes_assoc (sep=;)' for all_file in sorted(all_files)]
     all_reactions = []
     all_compounds = []
     reactions = {}
@@ -83,7 +86,7 @@ def compare_multiple_sbml(sbml_path, output_folder):
     reaction_file = output_folder + '/reactions.tsv'
     with open(reaction_file, 'w') as output_reaction:
         csvwriter = csv.writer(output_reaction, delimiter='\t')
-        csvwriter.writerow(['reaction', *species_columns, *gene_columns, 'formula'])
+        csvwriter.writerow(['reaction', *species_columns, *gene_columns, '_formula'])
         for reaction in all_reactions:
             reaction_presents = []
             reaction_genes = []
@@ -93,20 +96,26 @@ def compare_multiple_sbml(sbml_path, output_folder):
                     reaction_presents.append('present')
                 else:
                     reaction_presents.append('')
-                species_reaction = reactions[sbml_file].get_by_id(reaction.id)
-                ga_for_gbr = species_reaction.notes['GENE_ASSOCIATION']
-                ga_for_gbr = re.sub(r" or " , "|", ga_for_gbr)
-                ga_for_gbr = re.sub(r" and " , "&", ga_for_gbr)
-                ga_for_gbr = re.sub(r"\s" , "", ga_for_gbr)
-                if re.findall("\||&", ga_for_gbr):
-                    to_compare_ga_subsets = list(compile_input(ga_for_gbr))
-                    genes = []
-                    for to_compare_subset in to_compare_ga_subsets:
-                        for gene in to_compare_subset:
-                            genes.append(gene)
+                if reaction.id in reactions[sbml_file]:
+                    species_reaction = reactions[sbml_file].get_by_id(reaction.id)
+                    if 'GENE_ASSOCIATION' in species_reaction.notes:
+                        ga_for_gbr = species_reaction.notes['GENE_ASSOCIATION']
+                        ga_for_gbr = re.sub(r" or " , "|", ga_for_gbr)
+                        ga_for_gbr = re.sub(r" and " , "&", ga_for_gbr)
+                        ga_for_gbr = re.sub(r"\s" , "", ga_for_gbr)
+                        if re.findall("\||&", ga_for_gbr):
+                            to_compare_ga_subsets = list(compile_input(ga_for_gbr))
+                            genes = []
+                            for to_compare_subset in to_compare_ga_subsets:
+                                for gene in to_compare_subset:
+                                    genes.append(gene)
+                        else:
+                            genes  = [ga_for_gbr.replace('(', '').replace(')', '')]
+                        reaction_genes.append(';'.join(genes))
+                    else:
+                        reaction_genes.append('')
                 else:
-                    genes  = [ga_for_gbr.replace('(', '').replace(')', '')]
-                reaction_genes.append(','.join(genes))
+                    reaction_genes.append('')
 
             row = row + reaction_presents + reaction_genes
             row.append(reaction.reaction)
@@ -139,6 +148,13 @@ def compare_sbml(sbml1_path, sbml2_path):
     sbml2_path: str
         path to the second sbml file to compare
     """
+
+    if not os.path.exists(sbml1_path):
+        raise FileNotFoundError("No SBML file or directory (sbml1_path) accessible at " + sbml1_path)
+
+    if not os.path.exists(sbml2_path):
+        raise FileNotFoundError("No SBML file or directory (sbml2_path) accessible at " + sbml2_path)
+
     sbml_1 = read_sbml_model(sbml1_path)
     sbml_2 = read_sbml_model(sbml2_path)
     

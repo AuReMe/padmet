@@ -37,6 +37,7 @@ import docopt
 import re
 import itertools
 import libsbml
+import os
 
 from Bio import SeqIO
 from padmet.utils import sbmlPlugin as sp
@@ -65,6 +66,12 @@ def check_orthology_input(model_metabolic, model_faa, dict_ids_file, output, ver
     #TODO
     """
     if model_metabolic is not None:
+        if not os.path.exists(model_metabolic):
+            raise FileNotFoundError("No SBML file accessible (--model_metabolic/model_metabolic) at " + model_metabolic)
+
+        if not os.path.exists(model_faa):
+            raise FileNotFoundError("No fasta file accessible (--model_faa/model_faa) at " + model_faa)
+
         if verbose: print("check genes ids model_metablic vs model_faa")
         #if true: more than cutoff% match
         if check_ids(model_metabolic, model_faa, cutoff, verbose):

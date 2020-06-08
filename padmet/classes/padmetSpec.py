@@ -42,6 +42,8 @@ class PadmetSpec:
             pathname of the padmet file
         """
         if padmetSpec_file is not None:
+            if not os.path.exists(padmetSpec_file):
+                raise FileNotFoundError("No Padmet Spec file accessible at " + padmetSpec_file)
             self.loadGraph(padmetSpec_file)
         else:
             self.dicOfRelationIn = {}
@@ -279,6 +281,9 @@ class PadmetSpec:
         @return: _
         @rtype: None
         """
+        if not os.path.exists(sbml_file):
+            raise FileNotFoundError("No SBML file accessible at " + sbml_file)
+
         file_name = os.path.basename(sbml_file)
         file_name = os.path.splitext(file_name)[0]
         if not source_id:

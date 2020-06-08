@@ -24,6 +24,7 @@ Description:
 """
 import docopt
 import libsbml
+import os
 
 from padmet.utils.sbmlPlugin import convert_from_coded_id, parseNotes
 
@@ -71,6 +72,9 @@ def sbml_to_curation(sbml_file, rxn_list, output, extract_gene=False, comment="N
         if True print information
     
     """
+    if not os.path.exists(sbml_file):
+        raise FileNotFoundError("No SBML file (--sbml/sbml_file) accessible at " + sbml_file)
+
     reader = libsbml.SBMLReader()
     document = reader.readSBML(sbml_file)
     for i in range(document.getNumErrors()):

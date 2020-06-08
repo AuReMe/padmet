@@ -5,6 +5,7 @@ from padmet.classes.node import Node
 from padmet.classes.relation import Relation
 from padmet.utils import sbmlPlugin
 import libsbml
+import os
 
 __all__ = ["PadmetRef"]
 
@@ -47,6 +48,8 @@ class PadmetRef:
         
         """
         if padmetRef_file is not None:
+            if not os.path.exists(padmetRef_file):
+                raise FileNotFoundError("No Padmet Ref file accessible at " + padmetRef_file)
             self.loadGraph(padmetRef_file)
         else:
             self.dicOfRelationIn = {}
@@ -268,6 +271,9 @@ class PadmetRef:
         verbose: bool
             if True print supp info
         """
+        if not os.path.exists(sbml_file):
+            raise FileNotFoundError("No SBML file accessible at " + sbml_file)
+
         # using libSbml to read sbml_file
         if verbose:
             print("loading sbml file: %s" % sbml_file)

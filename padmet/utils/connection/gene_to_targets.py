@@ -18,6 +18,7 @@ Description:
         -v   print info
 """
 import docopt
+import os
 
 from padmet.classes import PadmetSpec
 
@@ -55,7 +56,9 @@ def gene_to_targets(padmet, genes_file, output, verbose=False):
     verbose: bool
         if True print information
     """
-    
+    if not os.path.exists(genes_file):
+        raise FileNotFoundError("No genes file (--genes/genes_file) accessible at " + genes_file)
+
     with open(genes_file,'r') as f:
         all_genes = f.read().splitlines()
         nb_genes = len(all_genes)

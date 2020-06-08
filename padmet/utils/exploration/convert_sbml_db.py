@@ -118,7 +118,18 @@ def check_sbml_db(sbml_file, to_map, verbose = False, mnx_reac_file = None, mnx_
     if mnx_folder:
         mnx_reac_file = os.path.join(mnx_folder, "reac_xref.tsv")
         mnx_chem_file = os.path.join(mnx_folder, "chem_xref.tsv")
-    
+
+    if mnx_reac_file:
+        if not os.path.exists(mnx_reac_file):
+            raise FileNotFoundError("No MetaNetX file for reactions accessible at " + mnx_reac_file)
+
+    if mnx_chem_file:
+        if not os.path.exists(mnx_chem_file):
+            raise FileNotFoundError("No MetaNetX file for compounds accessible at " + mnx_chem_file)
+
+    if not os.path.exists(sbml_file):
+        raise FileNotFoundError("No SBML file accessible at " + sbml_file)
+
     reader = libsbml.SBMLReader()
     document = reader.readSBML(sbml_file)
     for i in range(document.getNumErrors()):
@@ -235,6 +246,17 @@ def map_sbml(sbml_file, to_map, db_out, output, verbose = False, mnx_reac_file =
     if mnx_folder:
         mnx_reac_file = os.path.join(mnx_folder, "reac_xref.tsv")
         mnx_chem_file = os.path.join(mnx_folder, "chem_xref.tsv")
+
+    if mnx_reac_file:
+        if not os.path.exists(mnx_reac_file):
+            raise FileNotFoundError("No MetaNetX file for reactions accessible at " + mnx_reac_file)
+
+    if mnx_chem_file:
+        if not os.path.exists(mnx_chem_file):
+            raise FileNotFoundError("No MetaNetX file for compounds accessible at " + mnx_chem_file)
+
+    if not os.path.exists(sbml_file):
+        raise FileNotFoundError("No SBML file accessible at " + sbml_file)
 
     reader = libsbml.SBMLReader()
     document = reader.readSBML(sbml_file)

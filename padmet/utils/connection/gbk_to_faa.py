@@ -16,6 +16,7 @@ Description:
         -v   print info
 """
 import docopt
+import os
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -54,6 +55,9 @@ def gbk_to_faa(gbk_file, output, qualifier='locus_tag', verbose=True):
     verbose: bool
         if True print information
     """
+    if not os.path.exists(gbk_file):
+        raise FileNotFoundError("No Genbank file (--gbk/gbk_file) accessible at " + gbk_file)
+
     fasta_records = []
     fasta_ids = {}
     with open(gbk_file, "r") as gbk:

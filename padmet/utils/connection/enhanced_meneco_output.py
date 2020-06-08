@@ -29,6 +29,7 @@ Description:
         --output=FILE    path to tsv output file
 """
 import docopt
+import os
 
 from padmet.classes import PadmetRef
 from padmet.utils.sbmlPlugin import get_all_decoded_version
@@ -76,6 +77,9 @@ def enhanced_meneco_output(meneco_output_file, padmetRef, output, verbose=False)
     verbose: bool
         if True print information    
     """
+    if not os.path.exists(meneco_output_file):
+        raise FileNotFoundError("No Meneco result (--meneco_output/meneco_output_file) accessible at " + meneco_output_file)
+
     with open(meneco_output_file,'r') as f:
         #recovering union reactions
         file_in_array = f.read().splitlines()

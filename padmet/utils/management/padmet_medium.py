@@ -37,6 +37,7 @@ Description:
         -v   print info
 """
 import docopt
+import os
 
 from padmet.classes import PadmetRef, PadmetSpec
 
@@ -51,7 +52,11 @@ def command_help():
 def padmet_medium_cli(command_args):
     args = docopt.docopt(__doc__, argv=command_args)
     if args["--seeds"]:
-        with open(args["--seeds"], 'r') as f:
+        seeds_file = args["--seeds"]
+        if not os.path.exists(seeds_file):
+            raise FileNotFoundError("No seeds file (--seeds) accessible at " + seeds_file)
+
+        with open(seeds_file, 'r') as f:
             seeds = [line.split("\t")[0] for line in f.read().splitlines()]
     else:
         seeds = None

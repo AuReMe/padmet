@@ -54,7 +54,11 @@ def manual_curation_cli(command_args):
     data_file = args["--data"]
     output = args["--output"]
     verbose = args["-v"]
+
     if data_file:
+        if not os.path.exists(data_file):
+            raise FileNotFoundError("No form curation file (--data/data_file) accessible at " + data_file)
+
         filename = os.path.splitext(os.path.basename(data_file))[0]
         source = filename
 

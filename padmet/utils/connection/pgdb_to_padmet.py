@@ -202,6 +202,9 @@ def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA', source='GENOME'
     else:
         padmet_id = None
 
+    if not os.path.exists(pgdb_folder):
+        raise FileNotFoundError("No PGDB folder (--pgdb/pgdb_folder) accessible at " + pgdb_folder)
+
     classes_file, compounds_file, proteins_file, reactions_file, enzrxns_file, pathways_file = \
     [os.path.join(pgdb_folder,_file) for _file in ["classes.dat", "compounds.dat", "proteins.dat", "reactions.dat", "enzrxns.dat", "pathways.dat"]]
     if enhanced_db:

@@ -201,7 +201,11 @@ def biggAPI_to_padmet(output, pwy_file=None, verbose=False):
             padmetRef.dicOfRelationOut[rlt.id_out] = [rlt]
     
     if pwy_file:
+        if not os.path.exists(pwy_file):
+            raise FileNotFoundError("No KEGG Pathway file (--pwy_file/pwy_file) accessible at " + pwy_file)
+
         add_kegg_pwy(pwy_file, padmetRef, verbose)
+
     if verbose: print("Generating file: %s" %output)
     padmetRef.generateFile(output)
 
