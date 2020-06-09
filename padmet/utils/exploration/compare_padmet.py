@@ -18,13 +18,14 @@ Description:
 ::
 
     usage:
-        padmet compare_padmet --padmet=FILES/DIR --output=DIR [--padmetRef=FILE] [-v]
+        padmet compare_padmet --padmet=FILES/DIR --output=DIR [--padmetRef=FILE] [--cpu INT] [-v]
 
     option:
         -h --help    Show help.
         --padmet=FILES/DIR    pathname of the padmet files, sep all files by ',', ex: /path/padmet1.padmet;/path/padmet2.padmet OR a folder
         --output=DIR    pathname of the output folder
         --padmetRef=FILE    pathanme of the database ref in padmet
+        --cpu INT    number of CPU to use in multiprocessing
 """
 import docopt
 import csv
@@ -50,7 +51,8 @@ def compare_padmet_cli(command_args):
     else:
         padmetRef = None
     padmet_path = args["--padmet"]
-    compare_padmet(padmet_path, output, padmetRef, verbose)
+    number_cpu = args["--cpu"]
+    compare_padmet(padmet_path, output, padmetRef, verbose, number_cpu)
 
 
 def extract_information_padmet(file_path, padmetRef, verbose):
