@@ -81,6 +81,7 @@ exploration:
     padmet_stats    Compute stats on a PADMet file
     prot2genome    Perfoms the structural annotation of AuCoMe
     report_network    Creates reports for a PADMet file
+    visu_network    Allows to visualize a PADMet or SBML network
     visu_path    Allows to visualize a pathway in PADMet network
 
 management:
@@ -134,6 +135,7 @@ padmet_instance = from_pgdb_to_padmet(pgdb_folder, extract_gene=True)
 | padmet_stats                  | ```from padmet.utils.exploration.padmet_stats import compute_stats```                             | padmet padmet_stats                |
 | prot2genome                   | ```from padmet.utils.exploration.prot2genome import fromAucome```                                 | padmet prot2genome                 |
 | report_network                | ```padmetSpec.network_report(output_dir, padmetRef_file, verbose)```                              | padmet report_network              |
+| visu_network                  | ```from padmet.utils.exploration.visu_network import create_compounds_graph```                    | padmet visu_network                |
 | visu_path                     | ```from padmet.utils.exploration.visu_path import visu_path```                                    | padmet visu_path                   |
 | manual_curation               |                                                                                                   | padmet manual_curation             |
 | padmet_compart                |                                                                                                   | padmet padmet_compart              |
