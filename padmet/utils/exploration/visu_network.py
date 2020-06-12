@@ -16,6 +16,7 @@ Description:
 """
 import docopt
 import logging
+import sys
 
 try:
     import igraph
@@ -114,11 +115,12 @@ def parse_compounds_sbml(sbml_file):
 
 
 def create_compounds_graph(metabolic_network_file, output_file):
-
     if metabolic_network_file.endswith('.padmet'):
         edges, edges_label, weights, nodes, nodes_label = parse_compounds_padmet(metabolic_network_file)
     elif metabolic_network_file.endswith('.sbml'):
         edges, edges_label, weights, nodes, nodes_label = parse_compounds_sbml(metabolic_network_file)
+    else:
+        sys.exit('No correct extension file as input. Input must be a .padmet or a .sbml file.')
 
     n_vertices = len(nodes)
 
@@ -181,17 +183,18 @@ def create_html_compounds_graph(metabolic_network_file, output_file):
         edges, edges_label, weights, nodes, nodes_label = parse_compounds_padmet(metabolic_network_file)
     elif metabolic_network_file.endswith('.sbml'):
         edges, edges_label, weights, nodes, nodes_label = parse_compounds_sbml(metabolic_network_file)
-
+    else:
+        sys.exit('No correct extension file as input. Input must be a .padmet or a .sbml file.')
     
-    G = pyvis.network.Network(height=1900, width=1900, directed=True)
-    G.barnes_hut()
+    compounds_graph = pyvis.network.Network(height=1900, width=1900, directed=True)
+    compounds_graph.barnes_hut()
 
-    G.add_nodes([node for node in nodes.values()], label=[nodes_label[node] for node in nodes.values()])
+    compounds_graph.add_nodes([node for node in nodes.values()], label=[nodes_label[node] for node in nodes.values()])
 
     for edge in edges:
-        G.add_edge(edge[0], edge[1])
+        compounds_graph.add_edge(edge[0], edge[1])
 
-    G.show(output_file)
+    compounds_graph.show(output_file)
 
 
 if __name__ == "__main__":
