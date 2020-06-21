@@ -630,7 +630,8 @@ def pathways_parser(filePath, padmet, verbose = False):
                     current_id = value
                     dict_data[current_id] = {}
                 if attrib in ["COMMON-NAME", "TAXONOMIC-RANGE",\
-                "TYPES", "SYNONYMS", "DBLINKS", "IN-PATHWAY", "REACTION-LIST"]:
+                "TYPES", "SYNONYMS", "DBLINKS", "IN-PATHWAY",\
+                    "REACTION-LIST", "REACTION-LAYOUT"]:
                     if attrib in dict_data[current_id]:
                         dict_data[current_id][attrib].append(value)
                     else:
@@ -653,6 +654,56 @@ def pathways_parser(filePath, padmet, verbose = False):
             pathway_node.misc["TAXONOMIC-RANGE"] = dict_values["TAXONOMIC-RANGE"]
         except KeyError:
             pass
+
+        if "REACTION-LAYOUT" in dict_values:
+            reaction_layout_regex = r'\((?P<reaction_id>\S*)\s\(\:LEFT-PRIMARIES[\s]*(?P<reaction_left>[^\(]*)\)\s\(\:DIRECTION\s(?P<reaction_direction>\S*)\)\s\(:RIGHT-PRIMARIES[\s]*(?P<reaction_right>[^\(]*)\)\)'
+            reactions = dict_values["REACTION-LAYOUT"]
+            reactions_compounds = []
+            for reaction in reactions:
+                regex_xref = re.match(reaction_layout_regex, reaction)
+                if regex_xref is None:
+                    print(reaction)
+                reaction_id = regex_xref.groupdict()['reaction_id']
+                reaction_direction = regex_xref.groupdict()['reaction_direction']
+                if reaction_direction == ':L2R':
+                    reaction_reactant = regex_xref.groupdict()['reaction_left'].split(' ')
+                    reaction_product = regex_xref.groupdict()['reaction_right'].split(' ')
+                elif reaction_direction == ':R2L':
+                    reaction_reactant = regex_xref.groupdict()['reaction_right'].split(' ')
+                    reaction_product = regex_xref.groupdict()['reaction_left'].split(' ')
+
+                reactions_compounds.append((reaction_id, reaction_reactant, reaction_product))
+
+            reactions_ordered = {}
+            reactions_added = []
+
+            pathway_reactants = [reactant for reaction in reactions_compounds for reactant in reaction[1]]
+            pathway_products = [product for reaction in reactions_compounds for product in reaction[2]]
+
+            pathway_input_compounds = list(set(pathway_reactants) - set(pathway_products))
+            pathway_output_compounds = list(set(pathway_products) - set(pathway_reactants))
+
+            if pathway_input_compounds != []:
+                pathway_node.misc["INPUT-COMPOUNDS"] = [','.join(pathway_input_compounds)]
+            if pathway_output_compounds != []:
+                pathway_node.misc["OUTPUT-COMPOUNDS"] = [','.join(pathway_output_compounds)]
+
+            def reaction_order(compound, reaction_ordered, reactions_compounds, alreayd_known_compounds):
+                for reaction in reactions_compounds:
+                    if compound in reaction[1]:
+                        reaction_ordered.append(reaction[0])
+                        alreayd_known_compounds.append(compound)
+                        for reaction_product in reaction[2]:
+                            if reaction_product not in alreayd_known_compounds:
+                                reaction_order(reaction_product, reaction_ordered, reactions_compounds, alreayd_known_compounds)
+
+            for input_compound in pathway_input_compounds:
+                reaction_ordered = []
+                alreayd_known_compounds = []
+                reaction_order(input_compound, reaction_ordered, reactions_compounds, alreayd_known_compounds)
+                if reaction_ordered != []:
+                    pathway_node.misc["REACTIONS-ORDER"] = [','.join(reaction_ordered)]
+
         try:
             types = dict_values["TYPES"]
             _setType(types, pathway_id, padmet)
