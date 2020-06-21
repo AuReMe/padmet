@@ -146,6 +146,43 @@ class PadmetSpec:
                 all_relation.add(rlt)
         return all_relation
 
+    def getRelation(self, rlt_id_in, rlt_type, rlt_id_out):
+        """
+        return a relation
+
+        Returns
+        -------
+        Relation
+            return a relation
+        """
+        rlts = [
+            rlt
+            for list_rlt in self.dicOfRelationIn.values()
+            for rlt in list_rlt
+            if rlt.type == rlt_type
+            and rlt.id_in == rlt_id_in
+            and rlt.id_out == rlt_id_out
+        ]
+        return rlts
+
+    def getRelationTypeIDIn(self, rlt_type, rlt_id_in):
+        """
+        return a relation
+
+        Returns
+        -------
+        Relation
+            return a relation
+        """
+        rlts = [
+            rlt
+            for list_rlt in self.dicOfRelationIn.values()
+            for rlt in list_rlt
+            if rlt.type == rlt_type
+            and rlt.id_in == rlt_id_in
+        ]
+        return rlts
+
     def loadGraph(self, padmet_file):
         """
         Allow to recover all the information of the padmet file.
