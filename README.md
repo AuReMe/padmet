@@ -1,4 +1,4 @@
-[![PyPI version](https://img.shields.io/pypi/v/padmet.svg)](https://pypi.org/project/padmet/) [![GitHub license](https://img.shields.io/github/license/AuReMe/padmet.svg)](https://github.com/AuReMe/padmet/blob/master/LICENSE) [![Documentation Status](https://readthedocs.org/projects/padmet/badge/?version=latest)](https://padmet.readthedocs.io/en/latest/?badge=latest) [![Build Status](https://travis-ci.org/AuReMe/padmet.svg?branch=master)](https://travis-ci.org/AuReMe/padmet)
+[![PyPI version](https://img.shields.io/pypi/v/padmet.svg)](https://pypi.org/project/padmet/) [![GitHub license](https://img.shields.io/github/license/AuReMe/padmet.svg)](https://github.com/AuReMe/padmet/blob/master/LICENSE) [![Documentation Status](https://readthedocs.org/projects/padmet/badge/?version=latest)](https://padmet.readthedocs.io/en/latest/?badge=latest) ![Python package](https://github.com/AuReMe/padmet/workflows/Python%20package/badge.svg)
 
 # PADMet
 
