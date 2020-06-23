@@ -31,7 +31,7 @@ pip install padmet
 
 ## Use
 
-PADMet can be used either by using its entrypoint or by making an import in python.
+PADMet can be used either with an entrypoint (`padmet -h`) or by making an import in python (`import padmet`).
 
 ### Entrypoint
 
