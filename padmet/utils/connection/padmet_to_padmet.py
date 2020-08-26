@@ -39,7 +39,7 @@ def padmet_to_padmet_cli(command_args):
     padmet_to_padmet(to_add, output, verbose)
 
 
-def padmet_to_padmet(to_add, output, verbose=False):
+def padmet_to_padmet(to_add, output=None, verbose=False):
     """
     Create a padmet by merging multiple other padmet files.
 
@@ -51,6 +51,10 @@ def padmet_to_padmet(to_add, output, verbose=False):
         path to the output file
     verbose: bool
         verbose level of script
+    Returns
+    -------
+    padmet_init: PadmetSpec
+        padmet created from emrging of the other padmet
     """
     if os.path.isdir(to_add):
         path = to_add
@@ -72,7 +76,9 @@ def padmet_to_padmet(to_add, output, verbose=False):
         padmet_update = PadmetSpec(padmet_update_file)
         padmet_init.updateFromPadmet(padmet_update)
 
-    if verbose:
-        print("Generated file: %s" %output)
-    padmet_init.generateFile(output)
-        
+    if output:
+        if verbose:
+            print("Generated file: %s" %output)
+        padmet_init.generateFile(output)
+
+    return padmet_init

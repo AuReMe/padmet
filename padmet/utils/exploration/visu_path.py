@@ -10,11 +10,11 @@ compounds: skyblue
 ::
 
     usage:
-        padmet visu_path --padmetSpec=FILE --padmetRef=FILE --pathway=ID --output=FILE [--hiding]
+        padmet visu_path --padmetSpec=FILE/FOLDER --padmetRef=FILE --pathway=ID --output=FILE [--hiding]
     
     options:
         -h --help     Show help.
-        --padmetSpec=FILE    pathname to the PADMet file of the network.
+        --padmetSpec=FILE/FOLDER    pathname to the PADMet file of the network or to a folder containing multiple padmets.
         --padmetRef=FILE    pathname to the PADMet file of the db of reference.
         --pathway=ID    pathway id to visualize, can be multiple pathways separated by a ",".
         --output=FILE    pathname to the output file (extension can be .png or .svg).
@@ -24,6 +24,7 @@ compounds: skyblue
 import docopt
 import matplotlib.pylab as plt
 import networkx as nx
+import os
 import seaborn as sns
 
 sns.set_style("white")
@@ -31,6 +32,7 @@ sns.set('poster', rc={'figure.figsize':(75,70), 'lines.linewidth': 10})
 
 from collections import OrderedDict
 from padmet.classes import PadmetRef, PadmetSpec
+from padmet.utils.connection import padmet_to_padmet
 from networkx.drawing.nx_agraph import graphviz_layout
 
 
@@ -58,7 +60,7 @@ def visu_path(padmet_pathname, padmet_ref_pathname, pathway_ids, output_file, hi
     Parameters
     ----------
     padmet_pathname: str
-        pathname of the padmet file
+        pathname of the padmet file or a folder containing multiple padmet
     padmet_ref_pathname: str
         pathname of the padmetRef file
     pathway_ids: str
@@ -68,7 +70,10 @@ def visu_path(padmet_pathname, padmet_ref_pathname, pathway_ids, output_file, hi
     hide_compounds: bool
         hide common compounds (like water or proton)
     """
-    padmet = PadmetSpec(padmet_pathname)
+    if os.path.isfile(padmet_pathname):
+        padmet = PadmetSpec(padmet_pathname)
+    else:
+        padmet = padmet_to_padmet.padmet_to_padmet(padmet_pathname)
     padmet_ref = PadmetRef(padmet_ref_pathname)
 
     pathway_ids = pathway_ids.split(',')
