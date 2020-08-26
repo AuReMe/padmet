@@ -49,6 +49,25 @@ def visu_network_cli(command_args):
 
 
 def parse_compounds_padmet(padmet_file):
+    """ Parse padmets files to extract compounds to create edges and nodes for igraph.
+
+    Parameters
+    ----------
+    padmet_file: str
+        pathname of the padmet file
+    Returns
+    -------
+    edges: list
+        edges between two compounds (symbolizing the reaction)
+    edges_label: list
+        for each edge the name of the reaction
+    weights: list
+        the weight associated to each edge
+    nodes: list
+        a compound
+    nodes_label: list
+        for each node the name of the compound
+    """
     padmetSpec = PadmetSpec(padmet_file)
 
     all_rxns = [node for node in padmetSpec.dicOfNode.values() if node.type == "reaction"]
@@ -85,6 +104,25 @@ def parse_compounds_padmet(padmet_file):
 
 
 def parse_compounds_sbml(sbml_file):
+    """ Parse sbml files to extract compounds to create edges and nodes for igraph.
+
+    Parameters
+    ----------
+    sbml_file: str
+        pathname of the sbml file
+    Returns
+    -------
+    edges: list
+        edges between two compounds (symbolizing the reaction)
+    edges_label: list
+        for each edge the name of the reaction
+    weights: list
+        the weight associated to each edge
+    nodes: list
+        a compound
+    nodes_label: list
+        for each node the name of the compound
+    """
     sbml_model = read_sbml_model(sbml_file)
 
     edges = []
@@ -115,6 +153,15 @@ def parse_compounds_sbml(sbml_file):
 
 
 def create_compounds_graph(metabolic_network_file, output_file):
+    """ Using output of parse_compounds_padmet or parse_compounds_sbml create a network picture using igraph.
+
+    Parameters
+    ----------
+    metabolic_network_file: str
+        pathname of the metabolic network file
+    output_file: str
+        pathname of the output picture of the metabolic network
+    """
     if metabolic_network_file.endswith('.padmet'):
         edges, edges_label, weights, nodes, nodes_label = parse_compounds_padmet(metabolic_network_file)
     elif metabolic_network_file.endswith('.sbml'):
@@ -174,6 +221,15 @@ def create_compounds_graph(metabolic_network_file, output_file):
 
 
 def create_html_compounds_graph(metabolic_network_file, output_file):
+    """ Using output of parse_compounds_padmet or parse_compounds_sbml create an interactive graph in html.
+
+    Parameters
+    ----------
+    metabolic_network_file: str
+        pathname of the metabolic network file
+    output_file: str
+        pathname of the output picture of the metabolic network
+    """
     try:
         import pyvis
     except ImportError:
@@ -195,8 +251,3 @@ def create_html_compounds_graph(metabolic_network_file, output_file):
         compounds_graph.add_edge(edge[0], edge[1])
 
     compounds_graph.show(output_file)
-
-
-if __name__ == "__main__":
-    main()
-
