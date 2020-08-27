@@ -46,6 +46,7 @@ exploration:
     report_network    Creates reports for a PADMet file
     visu_network    Allows to visualize a PADMet or SBML network
     visu_path    Allows to visualize a pathway in PADMet network
+    visu_similarity_gsmn    Visualize similarity between metabolic networks using MDS
 
 management:
     manual_curation    Update a PADMet Spec by filling specific forms
@@ -86,7 +87,8 @@ def main(args=None):
             'dendrogram_reactions_distance', 'flux_analysis',
             'get_pwy_from_rxn', 'padmet_stats',
             'prot2genome', 'visu_path',
-            'visu_network', 'report_network',
+            'visu_network', 'visu_similarity_gsmn',
+            'report_network',
             ],
         'utils.management': [
             'manual_curation', 'padmet_compart',

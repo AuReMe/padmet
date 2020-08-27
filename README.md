@@ -83,6 +83,7 @@ exploration:
     report_network    Creates reports for a PADMet file
     visu_network    Allows to visualize a PADMet or SBML network
     visu_path    Allows to visualize a pathway in PADMet network
+    visu_similarity_gsmn    Visualize similarity between metabolic networks using MDS
 
 management:
     manual_curation    Update a PADMet Spec by filling specific forms
@@ -137,6 +138,7 @@ padmet_instance = from_pgdb_to_padmet(pgdb_folder, extract_gene=True)
 | report_network                | ```padmetSpec.network_report(output_dir, padmetRef_file, verbose)```                              | padmet report_network              |
 | visu_network                  | ```from padmet.utils.exploration.visu_network import create_compounds_graph```                    | padmet visu_network                |
 | visu_path                     | ```from padmet.utils.exploration.visu_path import visu_path```                                    | padmet visu_path                   |
+| visu_similarity_gsmn          | ```from padmet.utils.exploration.visu_similarity_gsmn import visu_similarity_gsmn```              | padmet visu_similarity_gsmn        |
 | manual_curation               |                                                                                                   | padmet manual_curation             |
 | padmet_compart                |                                                                                                   | padmet padmet_compart              |
 | padmet_medium                 | ```from padmet.utils.exploration.padmet_medium import manage_medium```                            | padmet padmet_medium               |
