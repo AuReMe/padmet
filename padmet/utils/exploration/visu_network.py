@@ -232,12 +232,12 @@ def parse_pathways_padmet(padmet_file):
     padmetSpec = PadmetSpec(padmet_file)
 
     # Check if the padmets and padmetref contain the INPUT-COMPOUNDS and OUTPUT-COMPOUNDS in pathway node.misc needed for this analysis.
-    padmetref_input_compounds_in_pwys = [1 for node_pathway in padmetSpec.dicOfNode
+    padmet_input_compounds_in_pwys = [1 for node_pathway in padmetSpec.dicOfNode
                                             if padmetSpec.dicOfNode[node_pathway].type == 'pathway' and 'INPUT-COMPOUNDS' in padmetSpec.dicOfNode[node_pathway].misc]
-    padmetref_output_compounds_in_pwys = [1 for node_pathway in padmetSpec.dicOfNode
+    padmet_output_compounds_in_pwys = [1 for node_pathway in padmetSpec.dicOfNode
                                             if padmetSpec.dicOfNode[node_pathway].type == 'pathway' and 'OUTPUT-COMPOUNDS' in padmetSpec.dicOfNode[node_pathway].misc]
-    if sum(padmetref_input_compounds_in_pwys) == 0 or sum(padmetref_output_compounds_in_pwys) == 0:
-        sys.exit("The padmet " + padmet_file + " does not contain INPUT-COMPOUNDS and OUTPUT-COMPOUNDS in the pathway node, can't produce the pathway visualization.")
+    if sum(padmet_input_compounds_in_pwys) == 0 or sum(padmet_output_compounds_in_pwys) == 0:
+        sys.exit("The padmet " + padmet_file + " does not contain INPUT-COMPOUNDS and OUTPUT-COMPOUNDS in the pathway node, padmet can't produce the pathway visualization without them.")
 
     edges = []
     edges_label = []
@@ -249,23 +249,22 @@ def parse_pathways_padmet(padmet_file):
     all_pwys = [node for node in padmetSpec.dicOfNode if padmetSpec.dicOfNode[node].type == "pathway"]
 
     for pwy in all_pwys:
-        reactants = []
-        products = []
         node_pwy = padmetSpec.dicOfNode[pwy]
         if 'INPUT-COMPOUNDS' in node_pwy.misc and 'OUTPUT-COMPOUNDS' in node_pwy.misc:
-            for reactant in node_pwy.misc['INPUT-COMPOUNDS'][0].split(','):
-                reactants.append(reactant)
+            reactants = node_pwy.misc['INPUT-COMPOUNDS'][0].split(',')
+            products = node_pwy.misc['OUTPUT-COMPOUNDS'][0].split(',')
+            for reactant in reactants:
                 if reactant not in nodes:
                     new_cpd_id = len(nodes_label)
                     nodes_label.append(reactant)
                     nodes[reactant] = new_cpd_id
-            for product in node_pwy.misc['OUTPUT-COMPOUNDS'][0].split(','):
-                products.append(product)
+            for product in products:
                 if product not in nodes:
                     new_cpd_id = len(nodes_label)
                     nodes_label.append(product)
                     nodes[product] = new_cpd_id
-            for reactant, product in zip(reactants, products):
+            reactant_product_tuples = [(reactant, product) for reactant in reactants for product in products]
+            for reactant, product in reactant_product_tuples:
                 edges.append((nodes[reactant], nodes[product]))
                 weights.append(1)
                 edges_label.append(node_pwy.id)
