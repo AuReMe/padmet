@@ -6,13 +6,14 @@ Description:
 ::
 
     usage:
-        padmet visu_network -i=FILE -o=FILE [--html=FILE]
+        padmet visu_network -i=FILE -o=FILE [--html=FILE] [--level=STR]
     
     options:
         -h --help     Show help.
         -i=FILE    pathname to the input file (either PADMet or SBML).
-        -o=FILE    pathname to the output file (picture of metabolic network)
-        --html=FILE    pathname to the output file (interactive hmtl of metabolic network)
+        -o=FILE    pathname to the output file (picture of metabolic network).
+        --html=FILE    pathname to the output file (interactive hmtl of metabolic network).
+        --level=STR    level of precision for the visualization (compound, reaction or pathway). By default visualization uses "compound".
 """
 import docopt
 import logging
@@ -43,9 +44,12 @@ def visu_network_cli(command_args):
     metabolic_network_file = args["-i"]
     output_file = args["-o"]
     html_output_file = args['--html']
-    create_compounds_graph(metabolic_network_file, output_file)
+    visualization_level = args['--level']
+    if visualization_level is None:
+        visualization_level = "compound"
+    create_graph(metabolic_network_file, output_file, visualization_level)
     if html_output_file:
-        create_html_compounds_graph(metabolic_network_file, html_output_file)
+        create_html_graph(metabolic_network_file, html_output_file, visualization_level)
 
 
 def parse_compounds_padmet(padmet_file):
@@ -152,7 +156,124 @@ def parse_compounds_sbml(sbml_file):
     return edges, edges_label, weights, nodes, nodes_label
 
 
-def create_compounds_graph(metabolic_network_file, output_file):
+def parse_reactions_padmet(padmet_file):
+    """ Parse padmets files to extract reactions to create edges and nodes for igraph.
+
+    Parameters
+    ----------
+    padmet_file: str
+        pathname of the padmet file
+    Returns
+    -------
+    edges: list
+        edges between two reactions
+    edges_label: list
+        for each edge the name of the reaction
+    weights: list
+        the weight associated to each edge
+    nodes: list
+        a compound
+    nodes_label: list
+        for each node the name of the compound
+    """
+    padmetSpec = PadmetSpec(padmet_file)
+
+    edges = []
+    edges_label = []
+    weights = []
+
+    nodes = {}
+    nodes_label = []
+
+    all_rxns = [node for node in padmetSpec.dicOfNode.values() if node.type == "reaction"]
+
+    for rxn in all_rxns:
+        for rlt in padmetSpec.dicOfRelationIn[rxn.id]:
+            if rlt.type == "produces":
+                for sec_rlt in padmetSpec.dicOfRelationOut[rlt.id_out]:
+                    if sec_rlt.type == "consumes":
+                        sec_rxn_id = sec_rlt.id_in
+                        if sec_rxn_id not in nodes:
+                            new_cpd_id = len(nodes_label)
+                            nodes_label.append(sec_rxn_id)
+                            nodes[sec_rxn_id] = new_cpd_id
+                        if rxn.id not in nodes:
+                            new_cpd_id = len(nodes_label)
+                            nodes_label.append(rxn.id)
+                            nodes[rxn.id] = new_cpd_id
+                        if (nodes[rxn.id], nodes[sec_rxn_id]) not in edges and (nodes[sec_rxn_id], nodes[rxn.id]) not in edges:
+                            edges.append((nodes[rxn.id], nodes[sec_rxn_id]))
+                            weights.append(1)
+                            edges_label.append(rxn.id)
+
+    return edges, edges_label, weights, nodes, nodes_label
+
+
+def parse_pathways_padmet(padmet_file):
+    """ Parse padmets files to extract pathway inputs and ouputs to create edges and nodes for igraph.
+
+    Parameters
+    ----------
+    padmet_file: str
+        pathname of the padmet file
+    Returns
+    -------
+    edges: list
+        edges between two compounds (symbolizing the pathway)
+    edges_label: list
+        for each edge the name of the pathway
+    weights: list
+        the weight associated to each edge
+    nodes: list
+        a compound
+    nodes_label: list
+        for each node the name of the compound
+    """
+    padmetSpec = PadmetSpec(padmet_file)
+
+    # Check if the padmets and padmetref contain the INPUT-COMPOUNDS and OUTPUT-COMPOUNDS in pathway node.misc needed for this analysis.
+    padmetref_input_compounds_in_pwys = [1 for node_pathway in padmetSpec.dicOfNode
+                                            if padmetSpec.dicOfNode[node_pathway].type == 'pathway' and 'INPUT-COMPOUNDS' in padmetSpec.dicOfNode[node_pathway].misc]
+    padmetref_output_compounds_in_pwys = [1 for node_pathway in padmetSpec.dicOfNode
+                                            if padmetSpec.dicOfNode[node_pathway].type == 'pathway' and 'OUTPUT-COMPOUNDS' in padmetSpec.dicOfNode[node_pathway].misc]
+    if sum(padmetref_input_compounds_in_pwys) == 0 or sum(padmetref_output_compounds_in_pwys) == 0:
+        sys.exit("The padmet " + padmet_file + " does not contain INPUT-COMPOUNDS and OUTPUT-COMPOUNDS in the pathway node, can't produce the pathway visualization.")
+
+    edges = []
+    edges_label = []
+    weights = []
+
+    nodes = {}
+    nodes_label = []
+
+    all_pwys = [node for node in padmetSpec.dicOfNode if padmetSpec.dicOfNode[node].type == "pathway"]
+
+    for pwy in all_pwys:
+        reactants = []
+        products = []
+        node_pwy = padmetSpec.dicOfNode[pwy]
+        if 'INPUT-COMPOUNDS' in node_pwy.misc and 'OUTPUT-COMPOUNDS' in node_pwy.misc:
+            for reactant in node_pwy.misc['INPUT-COMPOUNDS'][0].split(','):
+                reactants.append(reactant)
+                if reactant not in nodes:
+                    new_cpd_id = len(nodes_label)
+                    nodes_label.append(reactant)
+                    nodes[reactant] = new_cpd_id
+            for product in node_pwy.misc['OUTPUT-COMPOUNDS'][0].split(','):
+                products.append(product)
+                if product not in nodes:
+                    new_cpd_id = len(nodes_label)
+                    nodes_label.append(product)
+                    nodes[product] = new_cpd_id
+            for reactant, product in zip(reactants, products):
+                edges.append((nodes[reactant], nodes[product]))
+                weights.append(1)
+                edges_label.append(node_pwy.id)
+
+    return edges, edges_label, weights, nodes, nodes_label
+
+
+def create_graph(metabolic_network_file, output_file, visualization_level):
     """ Using output of parse_compounds_padmet or parse_compounds_sbml create a network picture using igraph.
 
     Parameters
@@ -161,13 +282,28 @@ def create_compounds_graph(metabolic_network_file, output_file):
         pathname of the metabolic network file
     output_file: str
         pathname of the output picture of the metabolic network
+    visualization_level: str
+        level of visualization either compound, reaction or pathway
     """
-    if metabolic_network_file.endswith('.padmet'):
-        edges, edges_label, weights, nodes, nodes_label = parse_compounds_padmet(metabolic_network_file)
-    elif metabolic_network_file.endswith('.sbml'):
-        edges, edges_label, weights, nodes, nodes_label = parse_compounds_sbml(metabolic_network_file)
-    else:
-        sys.exit('No correct extension file as input. Input must be a .padmet or a .sbml file.')
+    if visualization_level == "compound":
+        if metabolic_network_file.endswith('.padmet'):
+            edges, edges_label, weights, nodes, nodes_label = parse_compounds_padmet(metabolic_network_file)
+        elif metabolic_network_file.endswith('.sbml'):
+            edges, edges_label, weights, nodes, nodes_label = parse_compounds_sbml(metabolic_network_file)
+        else:
+            sys.exit('No correct extension file as input. Input must be a .padmet or a .sbml file.')
+
+    elif visualization_level == "reaction":
+        if metabolic_network_file.endswith('.padmet'):
+            edges, edges_label, weights, nodes, nodes_label = parse_reactions_padmet(metabolic_network_file)
+        else:
+            sys.exit('No correct extension file as input for pathway level. Input must be a .padmet.')
+
+    elif visualization_level == "pathway":
+        if metabolic_network_file.endswith('.padmet'):
+            edges, edges_label, weights, nodes, nodes_label = parse_pathways_padmet(metabolic_network_file)
+        else:
+            sys.exit('No correct extension file as input for pathway level. Input must be a .padmet.')
 
     n_vertices = len(nodes)
 
@@ -220,7 +356,7 @@ def create_compounds_graph(metabolic_network_file, output_file):
     igraph.plot(compounds_graph, output_file, **visual_style)
 
 
-def create_html_compounds_graph(metabolic_network_file, output_file):
+def create_html_graph(metabolic_network_file, output_file, visualization_level):
     """ Using output of parse_compounds_padmet or parse_compounds_sbml create an interactive graph in html.
 
     Parameters
@@ -229,18 +365,33 @@ def create_html_compounds_graph(metabolic_network_file, output_file):
         pathname of the metabolic network file
     output_file: str
         pathname of the output picture of the metabolic network
+    visualization_level: str
+        level of visualization either compound, reaction or pathway
     """
     try:
         import pyvis
     except ImportError:
         raise ImportError('Requires pyvis, try:\npip install pyvis')
 
-    if metabolic_network_file.endswith('.padmet'):
-        edges, edges_label, weights, nodes, nodes_label = parse_compounds_padmet(metabolic_network_file)
-    elif metabolic_network_file.endswith('.sbml'):
-        edges, edges_label, weights, nodes, nodes_label = parse_compounds_sbml(metabolic_network_file)
-    else:
-        sys.exit('No correct extension file as input. Input must be a .padmet or a .sbml file.')
+    if visualization_level == "compound":
+        if metabolic_network_file.endswith('.padmet'):
+            edges, edges_label, weights, nodes, nodes_label = parse_compounds_padmet(metabolic_network_file)
+        elif metabolic_network_file.endswith('.sbml'):
+            edges, edges_label, weights, nodes, nodes_label = parse_compounds_sbml(metabolic_network_file)
+        else:
+            sys.exit('No correct extension file as input. Input must be a .padmet or a .sbml file.')
+
+    elif visualization_level == "reaction":
+        if metabolic_network_file.endswith('.padmet'):
+            edges, edges_label, weights, nodes, nodes_label = parse_reactions_padmet(metabolic_network_file)
+        else:
+            sys.exit('No correct extension file as input for pathway level. Input must be a .padmet.')
+
+    elif visualization_level == "pathway":
+        if metabolic_network_file.endswith('.padmet'):
+            edges, edges_label, weights, nodes, nodes_label = parse_pathways_padmet(metabolic_network_file)
+        else:
+            sys.exit('No correct extension file as input for pathway level. Input must be a .padmet.')
     
     compounds_graph = pyvis.network.Network(height=1900, width=1900, directed=True)
     compounds_graph.barnes_hut()
