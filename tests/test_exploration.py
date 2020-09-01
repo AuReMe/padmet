@@ -221,11 +221,11 @@ def test_compare_padmet_cli():
 def test_padmet_stats():
     fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
     fabo_padmetSpec.generateFile('fabo.padmet')
-    compute_stats('fabo.padmet')
+    compute_stats('fabo.padmet', 'output_folder')
 
     # Expected stats: nb pathways, nb reactions, nb reactions with gene, nb genes, nb compounds
     expected_stats = ['1', '11', '7', '9', '28']
-    with open('padmet_stats.tsv', 'r') as reactions_file:
+    with open('output_folder/padmet_stats.tsv', 'r') as reactions_file:
         csvreader = csv.reader(reactions_file, delimiter='\t')
         for row in csvreader:
             if row[0] != 'padmet_file':
@@ -234,18 +234,17 @@ def test_padmet_stats():
     assert fabo_stats == expected_stats
 
     os.remove('fabo.padmet')
-    os.remove('padmet_stats.tsv')
-    os.remove('padmet_orthologs_stats.tsv')
+    shutil.rmtree('output_folder')
 
 
 def test_padmet_stats_cli():
     subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'fabo.padmet', '--extract-gene'])
 
-    subprocess.call(['padmet', 'padmet_stats', '--padmet', 'fabo.padmet'])
+    subprocess.call(['padmet', 'padmet_stats', '--padmet', 'fabo.padmet', '--output', 'output_folder'])
 
     # Expected stats: nb pathways, nb reactions, nb reactions with gene, nb genes, nb compounds
     expected_stats = ['1', '11', '7', '9', '28']
-    with open('padmet_stats.tsv', 'r') as reactions_file:
+    with open('output_folder/padmet_stats.tsv', 'r') as reactions_file:
         csvreader = csv.reader(reactions_file, delimiter='\t')
         for row in csvreader:
             if row[0] != 'padmet_file':
@@ -254,8 +253,7 @@ def test_padmet_stats_cli():
     assert fabo_stats == expected_stats
 
     os.remove('fabo.padmet')
-    os.remove('padmet_stats.tsv')
-    os.remove('padmet_orthologs_stats.tsv')
+    shutil.rmtree('output_folder')
 
 
 def test_get_pwy_from_rxn():
