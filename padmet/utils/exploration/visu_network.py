@@ -6,7 +6,7 @@ Description:
 ::
 
     usage:
-        padmet visu_network -i=FILE -o=FILE [--html=FILE] [--level=STR]
+        padmet visu_network -i=FILE -o=FILE [--html=FILE] [--level=STR] [--hide-currency]
     
     options:
         -h --help     Show help.
@@ -14,6 +14,7 @@ Description:
         -o=FILE    pathname to the output file (picture of metabolic network).
         --html=FILE    pathname to the output file (interactive hmtl of metabolic network).
         --level=STR    level of precision for the visualization (compound, reaction or pathway). By default visualization uses "compound".
+        --hide-currency    hide currency metabolites.
 """
 import docopt
 import logging
@@ -45,20 +46,23 @@ def visu_network_cli(command_args):
     output_file = args["-o"]
     html_output_file = args['--html']
     visualization_level = args['--level']
+    hide_currency_metabolites = args["--hide-currency"]
     if visualization_level is None:
         visualization_level = "compound"
-    create_graph(metabolic_network_file, output_file, visualization_level)
+    create_graph(metabolic_network_file, output_file, visualization_level, hide_currency_metabolites)
     if html_output_file:
         create_html_graph(metabolic_network_file, html_output_file, visualization_level)
 
 
-def parse_compounds_padmet(padmet_file):
+def parse_compounds_padmet(padmet_file, hide_metabolites):
     """ Parse padmets files to extract compounds to create edges and nodes for igraph.
 
     Parameters
     ----------
     padmet_file: str
         pathname of the padmet file
+    hide_metabolites: list
+        list of metabolites to hide
     Returns
     -------
     edges: list
@@ -91,29 +95,37 @@ def parse_compounds_padmet(padmet_file):
             if rlt.type == "produces":
                 outs.append(rlt.id_out)
         for compound_in in ins:
-            for compound_out in outs:
-                if compound_in not in nodes:
-                    new_cpd_id = len(nodes_label)
-                    nodes_label.append(compound_in)
-                    nodes[compound_in] = new_cpd_id
-                if compound_out not in nodes:
-                    new_cpd_id = len(nodes_label)
-                    nodes_label.append(compound_out)
-                    nodes[compound_out] = new_cpd_id
-                edges.append((nodes[compound_in], nodes[compound_out]))
-                weights.append(1)
-                edges_label.append(rxn.id)
+            if compound_in not in hide_metabolites:
+                for compound_out in outs:
+                    if compound_out not in hide_metabolites:
+                        if compound_in not in nodes:
+                            new_cpd_id = len(nodes_label)
+                            nodes_label.append(compound_in)
+                            nodes[compound_in] = new_cpd_id
+                        if compound_out not in nodes:
+                            new_cpd_id = len(nodes_label)
+                            nodes_label.append(compound_out)
+                            nodes[compound_out] = new_cpd_id
+                        edges.append((nodes[compound_in], nodes[compound_out]))
+                        weights.append(1)
+                        edges_label.append(rxn.id)
+                        if 'REVERSIBLE' in rxn.misc['DIRECTION']:
+                            edges.append((nodes[compound_out], nodes[compound_in]))
+                            weights.append(1)
+                            edges_label.append(rxn.id)
 
     return edges, edges_label, weights, nodes, nodes_label
 
 
-def parse_compounds_sbml(sbml_file):
+def parse_compounds_sbml(sbml_file, hide_metabolites):
     """ Parse sbml files to extract compounds to create edges and nodes for igraph.
 
     Parameters
     ----------
     sbml_file: str
         pathname of the sbml file
+    hide_metabolites: list
+        list of metabolites to hide
     Returns
     -------
     edges: list
@@ -139,19 +151,25 @@ def parse_compounds_sbml(sbml_file):
     for reaction in sbml_model.reactions:
         for reactant in reaction.reactants:
             reactant = convert_from_coded_id(reactant.id)[0]
-            for product in reaction.products:
-                product = convert_from_coded_id(product.id)[0]
-                if reactant not in nodes:
-                    new_cpd_id = len(nodes_label)
-                    nodes_label.append(reactant)
-                    nodes[reactant] = new_cpd_id
-                if product not in nodes:
-                    new_cpd_id = len(nodes_label)
-                    nodes_label.append(product)
-                    nodes[product] = new_cpd_id
-                edges.append((nodes[reactant], nodes[product]))
-                weights.append(1)
-                edges_label.append(reaction.id)
+            if reactant not in hide_metabolites:
+                for product in reaction.products:
+                    product = convert_from_coded_id(product.id)[0]
+                    if product not in hide_metabolites:
+                        if reactant not in nodes:
+                            new_cpd_id = len(nodes_label)
+                            nodes_label.append(reactant)
+                            nodes[reactant] = new_cpd_id
+                        if product not in nodes:
+                            new_cpd_id = len(nodes_label)
+                            nodes_label.append(product)
+                            nodes[product] = new_cpd_id
+                        edges.append((nodes[reactant], nodes[product]))
+                        weights.append(1)
+                        edges_label.append(reaction.id)
+                        if reaction.reversibility == True:
+                            edges.append((nodes[product], nodes[reactant]))
+                            weights.append(1)
+                            edges_label.append(reaction.id)
 
     return edges, edges_label, weights, nodes, nodes_label
 
@@ -201,7 +219,7 @@ def parse_reactions_padmet(padmet_file):
                             new_cpd_id = len(nodes_label)
                             nodes_label.append(rxn.id)
                             nodes[rxn.id] = new_cpd_id
-                        if (nodes[rxn.id], nodes[sec_rxn_id]) not in edges and (nodes[sec_rxn_id], nodes[rxn.id]) not in edges:
+                        if (nodes[rxn.id], nodes[sec_rxn_id]) not in edges:
                             edges.append((nodes[rxn.id], nodes[sec_rxn_id]))
                             weights.append(1)
                             edges_label.append(rxn.id)
@@ -272,7 +290,7 @@ def parse_pathways_padmet(padmet_file):
     return edges, edges_label, weights, nodes, nodes_label
 
 
-def create_graph(metabolic_network_file, output_file, visualization_level):
+def create_graph(metabolic_network_file, output_file, visualization_level, hide_currency_metabolites):
     """ Using output of parse_compounds_padmet or parse_compounds_sbml create a network picture using igraph.
 
     Parameters
@@ -283,12 +301,22 @@ def create_graph(metabolic_network_file, output_file, visualization_level):
         pathname of the output picture of the metabolic network
     visualization_level: str
         level of visualization either compound, reaction or pathway
+    hide_currency_metabolites: bool
+        hide currency metabolites
     """
+    if hide_currency_metabolites:
+        hide_metabolites = ["PROTON", "WATER", "OXYGEN-MOLECULE", "NADP", "NADPH", "ATP",
+                            "PPI", "CARBON-DIOXIDE", "Pi", "ADP", "CO-A", "UDP", "NAD",
+                            "NADH", "AMP", "AMMONIA", "HYDROGEN-PEROXIDE", "Acceptor",
+                            "Donor-H2", "3-5-ADP", "GDP", "CARBON-MONOXIDE", "GTP", "FAD"]
+    else:
+        hide_metabolites = []
+
     if visualization_level == "compound":
         if metabolic_network_file.endswith('.padmet'):
-            edges, edges_label, weights, nodes, nodes_label = parse_compounds_padmet(metabolic_network_file)
+            edges, edges_label, weights, nodes, nodes_label = parse_compounds_padmet(metabolic_network_file, hide_metabolites)
         elif metabolic_network_file.endswith('.sbml'):
-            edges, edges_label, weights, nodes, nodes_label = parse_compounds_sbml(metabolic_network_file)
+            edges, edges_label, weights, nodes, nodes_label = parse_compounds_sbml(metabolic_network_file, hide_metabolites)
         else:
             sys.exit('No correct extension file as input. Input must be a .padmet or a .sbml file.')
 

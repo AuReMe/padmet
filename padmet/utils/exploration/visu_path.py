@@ -10,7 +10,7 @@ compounds: skyblue
 ::
 
     usage:
-        padmet visu_path --padmetSpec=FILE/FOLDER --padmetRef=FILE --pathway=ID --output=FILE [--hiding] [--level=STR]
+        padmet visu_path --padmetSpec=FILE/FOLDER --padmetRef=FILE --pathway=ID --output=FILE [--hide-currency] [--level=STR]
     
     options:
         -h --help     Show help.
@@ -18,7 +18,7 @@ compounds: skyblue
         --padmetRef=FILE    pathname to the PADMet file of the db of reference.
         --pathway=ID    pathway id to visualize, can be multiple pathways separated by a ",".
         --output=FILE    pathname to the output file (extension can be .png or .svg).
-        --hiding    hide common compounds.
+        --hide-currency    hide currency metabolites.
         --level=STR    level of precision for the visualization (compound or pathway). By default visualization uses "compound".
 """
 import docopt
@@ -51,17 +51,17 @@ def visu_path_cli(command_args):
     padmet_ref_pathname = args["--padmetRef"]
     pathway_ids = args["--pathway"]
     output_file = args["--output"]
-    hide_compounds = args["--hiding"]
+    hide_currency_metabolites = args["--hide-currency"]
     visualization_level = args["--level"]
     if visualization_level is None:
         visualization_level = "compound"
     if visualization_level == "compound":
-        visu_path_compounds(padmet_pathname, padmet_ref_pathname, pathway_ids, output_file, hide_compounds)
+        visu_path_compounds(padmet_pathname, padmet_ref_pathname, pathway_ids, output_file, hide_currency_metabolites)
     if visualization_level == "pathway":
         visu_path_pathways(padmet_pathname, padmet_ref_pathname, pathway_ids, output_file)
 
 
-def visu_path_compounds(padmet_pathname, padmet_ref_pathname, pathway_ids, output_file, hide_compounds=None):
+def visu_path_compounds(padmet_pathname, padmet_ref_pathname, pathway_ids, output_file, hide_currency_metabolites=None):
     """ Extract reactions from pathway and create a comppound/reaction graph.
 
     Parameters
@@ -74,8 +74,8 @@ def visu_path_compounds(padmet_pathname, padmet_ref_pathname, pathway_ids, outpu
         name of the pathway (can be multiple pathways separated by a ',')
     output_file: str
         pathname of the output picture (extension can be .png or .svg)
-    hide_compounds: bool
-        hide common compounds (like water or proton)
+    hide_currency_metabolites: bool
+        hide currency metabolites
     """
     if os.path.isfile(padmet_pathname):
         padmet = PadmetSpec(padmet_pathname)
@@ -86,8 +86,11 @@ def visu_path_compounds(padmet_pathname, padmet_ref_pathname, pathway_ids, outpu
     pathway_ids = pathway_ids.split(',')
     pwy_all_reactions = []
 
-    if hide_compounds:
-        compounds_to_hide = ["WATER", "PROTON", "NAD", "NADH", "ATP", "ADP"]
+    if hide_currency_metabolites:
+        compounds_to_hide = ["PROTON", "WATER", "OXYGEN-MOLECULE", "NADP", "NADPH", "ATP",
+                            "PPI", "CARBON-DIOXIDE", "Pi", "ADP", "CO-A", "UDP", "NAD",
+                            "NADH", "AMP", "AMMONIA", "HYDROGEN-PEROXIDE", "Acceptor",
+                            "Donor-H2", "3-5-ADP", "GDP", "CARBON-MONOXIDE", "GTP", "FAD"]
     else:
         compounds_to_hide = []
 
@@ -141,11 +144,15 @@ def visu_path_compounds(padmet_pathname, padmet_ref_pathname, pathway_ids, outpu
                 if reac not in custom_node_color:
                     custom_node_color[reac] = "skyblue"
                 DG.add_edge(reac, reaction_id)
+                if 'REVERSIBLE' in padmet_ref.dicOfNode[reaction_id].misc['DIRECTION']:
+                    DG.add_edge(reaction_id, reac)
         for prod in products:
             if prod not in compounds_to_hide:
                 if prod not in custom_node_color:
                     custom_node_color[prod] = "skyblue"
                 DG.add_edge(reaction_id, prod)
+                if 'REVERSIBLE' in padmet_ref.dicOfNode[reaction_id].misc['DIRECTION']:
+                    DG.add_edge(prod, reaction_id)
 
     # https://networkx.github.io/documentation/latest/reference/generated/networkx.drawing.nx_pylab.draw_networkx.html
     # apt-get install graphviz graphviz-dev (python-pygraphviz)
