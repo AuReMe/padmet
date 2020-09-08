@@ -22,6 +22,13 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
+try:
+    # Import to be compatible with biopython version lesser than 1.78
+    from Bio.Alphabet.IUPAC import protein
+except ImportError:
+    # Exception to be compatible with biopython version superior to 1.78
+    protein = None
+
 
 def command_help():
     """
@@ -66,13 +73,21 @@ def gbk_to_faa(gbk_file, output, qualifier='locus_tag', verbose=True):
                 try:
                     fasta_id = seq_feature.qualifiers[qualifier][0]
                     if fasta_id not in fasta_ids:
-                        fasta_record = SeqRecord(Seq(seq_feature.qualifiers['translation'][0]), id=fasta_id, description=fasta_id)
+                        # Keep compatibility with biopython version lesser than 1.78
+                        if protein:
+                            fasta_record = SeqRecord(Seq(seq_feature.qualifiers['translation'][0], protein), id=fasta_id, description=fasta_id)
+                        else:
+                            fasta_record = SeqRecord(Seq(seq_feature.qualifiers['translation'][0]), id=fasta_id, description=fasta_id)
                         fasta_records.append(fasta_record)
                         fasta_ids[fasta_id] = 1
                     else:
                         fasta_ids[fasta_id] += 1
                         isoform_id = fasta_id + '_isoform' + str(fasta_ids[fasta_id])
-                        fasta_record = SeqRecord(Seq(seq_feature.qualifiers['translation'][0]), id=isoform_id, description=fasta_id)
+                        # Keep compatibility with biopython version lesser than 1.78
+                        if protein:
+                            fasta_record = SeqRecord(Seq(seq_feature.qualifiers['translation'][0], protein), id=isoform_id, description=fasta_id)
+                        else:
+                            fasta_record = SeqRecord(Seq(seq_feature.qualifiers['translation'][0]), id=isoform_id, description=fasta_id)
                         fasta_records.append(fasta_record)
                 except KeyError:
                     if verbose:
