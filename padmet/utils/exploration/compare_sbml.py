@@ -59,13 +59,15 @@ def compare_multiple_sbml(sbml_path, output_folder):
     else:
         print("%s already exist, old comparison output folders will be overwritten" %output_folder)
 
-    if not os.path.exists(sbml_path):
-        raise FileNotFoundError("No SBML file or directory (--sbml/sbml_path) accessible at " + sbml_path)
-
     if os.path.isdir(sbml_path):
+        if not os.path.exists(sbml_path):
+            raise FileNotFoundError("No SBML directory (--sbml/sbml_path) accessible at " + sbml_path)
         all_files = [os.path.join(sbml_path, f) for f in next(os.walk(sbml_path))[2]]
     else:
         all_files = sbml_path.split(",")
+        for sbml_file in all_files:
+            if not os.path.exists(sbml_file):
+                raise FileNotFoundError("No SBML file (--sbml/sbml_path) accessible at " + sbml_file)
 
     species_columns = [os.path.splitext(os.path.basename(all_file))[0] for all_file in sorted(all_files)]
     gene_columns = [os.path.splitext(os.path.basename(all_file))[0] + '_genes_assoc (sep=;)' for all_file in sorted(all_files)]
