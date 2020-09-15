@@ -95,9 +95,9 @@ def compare_multiple_sbml(sbml_path, output_folder):
             row = [reaction.id]
             for sbml_file in sorted(all_files):
                 if reaction.id in [rxn.id for rxn in reactions[sbml_file]]:
-                    reaction_presents.append('present')
+                    reaction_presents.append(1)
                 else:
-                    reaction_presents.append('')
+                    reaction_presents.append(0)
                 if reaction.id in reactions[sbml_file]:
                     species_reaction = reactions[sbml_file].get_by_id(reaction.id)
                     if 'GENE_ASSOCIATION' in species_reaction.notes:
@@ -132,9 +132,9 @@ def compare_multiple_sbml(sbml_path, output_folder):
             row = [compound.id]
             for sbml_file in sorted(all_files):
                 if compound.id in compounds[sbml_file]:
-                    row.append('present')
+                    row.append(1)
                 else:
-                    row.append('')
+                    row.append(0)
             csvwriter.writerow(row)
 
 

@@ -8,9 +8,11 @@ import subprocess
 from padmet.utils.connection.pgdb_to_padmet import from_pgdb_to_padmet
 from padmet.utils.connection.sbmlGenerator import padmet_to_sbml
 from padmet.utils.exploration.compare_padmet import compare_padmet
+from padmet.utils.exploration.compare_sbml import compare_multiple_sbml
 from padmet.utils.exploration.padmet_stats import compute_stats
 from padmet.utils.exploration.get_pwy_from_rxn import extract_pwys
 from padmet.utils.exploration.flux_analysis import flux_analysis
+from padmet.utils import sbmlPlugin
 
 from padmet.classes import PadmetSpec
 
@@ -42,9 +44,9 @@ def test_compare_padmet():
     with open('output/genes.tsv', 'r') as genes_file:
         csvreader = csv.reader(genes_file, delimiter='\t')
         for row in csvreader:
-            if row[1] == 'present':
+            if row[1] == '1':
                 genes_fabo_1.append(row[0])
-            if row[2] == 'present':
+            if row[2] == '1':
                 genes_fabo_2.append(row[0])
 
     assert set(FABO_GENES).issubset(set(genes_fabo_1))
@@ -56,9 +58,9 @@ def test_compare_padmet():
     with open('output/reactions.tsv', 'r') as reactions_file:
         csvreader = csv.reader(reactions_file, delimiter='\t')
         for row in csvreader:
-            if row[1] == 'present':
+            if row[1] == '1':
                 reactions_fabo_1.append(row[0])
-            if row[2] == 'present':
+            if row[2] == '1':
                 reactions_fabo_2.append(row[0])
 
     expected_fabo_1_rxns = [rxn for rxn in FABO_RXNS if rxn != 'ACYLCOASYN-RXN']
@@ -140,9 +142,9 @@ def test_compare_padmet_cli():
     with open('output/genes.tsv', 'r') as genes_file:
         csvreader = csv.reader(genes_file, delimiter='\t')
         for row in csvreader:
-            if row[1] == 'present':
+            if row[1] == '1':
                 genes_fabo_1.append(row[0])
-            if row[2] == 'present':
+            if row[2] == '1':
                 genes_fabo_2.append(row[0])
 
     assert set(FABO_GENES).issubset(set(genes_fabo_1))
@@ -154,9 +156,9 @@ def test_compare_padmet_cli():
     with open('output/reactions.tsv', 'r') as reactions_file:
         csvreader = csv.reader(reactions_file, delimiter='\t')
         for row in csvreader:
-            if row[1] == 'present':
+            if row[1] == '1':
                 reactions_fabo_1.append(row[0])
-            if row[2] == 'present':
+            if row[2] == '1':
                 reactions_fabo_2.append(row[0])
 
     expected_fabo_1_rxns = [rxn for rxn in FABO_RXNS if rxn != 'ACYLCOASYN-RXN']
@@ -216,6 +218,54 @@ def test_compare_padmet_cli():
     os.remove('fabo_1.padmet')
     os.remove('fabo_2.padmet')
     shutil.rmtree('output')
+
+
+def test_compare_sbml():
+    fabo_1_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
+    fabo_1_padmetSpec.delNode('ACYLCOASYN-RXN')
+    padmet_to_sbml(fabo_1_padmetSpec, 'fabo_1.sbml')
+
+    fabo_2_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
+    fabo_2_padmetSpec.delNode('ACYLCOADEHYDROG-RXN')
+    padmet_to_sbml(fabo_2_padmetSpec, 'fabo_2.sbml')
+
+    compare_multiple_sbml('fabo_1.sbml,fabo_2.sbml', 'output_folder')
+
+    reactions_fabo_1 = []
+    reactions_fabo_2 = []
+    with open('output_folder/reactions.tsv', 'r') as reactions_file:
+        csvreader = csv.reader(reactions_file, delimiter='\t')
+        for row in csvreader:
+            if row[1] == '1':
+                reactions_fabo_1.append(row[0])
+            if row[2] == '1':
+                reactions_fabo_2.append(row[0])
+
+    expected_fabo_1_rxns = [rxn for rxn in FABO_RXNS if rxn != 'ACYLCOASYN-RXN']
+    expected_fabo_2_rxns = [rxn for rxn in FABO_RXNS if rxn != 'ACYLCOADEHYDROG-RXN']
+
+    assert set(expected_fabo_1_rxns).issubset(set(reactions_fabo_1))
+
+    assert set(expected_fabo_2_rxns).issubset(set(reactions_fabo_2))
+
+    metabolites_fabo_1 = []
+    metabolites_fabo_2 = []
+    with open('output_folder/metabolites.tsv', 'r') as metabolites_file:
+        csvreader = csv.reader(metabolites_file, delimiter='\t')
+        for row in csvreader:
+            if row[1] == '1':
+                metabolites_fabo_1.append(sbmlPlugin.convert_from_coded_id(row[0])[0])
+            if row[2] == '1':
+                metabolites_fabo_2.append(sbmlPlugin.convert_from_coded_id(row[0])[0])
+
+    metabolites_fabo_1 = list(set(metabolites_fabo_1))
+    metabolites_fabo_2 = list(set(metabolites_fabo_2))
+
+    assert set(FABO_CPDS).issubset(set(metabolites_fabo_1 + metabolites_fabo_2))
+
+    os.remove('fabo_1.sbml')
+    os.remove('fabo_2.sbml')
+    shutil.rmtree('output_folder')
 
 
 def test_padmet_stats():
@@ -305,3 +355,4 @@ def test_flux_analysis_cli():
 
     os.remove('fabo.sbml')
     os.remove('test.padmet')
+test_compare_sbml()

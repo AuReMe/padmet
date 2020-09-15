@@ -4,10 +4,10 @@ Description:
     #Compare 1-n padmet and create a folder output with files:
     genes.tsv:
         fieldnames = [gene, padmet_a, padmet_b, padmet_a_rxn_assoc, padmet_b_rxn_assoc]
-        line = [gene-a, 'present' (if in padmet_a), 'present' (if in padmet_b), rxn-1;rxn-2 (names of reactions associated to gene-a in padmet_a), rxn-2]
+        line = [gene-a, 1 (if in padmet_a), 1 (if in padmet_b), rxn-1;rxn-2 (names of reactions associated to gene-a in padmet_a), rxn-2]
     reactions.tsv:
         fieldnames = [reaction, padmet_a, padmet_b, padmet_a_genes_assoc, padmet_b_genes_assoc, padmet_a_formula, padmet_b_formula]
-        line = [rxn-1, 'present' (if in padmet_a), 'present' (if in padmet_b), 'gene-a;gene-b; gene-a, 'cpd-1 + cpd-2 => cpd-3', 'cpd-1 + cpd-2 => cpd-3']
+        line = [rxn-1, 1 (if in padmet_a), 1 (if in padmet_b), 'gene-a;gene-b; gene-a, 'cpd-1 + cpd-2 => cpd-3', 'cpd-1 + cpd-2 => cpd-3']
     pathways.tsv:
         fieldnames = [pathway, padmet_a_completion_rate, padmet_b_completion_rate, padmet_a_rxn_assoc, padmet_b_rxn_assoc]
         line = [pwy-a, 0.80, 0.30, rxn-a;rxn-b; rxn-a]
@@ -179,10 +179,10 @@ def compare_padmet(padmet_path, output, padmetRef = None, verbose = False, numbe
     #Compare 1-n padmet and create a folder output with files:
     genes.tsv:
         fieldnames = [gene, padmet_a, padmet_b, padmet_a_rxn_assoc, padmet_b_rxn_assoc]
-        line = [gene-a, 'present' (if in padmet_a), 'present' (if in padmet_b), rxn-1;rxn-2 (names of reactions associated to gene-a in padmet_a), rxn-2]
+        line = [gene-a, 1 (if in padmet_a), 1 (if in padmet_b), rxn-1;rxn-2 (names of reactions associated to gene-a in padmet_a), rxn-2]
     reactions.tsv:
         fieldnames = [reaction, padmet_a, padmet_b, padmet_a_genes_assoc, padmet_b_genes_assoc, padmet_a_formula, padmet_b_formula]
-        line = [rxn-1, 'present' (if in padmet_a), 'present' (if in padmet_b), 'gene-a;gene-b; gene-a, 'cpd-1 + cpd-2 => cpd-3', 'cpd-1 + cpd-2 => cpd-3']
+        line = [rxn-1, 1 (if in padmet_a), 1 (if in padmet_b), 'gene-a;gene-b; gene-a, 'cpd-1 + cpd-2 => cpd-3', 'cpd-1 + cpd-2 => cpd-3']
     pathways.tsv:
         fieldnames = [pathway, padmet_a_completion_rate, padmet_b_completion_rate, padmet_a_rxn_assoc, padmet_b_rxn_assoc]
         line = [pwy-a, 0.80, 0.30, rxn-a;rxn-b; rxn-a]
@@ -261,7 +261,7 @@ def compare_padmet(padmet_path, output, padmetRef = None, verbose = False, numbe
         for gene_id, dic_basename_rxn_assoc in list(dict_genes.items()):
             dict_row = {'gene': gene_id}
             for basename_file, rxn_assoc in list(dic_basename_rxn_assoc.items()):
-                dict_row.update({basename_file : 'present', basename_file+"_rxn_assoc (sep=;)": rxn_assoc})
+                dict_row.update({basename_file : 1, basename_file+"_rxn_assoc (sep=;)": rxn_assoc})
             writer.writerow(dict_row)
 
     #reactions
@@ -275,7 +275,10 @@ def compare_padmet(padmet_path, output, padmetRef = None, verbose = False, numbe
         for rxn_id, dict_basename_data in list(dict_rxns.items()):
             dict_row = {'reaction': rxn_id}
             for basename_file, rxn_data in list(dict_basename_data.items()):
-                dict_row.update({basename_file : 'present', basename_file+"_genes_assoc (sep=;)": rxn_data["genes_associated"], basename_file+"_formula": rxn_data["formula"]})
+                dict_row.update({basename_file: 1, basename_file+"_genes_assoc (sep=;)": rxn_data["genes_associated"], basename_file+"_formula": rxn_data["formula"]})
+            for basename_file in all_basename_files:
+                if basename_file not in dict_row:
+                    dict_row.update({basename_file: 0})
             writer.writerow(dict_row)
 
     #pathways
