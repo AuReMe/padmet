@@ -71,71 +71,80 @@ def compare_multiple_sbml(sbml_path, output_folder):
 
     species_columns = [os.path.splitext(os.path.basename(all_file))[0] for all_file in sorted(all_files)]
     gene_columns = [os.path.splitext(os.path.basename(all_file))[0] + '_genes_assoc (sep=;)' for all_file in sorted(all_files)]
-    all_reactions = []
+    all_reactions = {}
     all_compounds = []
     reactions = {}
     compounds = {}
     for sbml_file in all_files:
         sbml_1 = read_sbml_model(sbml_file)
         reactions[sbml_file] = sbml_1.reactions
-        all_reactions.extend([rxn for rxn in sbml_1.reactions])
+        for rxn in sbml_1.reactions:
+            if rxn.id not in all_reactions:
+                all_reactions[rxn.id] = rxn
         compounds[sbml_file] = [metabolite.id for metabolite in sbml_1.metabolites]
-        all_compounds.extend([metabolite for metabolite in sbml_1.metabolites])
+        all_compounds.extend([metabolite.id for metabolite in sbml_1.metabolites])
 
-    all_reactions = set(all_reactions)
     all_compounds = set(all_compounds)
 
     reaction_file = output_folder + '/reactions.tsv'
+    reaction_file_rows = []
+
+    for reaction_id in all_reactions:
+        reaction_presents = []
+        reaction_genes = []
+        row = [reaction_id]
+        for sbml_file in sorted(all_files):
+            if reaction_id in [rxn.id for rxn in reactions[sbml_file]]:
+                reaction_presents.append(1)
+            else:
+                reaction_presents.append(0)
+            if reaction_id in reactions[sbml_file]:
+                species_reaction = reactions[sbml_file].get_by_id(reaction_id)
+                if 'GENE_ASSOCIATION' in species_reaction.notes:
+                    ga_for_gbr = species_reaction.notes['GENE_ASSOCIATION']
+                    ga_for_gbr = re.sub(r" or " , "|", ga_for_gbr)
+                    ga_for_gbr = re.sub(r" and " , "&", ga_for_gbr)
+                    ga_for_gbr = re.sub(r"\s" , "", ga_for_gbr)
+                    if re.findall("\||&", ga_for_gbr):
+                        to_compare_ga_subsets = list(compile_input(ga_for_gbr))
+                        genes = []
+                        for to_compare_subset in to_compare_ga_subsets:
+                            for gene in to_compare_subset:
+                                genes.append(gene)
+                    else:
+                        genes  = [ga_for_gbr.replace('(', '').replace(')', '')]
+                    reaction_genes.append(';'.join(genes))
+                else:
+                    reaction_genes.append('')
+            else:
+                reaction_genes.append('')
+
+        row = row + reaction_presents + reaction_genes
+        row.append(all_reactions[reaction_id].reaction)
+
+        reaction_file_rows.append(row)
+
     with open(reaction_file, 'w') as output_reaction:
         csvwriter = csv.writer(output_reaction, delimiter='\t')
         csvwriter.writerow(['reaction', *species_columns, *gene_columns, '_formula'])
-        for reaction in all_reactions:
-            reaction_presents = []
-            reaction_genes = []
-            row = [reaction.id]
-            for sbml_file in sorted(all_files):
-                if reaction.id in [rxn.id for rxn in reactions[sbml_file]]:
-                    reaction_presents.append(1)
-                else:
-                    reaction_presents.append(0)
-                if reaction.id in reactions[sbml_file]:
-                    species_reaction = reactions[sbml_file].get_by_id(reaction.id)
-                    if 'GENE_ASSOCIATION' in species_reaction.notes:
-                        ga_for_gbr = species_reaction.notes['GENE_ASSOCIATION']
-                        ga_for_gbr = re.sub(r" or " , "|", ga_for_gbr)
-                        ga_for_gbr = re.sub(r" and " , "&", ga_for_gbr)
-                        ga_for_gbr = re.sub(r"\s" , "", ga_for_gbr)
-                        if re.findall("\||&", ga_for_gbr):
-                            to_compare_ga_subsets = list(compile_input(ga_for_gbr))
-                            genes = []
-                            for to_compare_subset in to_compare_ga_subsets:
-                                for gene in to_compare_subset:
-                                    genes.append(gene)
-                        else:
-                            genes  = [ga_for_gbr.replace('(', '').replace(')', '')]
-                        reaction_genes.append(';'.join(genes))
-                    else:
-                        reaction_genes.append('')
-                else:
-                    reaction_genes.append('')
-
-            row = row + reaction_presents + reaction_genes
-            row.append(reaction.reaction)
-
-            csvwriter.writerow(row)
+        csvwriter.writerows(reaction_file_rows)
 
     compounds_file = output_folder + '/metabolites.tsv'
+    compounds_rows = []
+
+    for compound_id in all_compounds:
+        row = [compound_id]
+        for sbml_file in sorted(all_files):
+            if compound_id in compounds[sbml_file]:
+                row.append(1)
+            else:
+                row.append(0)
+        compounds_rows.append(row)
+
     with open(compounds_file, 'w') as output_compound:
         csvwriter = csv.writer(output_compound, delimiter='\t')
         csvwriter.writerow(['metabolite', *sorted(all_files)])
-        for compound in all_compounds:
-            row = [compound.id]
-            for sbml_file in sorted(all_files):
-                if compound.id in compounds[sbml_file]:
-                    row.append(1)
-                else:
-                    row.append(0)
-            csvwriter.writerow(row)
+        csvwriter.writerows(compounds_rows)
 
 
 def compare_sbml(sbml1_path, sbml2_path):
