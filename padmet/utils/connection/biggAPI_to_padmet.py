@@ -28,15 +28,27 @@ Description:
         --pwy_file=FILE   add kegg pathways from pathways file, line:'pwy_id, pwy_name, x, rxn_id'.
         -v   print info.
 """
-from gevent import monkey as curious_george
+try:
+    from gevent import monkey as curious_george
+except ImportError:
+    raise ImportError('Requires gevent, requests and grequests, try:\npip install gevent requests grequests')
+
 curious_george.patch_all(thread=False, select=False)
 
 from padmet.classes import Relation, instantiate_padmet
 
 import docopt
-import requests
-import grequests
 import os
+
+try:
+    import requests
+except ImportError:
+    raise ImportError('Requires gevent, requests and grequests, try:\npip install gevent requests grequests')
+
+try:
+    import grequests
+except ImportError:
+    raise ImportError('Requires gevent, requests and grequests, try:\npip install gevent requests grequests')
 
 
 def command_help():

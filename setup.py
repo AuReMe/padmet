@@ -3,27 +3,9 @@
 
 """Definition of setup function for setuptools module."""
 
-# Standard imports
-import sys
 from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 
-################################################################################
 
-class PyTest(TestCommand):
-    """Call tests with the custom 'python setup.py test' command."""
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.pytest_args = []
-
-    def run_tests(self):
-        import pytest
-        errno = pytest.main()
-        sys.exit(errno)
-
-################################################################################
- 
 setup(
     name='padmet',
     version="4.0",
@@ -45,8 +27,6 @@ setup(
                        "seaborn>=0.9.0",
                        "matplotlib>=3.1.1",
                        "networkx>=1.11",
-                       "requests>=2.22.0",
-                       "grequests>=0.4.0",
                        'lxml>=4.3.4',
                        'rpy2==3.0.5',
                        'scipy>=1.3.0',
