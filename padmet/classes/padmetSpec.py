@@ -1957,11 +1957,10 @@ def compare_rxn(rxn_1, rxn_2):
         if sorted(rxn_1['REACTANTS']) == sorted(rxn_2['REACTANTS']):
             if sorted(rxn_1['PRODUCTS']) == sorted(rxn_2['PRODUCTS']):
                 same_rxn = True
-        if not same_rxn and 'REVERSIBLE' == rxn_1['DIRECTION'][0]:
-            different_reversibility = True
-            if sorted(rxn_1['REACTANTS']) == sorted(rxn_2['PRODUCTS']):
-                if sorted(rxn_1['PRODUCTS']) == sorted(rxn_2['REACTANTS']):
-                    same_rxn = True
+        if sorted(rxn_1['REACTANTS']) == sorted(rxn_2['PRODUCTS']):
+            if sorted(rxn_1['PRODUCTS']) == sorted(rxn_2['REACTANTS']):
+                same_rxn = True
+                different_reversibility = True
     else:
         if 'REVERSIBLE' in [rxn_1['DIRECTION'][0], rxn_2['DIRECTION'][0]]:
             different_reversibility = True
