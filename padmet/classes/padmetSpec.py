@@ -1604,13 +1604,13 @@ class PadmetSpec:
         for rlt in rlt_to_compare:
             if relation.compare(rlt):
                 return False
-        try:
+        if idIn in self.dicOfRelationIn:
             self.dicOfRelationIn[idIn].append(relation)
-        except KeyError:
+        else:
             self.dicOfRelationIn[idIn] = [relation]
-        try:
+        if idOut in self.dicOfRelationOut:
             self.dicOfRelationOut[idOut].append(relation)
-        except KeyError:
+        else:
             self.dicOfRelationOut[idOut] = [relation]
         return True
 
@@ -1953,28 +1953,41 @@ def compare_rxn(rxn_1, rxn_2):
     same_rxn = None
     different_reversibility = None
 
-    if rxn_1['DIRECTION'] == rxn_2['DIRECTION']:
-        if sorted(rxn_1['REACTANTS']) == sorted(rxn_2['REACTANTS']):
-            if sorted(rxn_1['PRODUCTS']) == sorted(rxn_2['PRODUCTS']):
+    rxn_1_direction = rxn_1['DIRECTION'][0]
+    rxn_2_direction = rxn_2['DIRECTION'][0]
+
+    # First element of each list is the compound ID, the second element is the stoichiometric coefficient.
+    # TODO: find another way to deal with reactants or products containing the same compounds multiple times (like RXN-2103 in MetaCyc).
+    # This will need modification of _addRelation and also how we add relation in padmet.
+    rxn_1_reactants = sorted(set([reactant[0] for reactant in rxn_1['REACTANTS']]))
+    rxn_1_products = sorted(set([reactant[0] for reactant in rxn_1['PRODUCTS']]))
+
+    rxn_2_reactants = sorted(set([reactant[0] for reactant in rxn_2['REACTANTS']]))
+    rxn_2_products = sorted(set([reactant[0] for reactant in rxn_2['PRODUCTS']]))
+
+    if rxn_1_direction == rxn_2_direction:
+        if rxn_1_reactants == rxn_2_reactants:
+            if rxn_1_products == rxn_2_products:
                 same_rxn = True
-        if sorted(rxn_1['REACTANTS']) == sorted(rxn_2['PRODUCTS']):
-            if sorted(rxn_1['PRODUCTS']) == sorted(rxn_2['REACTANTS']):
-                same_rxn = True
-                different_reversibility = True
+
+            if rxn_1_reactants == rxn_2_products:
+                if rxn_1_products == rxn_2_reactants:
+                    different_reversibility = True
+                    same_rxn = True
     else:
-        if 'REVERSIBLE' in [rxn_1['DIRECTION'][0], rxn_2['DIRECTION'][0]]:
+        if 'REVERSIBLE' in [rxn_1_direction, rxn_2_direction]:
             different_reversibility = True
-            if sorted(rxn_1['REACTANTS']) == sorted(rxn_2['REACTANTS']):
-                if sorted(rxn_1['PRODUCTS']) == sorted(rxn_2['PRODUCTS']):
+            if rxn_1_reactants == rxn_2_reactants:
+                if rxn_1_products == rxn_2_products:
                     same_rxn = True
             if not same_rxn:
-                if sorted(rxn_1['REACTANTS']) == sorted(rxn_2['PRODUCTS']):
-                    if sorted(rxn_1['PRODUCTS']) == sorted(rxn_2['REACTANTS']):
+                if rxn_1_reactants == rxn_2_products:
+                    if rxn_1_products == rxn_2_reactants:
                         same_rxn = True
-        if (rxn_1['DIRECTION'][0] == 'LEFT-TO-RIGHT' and rxn_2['DIRECTION'][0] == 'RIGHT-TO-LEFT') or (rxn_1['DIRECTION'][0] == 'RIGHT-TO-LEFT' and rxn_2['DIRECTION'][0] == 'LEFT-TO-RIGHT'):
+        if (rxn_1_direction == 'LEFT-TO-RIGHT' and rxn_2_direction == 'RIGHT-TO-LEFT') or (rxn_1_direction == 'RIGHT-TO-LEFT' and rxn_2_direction == 'LEFT-TO-RIGHT'):
             different_reversibility = True
-            if sorted(rxn_1['REACTANTS']) == sorted(rxn_2['PRODUCTS']):
-                if sorted(rxn_1['PRODUCTS']) == sorted(rxn_2['REACTANTS']):
+            if rxn_1_reactants == rxn_2_products:
+                if rxn_1_products == rxn_2_reactants:
                     same_rxn = True
 
     return same_rxn, different_reversibility
