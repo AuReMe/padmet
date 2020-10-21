@@ -1970,10 +1970,10 @@ def compare_rxn(rxn_1, rxn_2):
             if rxn_1_products == rxn_2_products:
                 same_rxn = True
 
-            if rxn_1_reactants == rxn_2_products:
-                if rxn_1_products == rxn_2_reactants:
-                    different_reversibility = True
-                    same_rxn = True
+        if rxn_1_reactants == rxn_2_products:
+            if rxn_1_products == rxn_2_reactants:
+                different_reversibility = True
+                same_rxn = True
     else:
         if 'REVERSIBLE' in [rxn_1_direction, rxn_2_direction]:
             different_reversibility = True
