@@ -8,6 +8,7 @@ PADMet is a python library to manage metabolic networks.
 - [PADMet](#padmet)
   - [Table of contents](#table-of-contents)
   - [Description](#description)
+  - [Requirements](#requirements)
   - [Installation](#installation)
     - [Installation with pip](#installation-with-pip)
   - [Use](#use)
@@ -21,6 +22,35 @@ The PADMet package allows conciliating genomics and metabolic network informatio
 
 The main concept underlying PADMet-Package is to provide solutions that ensure the consistency, the internal standardization and the reconciliation of the information used within any workflow that combines several tools involving metabolic networks reconstruction or analysis. The PADMet package is at the core of the AuReMe workflow, dedicated to the primary reconstruction of genome-scale metabolic networks from raw data. It allows the study of organisms for which few experimental data are available. Its main feature is to undergo the reconstruction of the metabolic network by combining several heterogeneous knowledge and data sources, including the information reported by several scaffold metabolic networks for cousin species.
 
+## Requirements
+
+For the padmet classes file (to handle PADMet format) and most of the padmet utisl scritps handling PADMet this package needs:
+
+* [biopython](https://github.com/biopython/biopython) to handle fasta files.
+* [cobra](https://github.com/opencobra/cobrapy) to handle sbml files and make Flux Balance Analysis.
+* [docopt](https://github.com/docopt/docopt) for the command-line.
+* [python-libsbml](https://github.com/sbmlteam/python-libsbml) to handle sbml files.
+* [lxml](https://github.com/lxml/lxml) to handle XML file.
+
+These 4 dependencies are installed with padmet.
+
+For the padmet utils scripts (to use the PADMet format and the command-line):
+
+* [seaborn](https://github.com/mwaskom/seaborn) to create data visualization.
+* [matplotlib](https://github.com/matplotlib/matplotlib) to create data visualization.
+* [networkx](https://github.com/networkx/networkx) for network analysis (in visu_* scripts).
+* [igraph](https://github.com/igraph/python-igraph) for network analysis (in visu_* scripts).
+* [rpy2](https://github.com/rpy2/rpy2) to interface R and Python.
+* [scipy](https://github.com/scipy/scipy) to create dendrogram (in dendrogram_reactions_distance).
+* [pandas](https://github.com/pandas-dev/pandas) to use dataframe of reaction presence/asbence.
+* [sklearn](https://github.com/scikit-learn/scikit-learn) to visualize similarity between metabolic networks using MDS.
+* [gevent](https://github.com/gevent/gevent) to handle issue when downloading files (in biggAPI_to_padmet).
+* [requests](https://github.com/psf/requests) to download files (in biggAPI_to_padmet).
+* [grequests](https://github.com/spyoungtech/grequests) to asynchronously download files (in biggAPI_to_padmet).
+* [supervenn](https://github.com/gecko984/supervenn) to create Venn diagram of reactions between multiple organisms (in dendrogram_reactions_distance).
+
+Contrary to the 4 first depedencies, you have to install these packages with a pip install if you want to use them.
+
 ## Installation
 
 ### Installation with pip
@@ -32,6 +62,8 @@ pip install padmet
 ## Use
 
 PADMet can be used either with an entrypoint (`padmet -h`) or by making an import in python (`import padmet`).
+
+There is a [documentation](https://padmet.readthedocs.io/en/latest/tutorial.html#) in construction.
 
 ### Entrypoint
 

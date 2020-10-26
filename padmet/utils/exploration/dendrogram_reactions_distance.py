@@ -41,6 +41,7 @@ from lxml import etree
 from padmet.classes import PadmetRef
 from scipy.cluster.hierarchy import dendrogram, fcluster, linkage, to_tree
 from scipy.spatial.distance import pdist, squareform
+from supervenn import supervenn
 
 
 def command_help():

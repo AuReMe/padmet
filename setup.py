@@ -24,12 +24,7 @@ setup(
                        'python-libsbml>=5.18.0',
                        'cobra>=0.17.1',
                        'biopython>=1.78',
-                       'seaborn>=0.9.0',
-                       'matplotlib>=3.1.1',
-                       'networkx>=1.11',
                        'lxml>=4.3.4',
-                       'rpy2==3.0.5',
-                       'scipy>=1.3.0',
                        ],
  
     include_package_data=True,
