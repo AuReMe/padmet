@@ -53,11 +53,11 @@ Contrary to the 4 first depedencies, you have to install these packages with a p
 
 Scripts that need to install one of these optional dependencies:
 
-* biggAPI_to_padmet.py
-* dendrogram_reactions_distance.py
-* visu_network.py
-* visu_path.py
-* visu_similarity_gsmn.py
+* [biggAPI_to_padmet.py](https://github.com/AuReMe/padmet/blob/master/padmet/utils/connection/biggAPI_to_padmet.py): gevent, requests and grequests
+* [dendrogram_reactions_distance.py](https://github.com/AuReMe/padmet/blob/master/padmet/utils/exploration/dendrogram_reactions_distance.py): matplotlib, seaborn, scipy, supervenn, rpy2 and pandas
+* [visu_network.py](https://github.com/AuReMe/padmet/blob/master/padmet/utils/exploration/visu_network.py): python-igraph
+* [visu_path.py](https://github.com/AuReMe/padmet/blob/master/padmet/utils/exploration/visu_path.py): matplotlib, networkx and seaborn
+* [visu_similarity_gsmn.py](https://github.com/AuReMe/padmet/blob/master/padmet/utils/exploration/visu_similarity_gsmn.py): matplotlib, pandas and scikit-learn
 
 ## Installation
 
