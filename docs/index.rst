@@ -25,14 +25,14 @@ Anyone interested in contributing or tweaking the library is more then welcome
 to do so. To start, simply fork the `Git repository`_ on Github and start playing with
 it. Then, issue pull requests.
 
-Quick start
+Tutorial
 =================
 
 .. toctree::
     :maxdepth: 2
     :glob:
 
-    quick_start
+    tutorial
 
 
 API Documentation
