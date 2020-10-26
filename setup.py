@@ -17,8 +17,8 @@ setup(
  
     description="Padmet package for metabolic network",
  
-    long_description=open('README.md', encoding='utf8').read(),
- 
+    long_description="""The PADMet package allows conciliating genomics and metabolic network information used to produce a genome-scale constraint-based metabolic model within a database that traces all the reconstruction process steps.
+    It allows representing the metabolic model in the form of a Wiki containing all the used/traced information. Other standard outputs are made available with the package.""",
     
     install_requires= ['docopt>=0.6.2',
                        'python-libsbml>=5.18.0',
