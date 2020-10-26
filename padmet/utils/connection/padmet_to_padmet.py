@@ -5,16 +5,56 @@ Description:
     Allows to merge 1-n padmet.
     1./ Update the 'init_padmet' with the 'to_add' padmet(s).
     to_add can be a file or a folder with only padmet files to add.
-    
-    padmetRef can be use to ensure data uniformization.
 
+::
+
+    usage:
+        padmet padmet_to_padmet --to_add=FILE/DIR --output=FILE  [-v]
+
+    options:
+        -h --help     Show help.
+        --to_add=FILE/DIR    path to the padmet file to add (sep: ,) or path to folder of padmet files.
+        --output=FILE   path to the new padmet file
+        -v   print info
 """
-from padmet.classes import PadmetSpec
+import docopt
 import os
 
-def padmet_to_padmet(to_add, output, padmetRef=None, verbose=False):
+from padmet.classes import PadmetSpec
+
+
+def command_help():
     """
-    #TODO
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def padmet_to_padmet_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+
+    output = args["--output"]
+    verbose = args["-v"]
+    to_add = args["--to_add"]
+    padmet_to_padmet(to_add, output, verbose)
+
+
+def padmet_to_padmet(to_add, output=None, verbose=False):
+    """
+    Create a padmet by merging multiple other padmet files.
+
+    Parameters
+    ----------
+    to_add: dir or str
+        padmet directory or string with multiple padmet paths separated by ','
+    output:
+        path to the output file
+    verbose: bool
+        verbose level of script
+    Returns
+    -------
+    padmet_init: PadmetSpec
+        padmet created from emrging of the other padmet
     """
     if os.path.isdir(to_add):
         path = to_add
@@ -24,7 +64,7 @@ def padmet_to_padmet(to_add, output, padmetRef=None, verbose=False):
             print("No padmet found in %s" %path)
             return
     else:
-        padmetFiles = to_add.split(";")
+        padmetFiles = to_add.split(",")
     
     padmet_init_file = padmetFiles[0]
     padmet_init = PadmetSpec(padmet_init_file)
@@ -36,7 +76,9 @@ def padmet_to_padmet(to_add, output, padmetRef=None, verbose=False):
         padmet_update = PadmetSpec(padmet_update_file)
         padmet_init.updateFromPadmet(padmet_update)
 
-    if verbose:
-        print("Generated file: %s" %output)
-    padmet_init.generateFile(output)
-        
+    if output:
+        if verbose:
+            print("Generated file: %s" %output)
+        padmet_init.generateFile(output)
+
+    return padmet_init

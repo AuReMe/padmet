@@ -2,13 +2,13 @@
 """
 Description:
     Before running orthology based reconstruction it is necessary to check if the metabolic network 
-    and the proteom of the model organism use the same ids for genes (or at least more than a given cutoff). 
+    and the proteome of the model organism use the same ids for genes (or at least more than a given cutoff).
     To only check this. Use the 2nd usage.
 
     If the genes ids are not the same, it is necessary to use a dictionnary of genes ids associating
-    the genes ids from the proteom to the genes ids from the metabolic network.
+    the genes ids from the proteome to the genes ids from the metabolic network.
 
-    To create the correct proteom from the dictionnnary, use the 3nd usage
+    To create the correct proteome from the dictionnnary, use the 3nd usage
     Finnaly by using the 1st usage, it is possible to:
 
         1/ Check model_faa and model_metabolic for a given cutoff
@@ -17,18 +17,61 @@ Description:
 
         3/ if still under, SystemExit()
 
+::
+
+    usage:
+        padmet check_orthology_input    --model_metabolic=FILE    --model_faa=FILE    [--cutoff=FLOAT] [--dict_ids_file=FILE] --output=FILE    [-v]
+        padmet check_orthology_input    --model_metabolic=FILE    --model_faa=FILE    [--cutoff=FLOAT] [-v]
+        padmet check_orthology_input    --model_faa=FILE    --dict_ids_file=FILE    --output=FILE [-v]
+
+    option:
+        -h --help    Show help.
+        --model_metabolic=FILE    pathname to the metabolic network of the model (sbml).
+        --model_faa=FILE    pathname to the proteome of the model (faa)
+        --cutoff=FLOAT    cutoff [0:1] for comparing model_metabolic and model_faa. [default: 0.70].
+        --dict_ids_file=FILE    pathname to the dict associating genes ids from the model_metabolic to the model_faa. line = gene_id_in_metabolic_network\tgene_id_in_faa
+        --output=FILE    output of get_valid_faa (a faa) or get_dict_ids (a dictionnary of gene ids in tsv)
+        -v   print info
 """
+import docopt
 import re
 import itertools
-from Bio import SeqIO
 import libsbml
+import os
+
+from Bio import SeqIO
 from padmet.utils import sbmlPlugin as sp
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def check_orthology_input_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    model_metabolic = args["--model_metabolic"]
+    model_faa = args["--model_faa"]
+    dict_ids_file = args["--dict_ids_file"]
+    output = args["--output"]
+    verbose = args["-v"]
+    cutoff = float(args["--cutoff"])
+    check_orthology_input(model_metabolic, model_faa, dict_ids_file, output, verbose, cutoff)
+
 
 def check_orthology_input(model_metabolic, model_faa, dict_ids_file, output, verbose, cutoff):
     """
     #TODO
     """
     if model_metabolic is not None:
+        if not os.path.exists(model_metabolic):
+            raise FileNotFoundError("No SBML file accessible (--model_metabolic/model_metabolic) at " + model_metabolic)
+
+        if not os.path.exists(model_faa):
+            raise FileNotFoundError("No fasta file accessible (--model_faa/model_faa) at " + model_faa)
+
         if verbose: print("check genes ids model_metablic vs model_faa")
         #if true: more than cutoff% match
         if check_ids(model_metabolic, model_faa, cutoff, verbose):

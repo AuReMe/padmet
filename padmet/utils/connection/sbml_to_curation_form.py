@@ -6,10 +6,49 @@ Description:
     For example use this script to extract specific missing reaction of a model to
     a just created metabolic network.
 
-"""
+::
 
+    usage:
+        padmet sbml_to_curation_form --sbml=FILE --output=FILE --rxn_id=ID [--comment=STR] [--extract-gene] [-v]
+        padmet sbml_to_curation_form --sbml=FILE --output=FILE --rxn_file=FILE [--comment=STR] [--extract-gene] [-v]
+
+    options:
+        -h --help     Show help.
+        --sbml=FILE    path of the sbml.
+        --output=FILE    form containing the reaction extracted, form used for manual curation in aureme.
+        --rxn_id=FILE    id of one reaction to extract
+        --rxn_file=FILE    file of reactions ids to extract, 1 id by line.
+        --extract-gene    If true, extract also genes associated to reactions.
+        --comment=STR    comment associated to the reactions in the form. Used to track sources of curation in aureme [default: "N.A"].
+        -v   print info
+"""
+import docopt
 import libsbml
+import os
+
 from padmet.utils.sbmlPlugin import convert_from_coded_id, parseNotes
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def sbml_to_curation_form_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    sbml_file = args["--sbml"]
+    if args["--rxn_id"]:
+        rxn_list = [args["--rxn_id"]]
+    if args["--rxn_file"]:
+        with open(args["--rxn_file"], 'r') as f:
+            rxn_list = f.read().splitlines()
+    output = args["--output"]
+    comment = args["--comment"]
+    verbose = args["-v"]
+    extract_gene = args["--extract-gene"]
+    sbml_to_curation(sbml_file, rxn_list, output, extract_gene=extract_gene, comment=comment, verbose=verbose)
 
 
 def sbml_to_curation(sbml_file, rxn_list, output, extract_gene=False, comment="N.A", verbose=False):
@@ -33,6 +72,9 @@ def sbml_to_curation(sbml_file, rxn_list, output, extract_gene=False, comment="N
         if True print information
     
     """
+    if not os.path.exists(sbml_file):
+        raise FileNotFoundError("No SBML file (--sbml/sbml_file) accessible at " + sbml_file)
+
     reader = libsbml.SBMLReader()
     document = reader.readSBML(sbml_file)
     for i in range(document.getNumErrors()):

@@ -1,0 +1,198 @@
+Data Base informations
+PADMET:
+	creation:2020-03-13
+	version:2.6
+DB_info:
+	DB:NA
+	version:NA
+
+Policy
+class	is_a_class	class
+class	has_name	name
+class	has_xref	xref
+class	has_suppData	suppData
+compound	is_a_class	class
+compound	has_name	name
+compound	has_xref	xref
+compound	has_suppData	suppData
+gene	is_a_class	class
+gene	has_name	name
+gene	has_xref	xref
+gene	has_suppData	suppData
+gene	codes_for	protein
+pathway	is_a_class	class
+pathway	has_name	name
+pathway	has_xref	xref
+pathway	is_in_pathway	pathway
+protein	is_a_class	class
+protein	has_name	name
+protein	has_xref	xref
+protein	has_suppData	suppData
+protein	catalyses	reaction
+protein	is_in_species	class
+reaction	is_a_class	class
+reaction	has_name	name
+reaction	has_xref	xref
+reaction	has_suppData	suppData
+reaction	has_reconstructionData	reconstructionData
+reaction	is_in_pathway	pathway
+reaction	consumes	class	STOICHIOMETRY	X	COMPARTMENT	Y
+reaction	produces	class	STOICHIOMETRY	X	COMPARTMENT	Y
+reaction	consumes	compound	STOICHIOMETRY	X	COMPARTMENT	Y
+reaction	produces	compound	STOICHIOMETRY	X	COMPARTMENT	Y
+reaction	consumes	protein	STOICHIOMETRY	X	COMPARTMENT	Y
+reaction	produces	protein	STOICHIOMETRY	X	COMPARTMENT	Y
+reaction	is_linked_to	gene	SOURCE:ASSIGNMENT	X:Y
+
+Nodes
+
+class	3-HYDROXYACYL-COA
+compound	3-KETO-ADIPYL-COA	COMMON-NAME	3-oxoadipyl-CoA	INCHI-KEY	InChIKey=VKKKAAPGXHWXOO-BIEWRJSYSA-I	MOLECULAR-WEIGHT	904.605    	SMILES	CC(C)([C@@H](O)C(=O)NCCC(=O)NCCSC(CC(CCC([O-])=O)=O)=O)COP(=O)(OP(=O)(OC[C@H]1([C@@H](OP([O-])(=O)[O-])[C@@H](O)[C@@H](O1)N2(C3(N=CN=C(C(N=C2)=3)N))))[O-])[O-]
+name	3-KETO-ADIPYL-COA_names	LABEL	3-ketoadipyl-CoA	LABEL	3-keto-adipyl-coa	LABEL	&beta;-ketoadipyl-CoA
+xref	3-KETO-ADIPYL-COA_xrefs	REFMET	3-oxoadipyl-CoA	PUBCHEM	45266578	HMDB	HMDB60378	CHEBI	57348	LIGAND-CPD	C02232
+class	3-KETOACYL-COA
+class	3S-S-3-hydroxyacyl-CoAs
+compound	ACETYL-COA	COMMON-NAME	acetyl-CoA	INCHI-KEY	InChIKey=ZSLZBFCDCINBPY-ZSJPKINUSA-J	MOLECULAR-WEIGHT	805.54    	SMILES	CC(=O)SCCNC(=O)CCNC(=O)[C@H](O)C(C)(C)COP(=O)(OP(=O)(OC[C@H]1([C@@H](OP([O-])(=O)[O-])[C@@H](O)[C@@H](O1)N2(C3(N=CN=C(C(N=C2)=3)N))))[O-])[O-]
+name	ACETYL-COA_names	LABEL	acetyl coenzyme-A	LABEL	ac-CoA	LABEL	acetylcoenzyme-A	LABEL	acetyl-S-CoA	LABEL	ac-S-CoA
+xref	ACETYL-COA_xrefs	REFMET	Acetyl-CoA	BIGG	accoa	METABOLIGHTS	MTBLC57288	HMDB	HMDB01206	CHEBI	57288	PUBCHEM	45266541	KNAPSACK	C00007259	CAS	72-89-9	UM-BBD-CPD	c0031	LIGAND-CPD	C00024
+class	ACYL-COA
+name	ACYLCOADEHYDROG-RXN_names	LABEL	fatty acyl coenzyme A dehydrogenase	LABEL	acyl coenzyme A dehydrogenase	LABEL	fatty-acyl-CoA dehydrogenase	LABEL	general acyl CoA dehydrogenase	LABEL	medium-chain acyl-coenzyme A dehydrogenase	LABEL	long-chain acyl coenzyme A dehydrogenase	LABEL	long-chain acyl-CoA dehydrogenase
+name	ACYLCOASYN-RXN_names	LABEL	Acyl-activating enzyme	LABEL	Fatty acid thiokinase (long-chain)
+compound	AMP	COMMON-NAME	AMP	INCHI-KEY	InChIKey=UDMBCSSLTHHNCD-KQYNXXCUSA-L	MOLECULAR-WEIGHT	345.208    	SMILES	C([C@H]3([C@H]([C@H]([C@H](N1(C2(N=CN=C(C(N=C1)=2)N)))O3)O)O))OP([O-])([O-])=O
+name	AMP_names	LABEL	5'-AMP	LABEL	adenosine-monophosphate	LABEL	adenylic acid	LABEL	adenosine 5'-phosphate	LABEL	adenosine 5'-monophosphate	LABEL	adenylate	LABEL	5'-adenylic acid	LABEL	5'-adenosine monophosphate
+xref	AMP_xrefs	REFMET	AMP	BIGG	amp	METABOLIGHTS	MTBLC456215	HMDB	HMDB00045	CHEMSPIDER	10239183	CHEBI	456215	PUBCHEM	15938965	LIGAND-CPD	C00020	CAS	61-19-8	NCI	20264
+compound	ATP	COMMON-NAME	ATP	INCHI-KEY	InChIKey=ZKHQWZAMYRWXGA-KQYNXXCUSA-J	MOLECULAR-WEIGHT	503.152    	SMILES	C([C@H]3([C@H]([C@H]([C@H](N1(C2(N=CN=C(C(N=C1)=2)N)))O3)O)O))OP([O-])(=O)OP([O-])(=O)OP([O-])(=O)[O-]
+name	ATP_names	LABEL	adenylpyrophosphate	LABEL	adenosine-triphosphate	LABEL	adenosine-5'-triphosphate
+xref	ATP_xrefs	REFMET	ATP	BIGG	atp	METABOLIGHTS	MTBLC30616	HMDB	HMDB00538	CHEMSPIDER	4574455	CHEBI	30616	PUBCHEM	5461108	LIGAND-CPD	C00002	CAS	56-65-5
+class	All-Coas
+class	All-Nucleosides
+class	CIS-DELTA3-ENOYL-COA	COMMON-NAME	a (3Z)-alk-3-enoyl-CoA
+name	CIS-DELTA3-ENOYL-COA_names	LABEL	a cis-&Delta;3-enoyl-CoA	LABEL	a cis-3-enoyl-CoA
+compound	CITRATE-LYASE
+compound	CO-A	COMMON-NAME	coenzyme A	INCHI-KEY	InChIKey=RGJOEKWQDUBAIZ-IBOSZNHHSA-J	MOLECULAR-WEIGHT	763.502    	SMILES	CC(C)(COP([O-])(=O)OP([O-])(=O)OC[C@@H]1(O[C@H]([C@H](O)[C@H](OP(=O)([O-])[O-])1)N2(C=NC3(C(N)=NC=NC2=3))))[C@@H](O)C(=O)NCCC(=O)NCCS
+name	CO-A_names	LABEL	CoA	LABEL	Co-A-SH	LABEL	HS-CoA
+xref	CO-A_xrefs	GO-TERMS	(REFMET "Coenzyme A" NIL midford 3701443689 NIL NIL)	BIGG	coa	Wikipedia	Coenzyme_a	METABOLIGHTS	MTBLC57287	HMDB	HMDB01423	CHEBI	57287	PUBCHEM	25113190	KNAPSACK	C00007258	CAS	85-61-0	LIGAND-CPD	C00010
+compound	CPD-9245	COMMON-NAME	palmitoleate	INCHI-KEY	InChIKey=SECPZKHBENQXJG-FPLPWBNLSA-M	MOLECULAR-WEIGHT	253.404    	SMILES	CCCCCCC=CCCCCCCCC(=O)[O-]
+name	CPD-9245_names	LABEL	(9Z)-hexadec-9-enoate	LABEL	palmitoleic acid (16:1&Delta;9)	LABEL	palmitoleic acid	LABEL	(9Z)-hexadecenoic acid	LABEL	cis-9-hexadecenoic acid	LABEL	cis-9-hexadecenoate
+xref	CPD-9245_xrefs	GO-TERMS	(REFMET "Palmitoleic acid" NIL midford 3701443689 NIL NIL)	METABOLIGHTS	MTBLC32372	HMDB	HMDB03229	CHEMSPIDER	4574392	LIGAND-CPD	C08362	CAS	373-49-9	PUBCHEM	5461012	CHEBI	32372
+compound	CPD0-1158
+compound	CPD0-1162
+compound	CPD0-1163
+class	CPD66-39
+class	Chemical-Reactions
+class	Cofactors
+class	Compounds
+class	D-3-HYDROXYACYL-COA	COMMON-NAME	a 2,3,4-saturated (3R)-3-hydroxyacyl-CoA
+name	D-3-HYDROXYACYL-COA_names	LABEL	a D-3-hydroxyacyl-CoA	LABEL	an (R)-hydroxyacyl-CoA	LABEL	a cis-3-hydroxyacyl-CoA	LABEL	a 3-OH-acyl-CoA	LABEL	a 3-hydroxyacyl-CoA
+class	D2-ENOYL-COA
+name	ENOYL-COA-DELTA-ISOM-RXN_names	LABEL	probable enoyl-CoA hydratase/isomerase	LABEL	probable enoyl CoA-hydratase/isomerase
+reaction	ENOYL-COA-HYDRAT-RXN	EC-NUMBER	EC-4.2.1.17	DIRECTION	LEFT-TO-RIGHT
+class	ETF-Oxidized	COMMON-NAME	an oxidized electron-transfer flavoprotein
+name	ETF-Oxidized_names	LABEL	an oxidized ETF	LABEL	an oxidized electron-transferring flavoprotein
+class	ETF-Reduced	COMMON-NAME	a reduced electron-transfer flavoprotein
+name	ETF-Reduced_names	LABEL	ETFH2	LABEL	a reduced ETF	LABEL	a reduced electron-transferring flavoprotein
+class	Etf
+pathway	FAO-PWY
+class	Fatty-Acid-Degradation
+compound	HOLO-CITRATE-LYASE
+name	KETOACYLCOATHIOL-RXN_names	LABEL	Beta-ketothiolase
+class	L-3-HYDROXYACYL-COA	COMMON-NAME	a 2,3,4-saturated (3S)-3-hydroxyacyl-CoA
+name	L-3-HYDROXYACYL-COA_names	LABEL	(3S)-3-hydroxyacyl-CoA	LABEL	3-hydroxyacyl-CoA	LABEL	3-OH-acyl-CoA	LABEL	RCHOHCH2CO-CoA	LABEL	trans-3-hydroxyacyl-CoA	LABEL	(S)-3-hydroxyacyl-CoA	LABEL	a (S)-3-hydroxyacyl-CoA	LABEL	a trans-3-hydroxyacyl-CoA	LABEL	a 3-OH-acyl-CoA	LABEL	a 3-hydroxyacyl-CoA	LABEL	an L-3-hydroxyacyl-CoA
+class	Long-Chain-234-Saturated-Fatty-Acids
+class	Modified-Proteins
+class	Monounsaturated-fatty-acids
+class	Monovalent-Inorganic-Cations
+compound	NAD	COMMON-NAME	NAD+	INCHI-KEY	InChIKey=BAWFJGJZGIEFAR-NNYOXOHSSA-M	MOLECULAR-WEIGHT	662.422    	SMILES	C1(C(\C(N)=O)=C/C=C[N+]=1[C@H]5(O[C@H](COP(=O)([O-])OP(=O)([O-])OC[C@@H]2(O[C@H]([C@H](O)[C@H](O)2)N3(C=NC4(C(N)=NC=NC3=4))))[C@@H](O)[C@@H](O)5))
+class	NAD-P-OR-NOP
+compound	NADH	COMMON-NAME	NADH	INCHI-KEY	InChIKey=BOPGDPNILDQYTO-NNYOXOHSSA-L	MOLECULAR-WEIGHT	663.43    	SMILES	C1(\N(C=CCC(\C(N)=O)=1)[C@H]5(O[C@H](COP(=O)([O-])OP(=O)([O-])OC[C@@H]2(O[C@H]([C@H](O)[C@H](O)2)N3(C=NC4(C(N)=NC=NC3=4))))[C@@H](O)[C@@H](O)5))
+class	NADH-P-OR-NOP
+name	NADH_names	LABEL	NADH2	LABEL	dihydrodiphosphopyridine nucleotide	LABEL	diphosphopyridine nucleotide reduced	LABEL	dihydronicotinamide adenine dinucleotide	LABEL	nicotinamide adenine dinucleotide reduced	LABEL	NAD-reduced	LABEL	NADH+H+	LABEL	DPNH	LABEL	&beta;-NADH
+xref	NADH_xrefs	REFMET	NADH	BIGG	nadh	METABOLIGHTS	MTBLC57945	HMDB	HMDB01487	CHEMSPIDER	10239197	CHEBI	57945	PUBCHEM	21604869	CAS	58-68-4	LIGAND-CPD	C00004
+name	NAD_names	LABEL	NAD+	LABEL	beta-nicotinamide adenine dinucleotide	LABEL	coenzyme I	LABEL	diphosphopyridine nucleotide	LABEL	diphosphopyridine nucleotide oxidized	LABEL	nicotinamide adenine dinucleotide	LABEL	nicotinamide adenine dinucleotide oxidized	LABEL	NAD-oxidized	LABEL	NAD-ox	LABEL	DPN+	LABEL	DPN-ox	LABEL	DPN	LABEL	&beta;-nicotinamide adenine dinucleotide	LABEL	NAD	LABEL	&beta;-NAD+
+xref	NAD_xrefs	REFMET	NAD+	BIGG	nad	METABOLIGHTS	MTBLC57540	HMDB	HMDB00902	CHEMSPIDER	10239196	CHEBI	57540	PUBCHEM	15938971	LIGAND-CPD	C00003	CAS	53-84-9
+class	Oxidized-Flavoproteins
+compound	PANTETHEINE-P
+compound	PPI	COMMON-NAME	diphosphate	INCHI-KEY	InChIKey=XPPKVPWEQAFLFU-UHFFFAOYSA-K	MOLECULAR-WEIGHT	174.951    	SMILES	O=P(O)(OP([O-])([O-])=O)[O-]
+name	PPI_names	LABEL	PPi	LABEL	PP	LABEL	pyrophosphate
+xref	PPI_xrefs	BIGG	ppi	CHEBI	29888	METABOLIGHTS	MTBLC33019	HMDB	HMDB00250	DRUGBANK	DB04160	CHEMSPIDER	996	PUBCHEM	1023	LIGAND-CPD	C00013	CAS	2466-09-3
+compound	PROTON	COMMON-NAME	H+	INCHI-KEY	InChIKey=GPRLSGONYQIRFK-UHFFFAOYSA-N	MOLECULAR-WEIGHT	1.008    	SMILES	[H+]
+name	PROTON_names	LABEL	hydrogen ion	LABEL	proton	LABEL	H
+xref	PROTON_xrefs	BIGG	h	HMDB	HMDB59597	CHEMSPIDER	1010	PUBCHEM	1038	CHEBI	15378	CAS	12408-02-5	LIGAND-CPD	C00080
+class	Polyphosphates
+class	Protein-Modification-Reactions
+class	Purine-ribonucleosides-5-P
+class	Purine-ribonucleosides-5-PPP
+class	Reduced-Flavoproteins
+compound	S-ACETYLPHOSPHOPANTETHEINE
+class	Saturated-Fatty-Acyl-CoA	COMMON-NAME	a 2,3,4-saturated fatty acyl CoA
+class	Small-Molecule-Reactions
+class	Subatomic-Particles
+class	TRANS-D2-ENOYL-COA	COMMON-NAME	a (2E)-2-enoyl-CoA
+name	TRANS-D2-ENOYL-COA_names	LABEL	a trans-didehydroacyl-CoA	LABEL	a trans-&Delta;2-enoyl-CoA	LABEL	a trans-2,3-didehydroacyl-CoA	LABEL	a trans-2,3-dehydroacyl-CoA	LABEL	trans-2,3-didehydroacyl-CoA	LABEL	trans-2,3-dehydroacyl-CoA	LABEL	trans-&Delta;2-enoyl-CoA	LABEL	trans-didehydroacyl-CoA	LABEL	a trans-2-enoyl-CoA	LABEL	a (2E)-alk-2-enoyl-CoA
+compound	WATER	COMMON-NAME	H2O	INCHI-KEY	InChIKey=XLYOFNOQVPJJNP-UHFFFAOYSA-N	MOLECULAR-WEIGHT	18.015    	SMILES	[OH2]
+name	WATER_names	LABEL	H2O	LABEL	hydrogen oxide	LABEL	water
+xref	WATER_xrefs	BIGG	h2o	METABOLIGHTS	MTBLC15377	HMDB	HMDB02111	CHEMSPIDER	937	CHEBI	15377	PUBCHEM	962	LIGAND-CPD	C00001	CAS	7732-18-5
+
+Relations
+
+3-KETO-ADIPYL-COA	is_a_class	3-KETOACYL-COA
+3-KETO-ADIPYL-COA	has_name	3-KETO-ADIPYL-COA_names
+3-KETO-ADIPYL-COA	has_xref	3-KETO-ADIPYL-COA_xrefs
+ACETYL-COA	is_a_class	All-Coas
+ACETYL-COA	has_name	ACETYL-COA_names
+ACETYL-COA	has_xref	ACETYL-COA_xrefs
+AMP	has_xref	AMP_xrefs
+AMP	is_a_class	All-Nucleosides
+AMP	is_a_class	Purine-ribonucleosides-5-P
+AMP	has_name	AMP_names
+ATP	is_a_class	All-Nucleosides
+ATP	is_a_class	Purine-ribonucleosides-5-PPP
+ATP	has_name	ATP_names
+ATP	has_xref	ATP_xrefs
+CIS-DELTA3-ENOYL-COA	is_a_class	All-Coas
+CIS-DELTA3-ENOYL-COA	has_name	CIS-DELTA3-ENOYL-COA_names
+CO-A	is_a_class	Cofactors
+CO-A	has_name	CO-A_names
+CO-A	has_xref	CO-A_xrefs
+CPD-9245	is_a_class	CPD66-39
+CPD-9245	is_a_class	Long-Chain-234-Saturated-Fatty-Acids
+CPD-9245	is_a_class	Monounsaturated-fatty-acids
+CPD-9245	has_name	CPD-9245_names
+CPD-9245	has_xref	CPD-9245_xrefs
+D-3-HYDROXYACYL-COA	is_a_class	3-HYDROXYACYL-COA
+D-3-HYDROXYACYL-COA	has_name	D-3-HYDROXYACYL-COA_names
+ENOYL-COA-HYDRAT-RXN	is_in_pathway	FAO-PWY
+ENOYL-COA-HYDRAT-RXN	is_a_class	Chemical-Reactions
+ENOYL-COA-HYDRAT-RXN	is_a_class	Small-Molecule-Reactions
+ENOYL-COA-HYDRAT-RXN	produces	L-3-HYDROXYACYL-COA	STOICHIOMETRY	1	COMPARTMENT	c
+ENOYL-COA-HYDRAT-RXN	consumes	TRANS-D2-ENOYL-COA	STOICHIOMETRY	1	COMPARTMENT	c
+ENOYL-COA-HYDRAT-RXN	consumes	WATER	STOICHIOMETRY	1	COMPARTMENT	c
+ETF-Oxidized	is_a_class	Etf
+ETF-Oxidized	is_a_class	Modified-Proteins
+ETF-Oxidized	is_a_class	Oxidized-Flavoproteins
+ETF-Oxidized	has_name	ETF-Oxidized_names
+ETF-Reduced	is_a_class	Etf
+ETF-Reduced	is_a_class	Reduced-Flavoproteins
+ETF-Reduced	has_name	ETF-Reduced_names
+FAO-PWY	is_a_class	Fatty-Acid-Degradation
+L-3-HYDROXYACYL-COA	has_name	L-3-HYDROXYACYL-COA_names
+L-3-HYDROXYACYL-COA	is_a_class	3S-S-3-hydroxyacyl-CoAs
+NAD	is_a_class	NAD-P-OR-NOP
+NAD	has_name	NAD_names
+NAD	has_xref	NAD_xrefs
+NADH	is_a_class	NADH-P-OR-NOP
+NADH	has_name	NADH_names
+NADH	has_xref	NADH_xrefs
+PPI	is_a_class	Polyphosphates
+PPI	has_name	PPI_names
+PPI	has_xref	PPI_xrefs
+PROTON	is_a_class	Monovalent-Inorganic-Cations
+PROTON	is_a_class	Subatomic-Particles
+PROTON	has_name	PROTON_names
+PROTON	has_xref	PROTON_xrefs
+Saturated-Fatty-Acyl-CoA	is_a_class	ACYL-COA
+TRANS-D2-ENOYL-COA	is_a_class	D2-ENOYL-COA
+TRANS-D2-ENOYL-COA	has_name	TRANS-D2-ENOYL-COA_names
+WATER	has_xref	WATER_xrefs
+WATER	has_name	WATER_names
+WATER	is_a_class	Compounds

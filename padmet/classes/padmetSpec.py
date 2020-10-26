@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from . import Policy
-from . import Node
-from . import Relation
-from . import PadmetRef
-from ..utils import sbmlPlugin
+from padmet.classes.policy import Policy
+from padmet.classes.node import Node
+from padmet.classes.relation import Relation
+from padmet.classes.padmetRef import PadmetRef
+from padmet.utils import sbmlPlugin
+
 import libsbml
 import os
 
@@ -41,6 +42,8 @@ class PadmetSpec:
             pathname of the padmet file
         """
         if padmetSpec_file is not None:
+            if not os.path.exists(padmetSpec_file):
+                raise FileNotFoundError("No Padmet Spec file accessible at " + padmetSpec_file)
             self.loadGraph(padmetSpec_file)
         else:
             self.dicOfRelationIn = {}
@@ -142,6 +145,43 @@ class PadmetSpec:
             for rlt in list_rlt:
                 all_relation.add(rlt)
         return all_relation
+
+    def getRelation(self, rlt_id_in, rlt_type, rlt_id_out):
+        """
+        return a relation
+
+        Returns
+        -------
+        Relation
+            return a relation
+        """
+        rlts = [
+            rlt
+            for list_rlt in self.dicOfRelationIn.values()
+            for rlt in list_rlt
+            if rlt.type == rlt_type
+            and rlt.id_in == rlt_id_in
+            and rlt.id_out == rlt_id_out
+        ]
+        return rlts
+
+    def getRelationTypeIDIn(self, rlt_type, rlt_id_in):
+        """
+        return a relation
+
+        Returns
+        -------
+        Relation
+            return a relation
+        """
+        rlts = [
+            rlt
+            for list_rlt in self.dicOfRelationIn.values()
+            for rlt in list_rlt
+            if rlt.type == rlt_type
+            and rlt.id_in == rlt_id_in
+        ]
+        return rlts
 
     def loadGraph(self, padmet_file):
         """
@@ -278,6 +318,9 @@ class PadmetSpec:
         @return: _
         @rtype: None
         """
+        if not os.path.exists(sbml_file):
+            raise FileNotFoundError("No SBML file accessible at " + sbml_file)
+
         file_name = os.path.basename(sbml_file)
         file_name = os.path.splitext(file_name)[0]
         if not source_id:
@@ -665,7 +708,7 @@ class PadmetSpec:
 
     def updateFromPadmet(self, padmet):
         """
-        update padmet from an other padmet file
+        update padmet from another padmet file
         
         Parameters
         ----------
@@ -674,10 +717,26 @@ class PadmetSpec:
        
         """
         for k, v in list(padmet.dicOfNode.items()):
+            already_present = None
             try:
                 self.dicOfNode[k]
+                already_present = True
             except KeyError:
                 self.dicOfNode[k] = v
+                if v.type == 'reaction':
+                    for rlt in padmet.dicOfRelationIn[k]:
+                        if rlt.type in ["consumes","produces"]:
+                            self._addRelation(rlt)
+            if v.type == "reaction" and already_present:
+                if k in self.dicOfNode:
+                    first_rxn = get_rxn(k, padmet)
+                    second_rxn = get_rxn(k, self)
+                    same_rxn, different_reversibility = compare_rxn(first_rxn, second_rxn)
+                    if same_rxn:
+                        if different_reversibility:
+                            self.dicOfNode[k].misc["DIRECTION"] = ["REVERSIBLE"]
+                    else:
+                        raise Exception("Can't copy reaction {0}: not the same reactants and products in reaction.".format(k))
 
         for rlt in padmet.getAllRelation():
             if rlt.type == "is_linked_to":
@@ -692,6 +751,8 @@ class PadmetSpec:
                     )
                 except (IndexError, KeyError) as e:
                     self._addRelation(rlt)
+            elif rlt.type in ['produces', 'consumes']:
+                pass
             else:
                 self._addRelation(rlt)
 
@@ -882,16 +943,16 @@ class PadmetSpec:
     def network_report(self, output_dir, padmetRef_file=None, verbose=False):
         """
         Summurizes the network in a folder (output_dir) of 4 files.
-        all_pathways.csv: report on the pathways of the network.
+        all_pathways.tsv: report on the pathways of the network.
         PadmetRef is used to recover the total reactions of a pathways. (sep = "\t")
         line = dbRef_id, Common name, Number of reactions found,
             Total number of reaction, Ratio (Reaction found / Total)
-        all_reactions.csv: report on the reactions of the network.  (sep = "\t")
+        all_reactions.tsv: report on the reactions of the network.  (sep = "\t")
         line = dbRef_id, Common name, formula (with id),
             formula (with common name), in pathways, associated genes, sources
-        all_metabolites.csv: report on the metabolites of the network. (sep = "\t")
+        all_metabolites.tsv: report on the metabolites of the network. (sep = "\t")
         line = dbRef_id, Common name, Produced (p), Consumed (c), Both (cp)
-        all_genes.csv: report on the genes of the network. (sep= "\t")
+        all_genes.tsv: report on the genes of the network. (sep= "\t")
         line = "id", "Common name", "linked reactions"
 
         Parameters
@@ -906,10 +967,10 @@ class PadmetSpec:
         os.system("mkdir -p " + output_dir)
         if not output_dir.endswith("/"):
             output_dir += "/"
-        all_pathways = output_dir + "all_pathways.csv"
-        all_reactions = output_dir + "all_reactions.csv"
-        all_metabolites = output_dir + "all_metabolites.csv"
-        all_genes = output_dir + "all_genes.csv"
+        all_pathways = output_dir + "all_pathways.tsv"
+        all_reactions = output_dir + "all_reactions.tsv"
+        all_metabolites = output_dir + "all_metabolites.tsv"
+        all_genes = output_dir + "all_genes.tsv"
 
         if padmetRef_file is not None:
             padmetRef = PadmetRef(padmetRef_file)
@@ -1543,13 +1604,13 @@ class PadmetSpec:
         for rlt in rlt_to_compare:
             if relation.compare(rlt):
                 return False
-        try:
+        if idIn in self.dicOfRelationIn:
             self.dicOfRelationIn[idIn].append(relation)
-        except KeyError:
+        else:
             self.dicOfRelationIn[idIn] = [relation]
-        try:
+        if idOut in self.dicOfRelationOut:
             self.dicOfRelationOut[idOut].append(relation)
-        except KeyError:
+        else:
             self.dicOfRelationOut[idOut] = [relation]
         return True
 
@@ -1878,3 +1939,55 @@ class PadmetSpec:
                         reconstructionData,
                         [reconstructionData_rlt],
                     )
+
+def get_rxn(rxn_id, padmet):
+    rxn_informaitons = {}
+    rxn_informaitons['DIRECTION'] = padmet.dicOfNode[rxn_id].misc['DIRECTION']
+
+    rxn_informaitons['REACTANTS'] = [(rlt.id_out, rlt.misc['STOICHIOMETRY']) for rlt in padmet.dicOfRelationIn[rxn_id] if rlt.type in ["consumes"]]
+    rxn_informaitons['PRODUCTS'] = [(rlt.id_out, rlt.misc['STOICHIOMETRY']) for rlt in padmet.dicOfRelationIn[rxn_id] if rlt.type in ["produces"]]
+
+    return rxn_informaitons
+
+def compare_rxn(rxn_1, rxn_2):
+    same_rxn = None
+    different_reversibility = None
+
+    rxn_1_direction = rxn_1['DIRECTION'][0]
+    rxn_2_direction = rxn_2['DIRECTION'][0]
+
+    # First element of each list is the compound ID, the second element is the stoichiometric coefficient.
+    # TODO: find another way to deal with reactants or products containing the same compounds multiple times (like RXN-2103 in MetaCyc).
+    # This will need modification of _addRelation and also how we add relation in padmet.
+    rxn_1_reactants = sorted(set([reactant[0] for reactant in rxn_1['REACTANTS']]))
+    rxn_1_products = sorted(set([reactant[0] for reactant in rxn_1['PRODUCTS']]))
+
+    rxn_2_reactants = sorted(set([reactant[0] for reactant in rxn_2['REACTANTS']]))
+    rxn_2_products = sorted(set([reactant[0] for reactant in rxn_2['PRODUCTS']]))
+
+    if rxn_1_direction == rxn_2_direction:
+        if rxn_1_reactants == rxn_2_reactants:
+            if rxn_1_products == rxn_2_products:
+                same_rxn = True
+
+        if rxn_1_reactants == rxn_2_products:
+            if rxn_1_products == rxn_2_reactants:
+                different_reversibility = True
+                same_rxn = True
+    else:
+        if 'REVERSIBLE' in [rxn_1_direction, rxn_2_direction]:
+            different_reversibility = True
+            if rxn_1_reactants == rxn_2_reactants:
+                if rxn_1_products == rxn_2_products:
+                    same_rxn = True
+            if not same_rxn:
+                if rxn_1_reactants == rxn_2_products:
+                    if rxn_1_products == rxn_2_reactants:
+                        same_rxn = True
+        if (rxn_1_direction == 'LEFT-TO-RIGHT' and rxn_2_direction == 'RIGHT-TO-LEFT') or (rxn_1_direction == 'RIGHT-TO-LEFT' and rxn_2_direction == 'LEFT-TO-RIGHT'):
+            different_reversibility = True
+            if rxn_1_reactants == rxn_2_products:
+                if rxn_1_products == rxn_2_reactants:
+                    same_rxn = True
+
+    return same_rxn, different_reversibility

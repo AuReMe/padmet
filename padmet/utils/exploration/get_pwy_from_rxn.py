@@ -1,11 +1,52 @@
 # -*- coding: utf-8 -*-
-"""
+r"""
 Description:
     From a file containing a list of reaction, return the pathways where these reactions 
     are involved.
     ex: if rxn-a in pwy-x => return, pwy-x; all rxn ids in pwy-x; all rxn ids in pwy-x FROM the list; ratio
 
+::
+
+    usage:
+        padmet get_pwy_from_rxn --reaction_file=FILE --padmetRef=FILE  --output=FILE
+
+    options:
+        -h --help     Show help.
+        --reaction_file=FILE    pathname of the file containing the reactions id, 1/line 
+        --padmetRef=FILE    pathname of the padmet representing the database.
+        --output=FILE    pathname of the file with line = pathway id, all reactions id, reactions ids from reaction file, ratio. sep = "\t"
 """
+import csv
+import docopt
+import os
+
+from padmet.classes import PadmetSpec
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def get_pwy_from_rxn_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    reaction_file = args["--reaction_file"]
+    padmet_file = args["--padmetRef"]
+    output = args["--output"]
+    padmet = PadmetSpec(padmet_file)
+    get_pwy_from_rxn(padmet, reaction_file, output)
+
+
+def get_pwy_from_rxn(padmet, reaction_file, output):
+    if not os.path.exists(reaction_file):
+        raise FileNotFoundError("No reaction file accessible at " + reaction_file)
+
+    with open(reaction_file, 'r') as f:
+        reactions = set(f.read().splitlines())
+    dict_pwy = extract_pwys(padmet, reactions)
+    dict_pwys_to_file(dict_pwy, output)
+
 
 def extract_pwys(padmet, reactions):
     """
@@ -51,13 +92,14 @@ def dict_pwys_to_file(dict_pwy, output):
         path to output file
 
     """
-    with open(output, 'w') as f:
+    with open(output, 'w') as output_file:
+        csvwriter = csv.writer(output_file, delimiter='\t')
         header = ["pathway_id","total_rxn","rxn_from_list","ratio"]
-        f.write("\t".join(header)+"\n")
+        csvwriter.writerow(header)
         for pwy_id, pwy_data in dict_pwy.items():
             total_rxn = pwy_data['total_rxn']
             rxn_from_list = pwy_data['rxn_from_list']
             ratio = pwy_data['ratio']
 
             line = [pwy_id, ";".join(total_rxn), ";".join(rxn_from_list),str(ratio)]
-            f.write("\t".join(line)+"\n")
+            csvwriter.writerow(line)

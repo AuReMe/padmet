@@ -17,8 +17,40 @@ Description:
 
     Comment: the reason of adding the reaction (ex: added for gap-filling by meneco)
 
+::
+
+    usage:
+        padmet enhanced_meneco_output --meneco_output=FILE --padmetRef=FILE --output=FILE [-v]
+
+    options:
+        -h --help     Show help.
+        --meneco_output=FILE    pathname of a meneco run' result
+        --padmetRef=FILE    path to padmet file corresponding to the database of reference (the repair network)
+        --output=FILE    path to tsv output file
 """
+import docopt
+import os
+
+from padmet.classes import PadmetRef
 from padmet.utils.sbmlPlugin import get_all_decoded_version
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def enhanced_meneco_output_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+
+    meneco_output_file = args["--meneco_output"]
+    output = args["--output"]
+    verbose = args["-v"]
+    padmetRef = PadmetRef(args["--padmetRef"])
+    enhanced_meneco_output(meneco_output_file, padmetRef, output, verbose)
+
 
 def enhanced_meneco_output(meneco_output_file, padmetRef, output, verbose=False):
     """
@@ -45,6 +77,9 @@ def enhanced_meneco_output(meneco_output_file, padmetRef, output, verbose=False)
     verbose: bool
         if True print information    
     """
+    if not os.path.exists(meneco_output_file):
+        raise FileNotFoundError("No Meneco result (--meneco_output/meneco_output_file) accessible at " + meneco_output_file)
+
     with open(meneco_output_file,'r') as f:
         #recovering union reactions
         file_in_array = f.read().splitlines()

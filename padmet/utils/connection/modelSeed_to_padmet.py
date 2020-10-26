@@ -1,41 +1,61 @@
 # -*- coding: utf-8 -*-
 """
 Description:
-    #TODO
+    From modelSeed reactions and pathways files creates a padmet file.
 
+::
+
+    usage:
+        padmet modelSeed_to_padmet --output=FILE --rxn_file=FILE --pwy_file=FILE [-v]
+
+    options:
+        -h --help     Show help.
+        --output=FILE    path of the padmet file to create
+        --rxn_file=FILE   path to json file of modelSeed reactions
+        --pwy_file=FILE   path to pathway reactions association from modelSeed
+        -v   print info.
 """
-from padmet.classes import Relation
-from padmet.classes import PadmetRef
-from datetime import datetime
-
+import docopt
 import csv
 import json
+import os
+
+from padmet.classes import Relation, instantiate_padmet
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def modelSeed_to_padmet_cli(command_args):
+    #parsing args
+    args = docopt.docopt(__doc__, argv=command_args)
+    output = args["--output"]
+    verbose = args["-v"]
+    rxn_file = args["--rxn_file"]
+    pwy_file = args["--pwy_file"]
+    modelSeed_to_padmet(rxn_file, pwy_file, output, verbose)
+
 
 def modelSeed_to_padmet(rxn_file, pwy_file, output, verbose=False):
     """
     #TODO
     """
     global list_of_relation
-    now = datetime.now()
-    today_date = now.strftime("%Y-%m-%d")
-    #print(verbose,today_date,version, output, classes_file, compounds_file, proteins_file, reactions_file, enzrxns_file, pathways_file)
-    policyInArray = [['compound','has_name','name'], ['compound','has_xref','xref'], ['compound','has_suppData','suppData'],
-                    ['gene','has_name','name'], ['gene','has_xref','xref'], ['gene','has_suppData','suppData'], ['gene','codes_for','protein'],
-                    ['pathway','has_name','name'], ['pathway','has_xref','xref'], ['pathway','is_in_pathway','pathway'], 
-                    ['protein','has_name','name'], ['protein','has_xref','xref'], ['protein','has_suppData','suppData'], ['protein','catalyses','reaction'],
-                    ['reaction','has_name','name'], ['reaction','has_xref','xref'], ['reaction','has_suppData','suppData'], ['reaction','has_reconstructionData','reconstructionData'], ['reaction','is_in_pathway','pathway'],  
-                    ['reaction','consumes','class','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','class','STOICHIOMETRY','X','COMPARTMENT','Y'], 
-                    ['reaction','consumes','compound','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','compound','STOICHIOMETRY','X','COMPARTMENT','Y'], 
-                    ['reaction','consumes','protein','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','protein','STOICHIOMETRY','X','COMPARTMENT','Y'], 
-                    ['reaction','is_linked_to','gene','SOURCE:ASSIGNMENT','X:Y']]
-    dbNotes = {"PADMET":{"Creation":today_date, "version":"2.6"}, "DB_info":{"DB":"MODELSEED", "version":"1.0"}}
-    padmetRef = PadmetRef()
-    if verbose: print("setting policy")
-    padmetRef.setPolicy(policyInArray)
-    if verbose: print("setting dbInfo")
-    padmetRef.setInfo(dbNotes)
+    padmet_id = os.path.splitext(os.path.basename(output))[0]
+    padmetRef = instantiate_padmet("PadmetRef", None, padmet_id, "MODELSEED", "1.0", verbose)
+
     list_of_relation = []
-    
+
+    if not os.path.exists(rxn_file):
+        raise FileNotFoundError("No json file of modelSeed reactions (--rxn_file/rxn_file) accessible at " + rxn_file)
+
+    if not os.path.exists(pwy_file):
+        raise FileNotFoundError("No pathway reactions association file from modelSeed (--pwy_file/pwy_file) accessible at " + pwy_file)
+
     rxn_data = json.load(open(rxn_file))
     #remove biomass rxn:
     rxn_data.pop("rxn12985")

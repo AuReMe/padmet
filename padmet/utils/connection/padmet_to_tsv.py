@@ -37,11 +37,42 @@ Description:
                 get all rlt has_xref => update previous list of data with extract_entity_xref(cpd_xref_rlt)
                     fieldnames = "entity_xref","concerns@reaction","concerns@compound","has_xref@xref"
 
+::
+
+    usage:
+        padmet padmet_to_tsv --padmetSpec=FILE [--padmetRef=FILE] --output_dir=DIR [-v]
+        padmet padmet_to_tsv --padmetRef=FILE [--padmetSpec=FILE] --output_dir=DIR [-v]
+
+    options:
+        -h --help     Show help.
+        --padmetSpec=FILE    path of the padmet representing the network to convert
+        --padmetRef=FILE    path of the padmet representing the database
+        --output_dir=DIR
+        -v
 """
-from padmet.classes import PadmetSpec, PadmetRef
-from itertools import zip_longest
+import docopt
 import os
 import csv
+
+from padmet.classes import PadmetSpec, PadmetRef
+from itertools import zip_longest
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def padmet_to_tsv_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    padmetSpec_file = args["--padmetSpec"]
+    padmetRef_file = args["--padmetRef"]
+    output_dir = args["--output_dir"]
+    verbose = args["-v"]
+    padmet_to_tsv(padmetSpec_file, padmetRef_file, output_dir, verbose)
+
 
 def padmet_to_tsv(padmetSpec_file, padmetRef_file, output_dir, verbose=False):
     """
@@ -253,7 +284,7 @@ def padmet_to_tsv(padmetSpec_file, padmetRef_file, output_dir, verbose=False):
             except KeyError:
                 pass
 
-        if padmetRef:
+        if padmetRef_file:
             if verbose: print("\tExtracting pathways's completion rate and creating pwy_rate.tsv")
             pwy_rate(padmetRef, padmetSpec, padmetSpec_name, padmetSpec_folder+"pwy_rate.tsv")
         else:

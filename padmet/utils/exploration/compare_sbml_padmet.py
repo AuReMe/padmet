@@ -3,8 +3,46 @@
 Description:
     compare reactions in sbml and padmet file
 
+::
+
+    usage:
+        padmet compare_sbml_padmet --padmet=FILE --sbml=FILE
+
+    option:
+        -h --help    Show help.
+        --padmet=FILE    path of the padmet file
+        --sbml=FILE    path of the sbml file
 """
+import docopt
+import os
 import padmet.utils.sbmlPlugin as sp
+
+from padmet.classes import PadmetSpec
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def compare_sbml_padmet_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    sbml_file = args["--sbml"]
+
+    if not os.path.exists(sbml_file):
+        raise FileNotFoundError("No SBML file (--sbml) accessible at " + sbml_file)
+
+    reader = libsbml.SBMLReader()
+    sbml_document = reader.readSBML(sbml_file)
+    for i in range(sbml_document.getNumErrors()):
+        print(sbml_document.getError(i).getMessage())
+
+    padmet = PadmetSpec(args["--padmet"])
+
+    compare_sbml_padmet(sbml_document, padmet)
+
 
 def compare_sbml_padmet(sbml_document, padmet):
     """

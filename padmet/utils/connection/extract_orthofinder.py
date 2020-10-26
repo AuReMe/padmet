@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Description:
-    After running orthofinder on n fasta file, read the output file 'Orthogroups.csv'
+    After running orthofinder on n fasta file, read the output file 'Orthogroups.tsv'
     
     Require a folder 'orthology_based_folder' with this archi:
     
@@ -49,14 +49,55 @@ Description:
         if yes: add the reaction to the new sbml and change genes ids by study org genes ids
         
         Create the new sbml file.
-    
+
+::
+
+    usage:
+        padmet extract_orthofinder --sbml=FILE/DIR --orthologues=DIR --study_id=STR --output=DIR [--workflow=STR] [-v]
+        padmet extract_orthofinder --sbml=DIR --orthogroups=FILE --study_id=STR --output=DIR [--workflow=STR] [-v]
+
+    option:
+        -h --help    Show help.
+        --sbml=DIR   Folder with sub folder named as models name within sbml file name as model_name.sbml
+        --orthogroups=FILE   Output file of Orthofinder run Orthogroups.tsv
+        --orthologues=DIR   Output directory of Orthofinder run Orthologues
+        --study_id=ID   name of the studied organism
+        --workflow=ID   worklow id in ['aureme','aucome']. specific run architecture where to search sbml files
+       --output=DIR   folder where to create all sbml output files
+        -v   print info
 """
+import docopt
 import re
 import csv
 import libsbml
+import os
+
 from padmet.utils import sbmlPlugin as sp
 from padmet.utils import gbr
-import os
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def extract_orthofinder_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    verbose = args["-v"]
+    sbml = args["--sbml"]
+    orthogroups_file = args["--orthogroups"]
+    orthologue_folder = args["--orthologues"]
+    output_folder = args["--output"]
+    study_id = args["--study_id"]
+    workflow = args["--workflow"]
+    all_model_sbml = get_sbml_files(sbml, workflow, verbose)
+    if orthogroups_file:
+        orthogroups_to_sbml(orthogroups_file, all_model_sbml, output_folder, study_id, verbose)
+    elif orthologue_folder:
+        orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_id, verbose)
+
 
 def get_sbml_files(sbml, workflow = None, verbose = False):
     """
@@ -104,7 +145,7 @@ def get_sbml_files(sbml, workflow = None, verbose = False):
     
 def orthogroups_to_sbml(orthogroups_file, all_model_sbml, output_folder, study_id, verbose = False):
     """
-    After running orthofinder on n fasta file, read the output file 'Orthogroups.csv'
+    After running orthofinder on n fasta file, read the output file 'Orthogroups.tsv'
     Require a folder 'orthology_based_folder' with this archi:
     \model_a
         model_a.sbml
@@ -129,7 +170,7 @@ def orthogroups_to_sbml(orthogroups_file, all_model_sbml, output_folder, study_i
     Parameters
     ----------
     orthogroups_file: str
-        path of Orthofinder output file 'Orthogroups.csv'
+        path of Orthofinder output file 'Orthogroups.tsv'
     orthology_based_folder: str
         path of folder with model's sbml
     output: str
@@ -172,9 +213,9 @@ def orthogroups_to_sbml(orthogroups_file, all_model_sbml, output_folder, study_i
     for dict_data in all_dict_data:
         dict_data_to_sbml(dict_data, dict_orthogroups=dict_orthogroups)
 
-def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_id, verbose = False):
+def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_id, verbose=False):
     """
-    After running orthofinder on n fasta file, read the output file 'Orthogroups.csv'
+    After running orthofinder on n fasta file, read the output files in 'Orthologues'
     Require a folder 'orthology_based_folder' with this archi:
     \model_a
         model_a.sbml
@@ -198,8 +239,8 @@ def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_i
 
     Parameters
     ----------
-    orthogroups_file: str
-        path of Orthofinder output file 'Orthogroups.csv'
+    orthologue_folder: str
+        path of Orthofinder output folder 'Orthologues'
     orthology_based_folder: str
         path of folder with model's sbml
     output: str
@@ -210,7 +251,7 @@ def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_i
         if True print information
     """
     if verbose:
-        print("Parsing Orthofinder output %s" %orthologue_folder)
+        print("Parsing Orthofinder output {0} for {1}".format(orthologue_folder, study_id))
     #k=orthogroup_id, v = {k = name, v = set of genes}
     all_orgs = set()
     all_orthologue_files = []
@@ -218,7 +259,9 @@ def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_i
         for _folder in _folders:
             all_orgs.add(_folder.replace("Orthologues_",""))
         for _file in _files:
-            all_orthologue_files.append(os.path.join(_path,_file))
+            _filename = os.path.splitext(_file)[0]
+            if _filename.endswith(study_id):
+                all_orthologue_files.append(os.path.join(_path,_file))
     dict_orthologues = {}
     for org in all_orgs:
         dict_orthologues[org] = dict()
@@ -250,7 +293,7 @@ def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_i
                 """
 
     if verbose:
-        print("Start sbml creation...")
+        print("Start sbml creation for " + study_id)
     all_dict_data = []
     if not os.path.exists(output_folder):
         if verbose:
@@ -266,6 +309,7 @@ def orthologue_to_sbml(orthologue_folder, all_model_sbml, output_folder, study_i
 
     for dict_data in all_dict_data:
         dict_data_to_sbml(dict_data, dict_orthologues=dict_orthologues)
+
 
 def dict_data_to_sbml(dict_data, dict_orthogroups=None, dict_orthologues=None, strict_match=True):
     """

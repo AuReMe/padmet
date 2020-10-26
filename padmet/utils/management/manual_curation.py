@@ -15,11 +15,76 @@ Description:
 
     Update padmetSpec and create a new padmet (new_padmet) or overwrite the input
 
+::
+
+    usage:
+        padmet manual_curation --padmetSpec=FILE --data=FILE [--padmetRef=FILE] [--output=FILE] [--tool=STR] [--category=STR] [-v]
+        padmet manual_curation --template_new_rxn=FILE
+        padmet manual_curation --template_add_delete_rxn=FILE
+
+    option:
+        -h --help    Show help.
+        --padmetSpec=FILE    path to the padmet to update
+        --padmetRef=FILE    path of the padmet representing the reference database
+        --data=FILE    path to the form with data for curation
+        --output=FILE    path to the output. if None. Overwriting padmetSpec
+        --tool=STR    specification of the tool used to allow this curation: ex a tool of gapfilling (meneco)
+        --category=STR    specification of the category of curation: ex if a reaction is added based on annotation info, use 'annotation'
+        --template_new_rxn=FILE    create a form used to create new reaction, use this form as input for 'data' option
+        --template_add_delete_rxn=FILE    create a form used to add or delete reaction, use this form as input for 'data' option
+        -v    print info
 """
-import os
 import csv
-from padmet.classes import Relation
+import docopt
+import os
+
+from padmet.classes import Relation, PadmetRef, PadmetSpec
 from padmet.utils.sbmlPlugin import parseGeneAssoc
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def manual_curation_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    data_file = args["--data"]
+    output = args["--output"]
+    verbose = args["-v"]
+
+    if data_file:
+        if not os.path.exists(data_file):
+            raise FileNotFoundError("No form curation file (--data/data_file) accessible at " + data_file)
+
+        filename = os.path.splitext(os.path.basename(data_file))[0]
+        source = filename
+
+    category = args["--category"]
+    tool = args["--tool"]
+    if args["--template_new_rxn"]:
+        output = args["--template_new_rxn"]
+        template_new_rxn(output)
+    elif args["--template_add_delete_rxn"]:
+        output = args["--template_add_delete_rxn"]
+        template_add_delete(output)
+    else:
+        padmetSpec = PadmetSpec(args["--padmetSpec"])
+        if not output:
+            output = args["--padmetSpec"]
+        if args["--padmetRef"]:
+            padmetRef = PadmetRef(args["--padmetRef"])
+        else:
+            padmetRef = None
+        to_do = sniff_datafile(data_file)
+
+        if to_do == "rxn_creator":
+            rxn_creator(data_file, padmetSpec, output, padmetRef, source, tool, category, verbose)
+        elif to_do == "add_delete_rxn":
+            add_delete_rxn(data_file, padmetSpec, output, padmetRef, source, tool, category, verbose)
+
 
 def sniff_datafile(data_file):
     """
@@ -123,7 +188,7 @@ def rxn_creator(data_file, padmetSpec, output, padmetRef=None, source=None, tool
             continue
 
         if verbose:
-            print("adding reaction %s" %reaction_id)
+            print("Adding reaction %s" %reaction_id)
         reaction_rev = reaction_data["reversible"][0].lower()
         if reaction_rev.upper() == "TRUE":
             reaction_rev = "REVERSIBLE"

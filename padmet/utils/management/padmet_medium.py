@@ -21,7 +21,69 @@ Description:
     4/ create a new file if output not None, or overwrite padmetSpec
 
 ::
+
+    usage:
+        padmet padmet_medium --padmetSpec=FILE
+        padmet padmet_medium --padmetSpec=FILE -r [--output=FILE] [-v]
+        padmet padmet_medium --padmetSpec=FILE --seeds=FILE [--padmetRef=FILE] [--output=FILE] [-v]
+
+    options:
+        -h --help     Show help.
+        --padmetSpec=FILE    path to the padmet file to update
+        --padmetRef=FILE    path to the padmet file representing to the database of reference (ex: metacyc_18.5.padmet)
+        --seeds=FILE    the path to the file containing the compounds ids and the compart, line = cpd-id\tcompart.
+        --output=FILE    If not None, pathname to the padmet file updated
+        -r    Use to remove all medium from padmet
+        -v   print info
 """
+import docopt
+import os
+
+from padmet.classes import PadmetRef, PadmetSpec
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def padmet_medium_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    if args["--seeds"]:
+        seeds_file = args["--seeds"]
+        if not os.path.exists(seeds_file):
+            raise FileNotFoundError("No seeds file (--seeds) accessible at " + seeds_file)
+
+        with open(seeds_file, 'r') as f:
+            seeds = [line.split("\t")[0] for line in f.read().splitlines()]
+    else:
+        seeds = None
+    padmet = PadmetSpec(args["--padmetSpec"])
+    if args["--padmetRef"]:
+        padmetRef = PadmetRef(args["--padmetRef"])
+    else:
+        padmetRef = None
+    output = args["--output"]
+    verbose = args["-v"]
+    remove = args["-r"]
+
+    if output is None:
+        output = args["--padmetSpec"]
+
+    if not remove and not seeds:
+        g_m = padmet.get_growth_medium()
+        print("List of growth medium:")
+        if g_m:
+            print(list(g_m))
+        else:
+            print("[]")
+    else:
+        manage_medium(padmet, seeds, padmetRef, verbose)
+        padmet.generateFile(output)
+
+
 def manage_medium(padmet, new_growth_medium=None, padmetRef=None, verbose=False):
     """
     Manage medium of a padmet. If new_growth_medium give, use this list of compound

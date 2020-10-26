@@ -8,7 +8,35 @@ Description:
     S[i,j] contains the quantity of metabolite 'i' produced (negative for consumed)
     by reaction 'j'.
 
+::
+
+    usage:
+        padmet padmet_to_matrix --padmet=FILE --output=FILE
+
+    option:
+        -h --help    Show help.
+        --padmet=FILE    path to the padmet file to convert.
+        --output=FILE    path to the output file, col: rxn, row: metabo, sep = "\t".
 """
+
+import docopt
+
+from padmet.classes import PadmetSpec
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def padmet_to_matrix_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    padmet_file = args["--padmet"]
+    output = args["--output"]
+    padmet = PadmetSpec(padmet_file)
+    padmet_to_matrix(padmet, output)
 
 
 def padmet_to_matrix(padmet, output):

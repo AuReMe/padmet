@@ -39,10 +39,35 @@ Idea is, mainly, that a syntree is simple to store (dict {node:successors}),
 
 Note that there is no real error handling for parenthesis.
 
+::
+
+    usage:
+        padmet gbr --string=FILE
+
+    options:
+        -h --help     Show help.
+        --string=STR    A string to parse
 """
+import docopt
 import re
+
 from enum import Enum
 from collections import ChainMap
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def gbr_cli(command_args):
+    #parsing args
+    args = docopt.docopt(__doc__, argv=command_args)
+    input_string = args["--string"]
+    for result in compile_input(input_string):
+        print(result)
 
 
 # Constants

@@ -1,0 +1,263 @@
+UNIQUE-ID - ENOYL-COA-HYDRAT-ENZRXN
+TYPES - Enzymatic-Reactions
+COMMON-NAME - enoyl-CoA hydratase
+CITATIONS - 8454629:EV-EXP-IMP-REACTION-BLOCKED:3577710779:brito
+COMMENT - This enzyme, a crotonase, is part of a multienzyme complex
+/that has broad substrate specificity.  It is also part of a
+/multifunctional polypeptide coded for by the fadB gene.  This enzyme
+/takes part in the oxidation of saturated fatty acids.  The enzyme is
+/active with substrates of varying chain lengths.  |CITS: [7024730]| 
+/The active site also catalyzes epimerization of unsaturated fatty
+/acids (EC 5.1.2.3).  |CITS: [8454629]|
+ENZYME - FADB-CPLX
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - ENOYL-COA-HYDRAT-RXN
+REACTION - RXN0-5393
+REGULATED-BY - REG0-9342
+REGULATED-BY - REG0-9341
+SYNONYMS - enoyl hydrase
+SYNONYMS - unsaturated acyl-CoA hydratase
+SYNONYMS - (3S)-3-hydroxyacyl-CoA hydro-lyase
+//
+UNIQUE-ID - ENZRXN0-2571
+TYPES - Enzymatic-Reactions
+COMMON-NAME - enoyl-CoA hydratase
+CITATIONS - 12535077:EV-EXP-IGI:3281218066:arnaud
+CITATIONS - 12535077:EV-COMP-HINF:3281218066:arnaud
+ENZYME - B2341-MONOMER
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - ENOYL-COA-HYDRAT-RXN
+SYNONYMS - (3S)-3-hydroxyacyl-CoA hydro-lyase
+//
+UNIQUE-ID - ENZRXN0-2567
+TYPES - Enzymatic-Reactions
+COMMON-NAME - dodecenoyl-CoA D-isomerase
+CITATIONS - 12535077:EV-EXP-IGI:3281216676:arnaud
+CITATIONS - 12535077:EV-COMP-HINF:3281216676:arnaud
+ENZYME - B2341-MONOMER
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - ENOYL-COA-DELTA-ISOM-RXN
+SYNONYMS - dodecenoyl-CoA D3-cis-D2-trans-isomerase
+//
+UNIQUE-ID - ENOYL-COA-DELTA-ISOM-ENZRXN
+TYPES - Enzymatic-Reactions
+COMMON-NAME - &Delta;<SUP>3</SUP>-cis-&Delta;<SUP>2</SUP>-trans-enoyl-CoA isomerase
+CITATIONS - 368024:EV-EXP-IDA:3577711336:brito
+COMMENT - This enzyme is part of a multienzyme complex that has broad
+/substrate specificity.  It is also part of a multifunctional
+/polypeptide coded for by the fadB gene.  This enzyme is required when
+/carbons 3,4 unsaturated fatty acids are degraded.  |CITS: [368024]|
+/It also catalyses the interconversion of 3-acetylenic fatty acyl
+/thioesters and (+)-2,3-dienoyl fatty acyl thioesters, with fatty acid
+/chain lengths C(6) to C(12).
+ENZYME - FADB-CPLX
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - ENOYL-COA-DELTA-ISOM-RXN
+REACTION - RXN0-5391
+REACTION-DIRECTION - REVERSIBLE
+REGULATED-BY - REG0-9345
+REGULATED-BY - REG0-9344
+REGULATED-BY - REG0-9343
+SYNONYMS - dodecenoyl-CoA &delta;-isomerase
+SYNONYMS - enoyl-CoA &delta;-isomerase
+SYNONYMS - acetylene-allene isomerase
+SYNONYMS - dodecenoyl-CoA &delta;(3)-cis-&delta;(2)-trans-isomerase
+//
+UNIQUE-ID - ENZRXN2V-71
+TYPES - Enzymatic-Reactions
+COMMON-NAME - acyl-CoA dehydrogenase
+BASIS-FOR-ASSIGNMENT - :AUTOMATED-NAME-MATCH
+CITATIONS - 12057976:EV-EXP-IMP-REACTION-BLOCKED:3576432247:brito
+COMMENT - Broad specificity for fatty acyl-CoA chain length.  The instance reactions below support FBA modeling of unsaturated fatty acid &beta;-oxidation.
+ENZYME - B0221-MONOMER
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - ACYLCOADEHYDROG-RXN
+REACTION-DIRECTION - PHYSIOL-LEFT-TO-RIGHT
+SYNONYMS - acyl-CoA:(acceptor) 2,3-oxidoreductase
+SYNONYMS - acyl dehydrogenase
+SYNONYMS - medium-chain acyl-CoA dehydrogenase
+//
+UNIQUE-ID - ENZRXN2V-58
+TYPES - Enzymatic-Reactions
+COMMON-NAME - fatty acyl-CoA synthetase
+BASIS-FOR-ASSIGNMENT - :AUTOMATED-NAME-MATCH
+ENZYME - B1805-MONOMER
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - ACYLCOASYN-RXN
+//
+UNIQUE-ID - ACYLCOASYN-ENZRXN
+TYPES - Enzymatic-Reactions
+COMMON-NAME - fatty acyl-CoA synthetase
+ALTERNATIVE-SUBSTRATES - (CPD66-39 OLEATE-CPD)
+ALTERNATIVE-SUBSTRATES - (CPD66-39 DODECANOATE)
+ALTERNATIVE-SUBSTRATES - (CPD66-39 CPD-19659)
+ALTERNATIVE-SUBSTRATES - (CPD66-39 CPD-3617)
+CITATIONS - 7016858:EV-EXP-IDA-PART-PURIFIED-PROTEIN-NH:3747424197:keseler
+CITATIONS - 4909455:EV-EXP-IDA-PART-PURIFIED-PROTEIN:3747419313:keseler
+CITATIONS - 3907712:EV-EXP-IDA-PURIFIED-PROTEIN:3747424197:keseler
+CITATIONS - 12034706:EV-EXP-IDA-UNPURIFIED-PROTEIN:3747425818:keseler
+COFACTORS - MG+2
+ENZYME - ACYLCOASYN-CPLX
+KCAT - 2.900e-2
+^SUBSTRATE - ATP
+^CITATIONS - BRENDA-2014
+^CITATIONS - 12034706
+KM - 8.5    
+^SUBSTRATE - OLEATE-CPD
+^CITATIONS - 7016858
+KM - 130
+^SUBSTRATE - ATP
+^CITATIONS - 12034706
+KM - 4.3    
+^SUBSTRATE - CPD-3617
+^CITATIONS - 7016858
+KM - 3.4    
+^SUBSTRATE - CPD-19659
+^CITATIONS - 7016858
+KM - 1.6    
+^SUBSTRATE - DODECANOATE
+^CITATIONS - 7016858
+KM - 25.    
+^SUBSTRATE - ATP
+^CITATIONS - BRENDA-2014
+^CITATIONS - 3907712
+KM - 50.    
+^SUBSTRATE - ATP
+^CITATIONS - BRENDA-2014
+^CITATIONS - 3907712
+KM - 34.    
+^SUBSTRATE - CO-A
+^CITATIONS - BRENDA-2014
+^CITATIONS - 3907712
+KM - 35.    
+^SUBSTRATE - CO-A
+^CITATIONS - BRENDA-2014
+^CITATIONS - 3907712
+KM - 53.    
+^SUBSTRATE - CO-A
+^CITATIONS - BRENDA-2014
+^CITATIONS - 3907712
+PH-OPT - 8.5    
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - ACYLCOASYN-RXN
+REACTION-DIRECTION - PHYSIOL-LEFT-TO-RIGHT
+REGULATED-BY - REG0-9857
+REGULATED-BY - REG0-9855
+SYNONYMS - long chain fatty acid CoA-ligase
+SYNONYMS - acyl-activating enzyme
+SYNONYMS - acyl-CoA synthase
+SYNONYMS - fatty acid thiokinase (long-chain)
+SYNONYMS - lignoceroyl-CoA synthase
+SYNONYMS - long-chain acyl-CoA synthetase
+SYNONYMS - palmitoyl-CoA synthase
+SYNONYMS - arachidonyl-CoA synthetase
+SYNONYMS - acid:CoA ligase (AMP forming)
+VMAX - 0.25    
+VMAX - 1.25    
+VMAX - 2.2220001    
+VMAX - 2.6320002    
+//
+UNIQUE-ID - ENZRXN2V-68
+TYPES - Enzymatic-Reactions
+COMMON-NAME - short chain acyl-CoA synthetase
+BASIS-FOR-ASSIGNMENT - :AUTOMATED-NAME-MATCH
+CITATIONS - 15213221:EV-EXP-IDA-PURIFIED-PROTEIN:3321711057:keseler
+CITATIONS - 12535077:EV-COMP-HINF:3281217371:arnaud
+CITATIONS - 12535077:EV-EXP-IGI:3281217285:arnaud
+COFACTORS - MG+2
+COMMENT - FadK has maximal activity with C6:0 and C8:0 substrates |CITS: [15213221]|.
+ENZYME - B1701-MONOMER
+PH-OPT - 7.7:8.2
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - ACYLCOASYN-RXN
+REACTION-DIRECTION - PHYSIOL-LEFT-TO-RIGHT
+SYNONYMS - fatty acid:CoA ligase (AMP-forming)
+SYNONYMS - acyl-CoA ligase
+//
+UNIQUE-ID - OHBUTYRYL-COA-EPIM-ENZRXN
+TYPES - Enzymatic-Reactions
+COMMON-NAME - 3-hydroxybutyryl-CoA epimerase
+CITATIONS - 8454629:EV-EXP-IMP-REACTION-BLOCKED:3577710779:brito
+COMMENT - This enzyme is part of a multienzyme complex that has broad
+/substrate specificity.  It is also part of a multifunctional
+/polypeptide coded for by the fadB gene.  This enzyme is required to
+/feed some unsaturated fatty acids into the &beta;-oxidation pathway.
+/|CITS: [368024]|  The active site for this reaction is also involved
+/in the hydratase reaction (EC 4.2.1.17).
+ENZYME - FADB-CPLX
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - OHBUTYRYL-COA-EPIM-RXN
+REACTION-DIRECTION - REVERSIBLE
+REGULATED-BY - REG0-9338
+REGULATED-BY - REG0-9337
+SYNONYMS - 3-hydroxyacyl-CoA epimerase
+SYNONYMS - 3-hydroxybutanoyl-CoA 3-epimerase
+//
+UNIQUE-ID - ENZRXN0-2568
+TYPES - Enzymatic-Reactions
+COMMON-NAME - 3-hydroxybutyryl-CoA epimerase
+CITATIONS - 12535077:EV-EXP-IGI:3281216769:arnaud
+CITATIONS - 12535077:EV-COMP-HINF:3281216769:arnaud
+ENZYME - B2341-MONOMER
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - OHBUTYRYL-COA-EPIM-RXN
+SYNONYMS - 3-hydroxybutanoyl-CoA 3-epimerase
+//
+UNIQUE-ID - ENZRXN0-2569
+TYPES - Enzymatic-Reactions
+COMMON-NAME - acetyl-CoA C-acyltransferase
+CITATIONS - 12535077:EV-EXP-IGI:3281216866:arnaud
+CITATIONS - 12535077:EV-COMP-HINF:3281216866:arnaud
+ENZYME - B2342-MONOMER
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - KETOACYLCOATHIOL-RXN
+SYNONYMS - acyl-CoA:acetyl-CoA C-acyltransferase
+//
+UNIQUE-ID - KETOACYLCOATHIOL-ENZRXN
+TYPES - Enzymatic-Reactions
+COMMON-NAME - 3-ketoacyl-CoA thiolase
+CITATIONS - 12535077:EV-EXP-IMP:3577033427:brito
+ENZYME - FADA-CPLX
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - KETOACYLCOATHIOL-RXN
+REGULATED-BY - REG0-10626
+REGULATED-BY - REG0-6928
+REGULATED-BY - REG0-6927
+SYNONYMS - acetyl-CoA C-acyltransferase
+SYNONYMS - &beta;-ketothiolase
+SYNONYMS - acetyl-CoA acyltransferase
+SYNONYMS - acyl-CoA:acetyl-CoA C-acyltransferase
+//
+UNIQUE-ID - OHACYL-COA-DEHYDROG-ENZRXN
+TYPES - Enzymatic-Reactions
+COMMON-NAME - 3-hydroxyacyl-CoA dehydrogenase
+ALTERNATIVE-SUBSTRATES - (L-3-HYDROXYACYL-COA S-3-HYDROXYACYL-N-ACYLTHIOETHANOLAMINE)
+ALTERNATIVE-SUBSTRATES - (L-3-HYDROXYACYL-COA S-3-HYDROXYACYLHYDROLIPOATE)
+CITATIONS - 7756275:EV-EXP-IMP-REACTION-BLOCKED:3577711061:brito
+COMMENT - This enzyme is part of a multienzyme complex that has broad
+/substrate specificity.  It is also part of a multifunctional
+/polypeptide coded for by the fadB gene.  This enzyme takes part in the
+/oxidation of saturated fatty acids. It exhibits the highest activity
+/with medium-chain substrates.  |CITS: [7024730]| It also oxidizes
+/S-3-hydroxyacyl-N-acylthioethanolamine and
+/S-3-hydroxyacylhydrolipoate.
+ENZYME - FADB-CPLX
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - OHACYL-COA-DEHYDROG-RXN
+REGULATED-BY - REG0-9340
+REGULATED-BY - REG0-9339
+REQUIRED-PROTEIN-COMPLEX - FAO-CPLX
+SYNONYMS - &beta;-hydroxyacyl dehydrogenase
+SYNONYMS - &beta;-keto-reductase
+SYNONYMS - (S)-3-hydroxyacyl-CoA:NAD+ oxidoreductase
+//
+UNIQUE-ID - ENZRXN0-2566
+TYPES - Enzymatic-Reactions
+COMMON-NAME - 3-hydroxyacyl-CoA dehydrogenase
+CITATIONS - 12535077:EV-EXP-IGI:3281216582:arnaud
+CITATIONS - 12535077:EV-COMP-HINF:3281216582:arnaud
+ENZYME - B2341-MONOMER
+PHYSIOLOGICALLY-RELEVANT? - T
+REACTION - OHACYL-COA-DEHYDROG-RXN
+SYNONYMS - (S)-3-hydroxyacyl-CoA:NAD+ oxidoreductase
+//

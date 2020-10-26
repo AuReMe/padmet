@@ -4,15 +4,44 @@
 Description:
     Create sbml from sbml. Use it to change sbml level.
 
-"""
+::
 
+    usage:
+        padmet sbml_to_sbml --input=FILE/FOLDER --output=FILE/FOLDER --new_sbml_lvl=STR [--cpu=INT]
+
+    option:
+        -h --help    Show help.
+        --input=FILE    path of the sbml file/folder to convert into sbml
+        --output=FILE    path of the sbml file/folder to generate.
+        --new_sbml_lvl=STR    level of the new sbml.
+        --cpu=FILE    number of cpu used [default: 1].
+        -v   print info.
+"""
+import docopt
 import os
 import sys
 
-from datetime import datetime
 from multiprocessing import Pool
-from padmet.classes import PadmetSpec
+from padmet.classes import PadmetSpec, instantiate_padmet
 from padmet.utils.connection import sbmlGenerator
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def sbml_to_sbml_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    input_sbml = args["--input"]
+    output_sbml = args["--output"]
+    new_sbml_level = args["--new_sbml_lvl"]
+    cpu = args['--cpu']
+
+    from_sbml_to_sbml(input_sbml, output_sbml, new_sbml_level, cpu)
+
 
 def run_sbml_to_sbml(multiprocess_data):
     """Turn sbml to sbml.
@@ -27,8 +56,9 @@ def run_sbml_to_sbml(multiprocess_data):
     bool:
         True if sbml file exists
     """
+    padmet_id = os.path.splitext(os.path.basename(multiprocess_data['sbml_output_file']))[0]
     padmet = sbml_to_padmet(sbml=multiprocess_data['sbml_file'], db=None, version=None, source_tool=None,
-                            source_category=None, source_id=None, mapping=None, verbose=None)
+                            source_category=None, source_id=None, mapping=None, verbose=None, padmet_id=padmet_id)
     sbmlGenerator.padmet_to_sbml(padmet, multiprocess_data['sbml_output_file'], sbml_lvl=multiprocess_data['new_sbml_level'], verbose=False)
 
     if multiprocess_data['sbml_output_file'] and not os.access(multiprocess_data['sbml_output_file'], os.W_OK):
@@ -41,14 +71,12 @@ def run_sbml_to_sbml(multiprocess_data):
     else:  # path is accessible
         return True
 
-def sbml_to_padmet(sbml, db, version, source_tool, source_category, source_id, mapping, verbose):
+def sbml_to_padmet(sbml, db, version, source_tool, source_category, source_id, mapping, verbose, padmet_id):
     """
     #TODO
     """
     db='NA'
     version='NA'
-    now = datetime.now()
-    today_date = now.strftime("%Y-%m-%d")
 
     if os.path.isdir(sbml):
         sbml_type = "dir"
@@ -56,22 +84,8 @@ def sbml_to_padmet(sbml, db, version, source_tool, source_category, source_id, m
         sbml_type = "file"
     else:
         raise TypeError("%s is not a dir or a file" %(sbml))
-    padmet_to_update = PadmetSpec()
 
-    POLICY_IN_ARRAY = [['class','is_a_class','class'], ['class','has_name','name'], ['class','has_xref','xref'], ['class','has_suppData','suppData'],
-                    ['compound','is_a_class','class'], ['compound','has_name','name'], ['compound','has_xref','xref'], ['compound','has_suppData','suppData'],
-                    ['gene','is_a_class','class'], ['gene','has_name','name'], ['gene','has_xref','xref'], ['gene','has_suppData','suppData'], ['gene','codes_for','protein'],
-                    ['pathway','is_a_class','class'], ['pathway','has_name','name'], ['pathway','has_xref','xref'], ['pathway','is_in_pathway','pathway'],
-                    ['protein','is_a_class','class'], ['protein','has_name','name'], ['protein','has_xref','xref'], ['protein','has_suppData','suppData'], ['protein','catalyses','reaction'],
-                    ['protein','is_in_species','class'],
-                    ['reaction','is_a_class','class'], ['reaction','has_name','name'], ['reaction','has_xref','xref'], ['reaction','has_suppData','suppData'], ['reaction','has_reconstructionData','reconstructionData'], ['reaction','is_in_pathway','pathway'],
-                    ['reaction','consumes','class','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','class','STOICHIOMETRY','X','COMPARTMENT','Y'],
-                    ['reaction','consumes','compound','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','compound','STOICHIOMETRY','X','COMPARTMENT','Y'],
-                    ['reaction','consumes','protein','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','protein','STOICHIOMETRY','X','COMPARTMENT','Y'],
-                    ['reaction','is_linked_to','gene','SOURCE:ASSIGNMENT','X:Y']]
-    dbNotes = {"PADMET":{"creation":today_date,"version":"2.6"},"DB_info":{"DB":db,"version":version}}
-    padmet_to_update.setInfo(dbNotes)
-    padmet_to_update.setPolicy(POLICY_IN_ARRAY)
+    padmet_to_update = instantiate_padmet("PadmetSpec", None, padmet_id, db, version, verbose)
 
     #if sbml is a directory, recover all file path in a list. if no => only one file: create a list with only this file
     sbml_mapping_dict = {}

@@ -17,13 +17,55 @@ Description:
 
     5./ Also extract xrefs
 
-"""
-from padmet.classes import Relation
-from padmet.classes import PadmetRef
-from datetime import datetime
+::
 
-import requests
-import grequests
+    usage:
+        padmet biggAPI_to_padmet --output=FILE [--pwy_file=FILE] [-v]
+
+    options:
+        -h --help     Show help.
+        --output=FILE    path to output, the padmet file.
+        --pwy_file=FILE   add kegg pathways from pathways file, line:'pwy_id, pwy_name, x, rxn_id'.
+        -v   print info.
+"""
+try:
+    from gevent import monkey as curious_george
+except ImportError:
+    raise ImportError('Requires gevent, requests and grequests, try:\npip install gevent requests grequests')
+
+curious_george.patch_all(thread=False, select=False)
+
+from padmet.classes import Relation, instantiate_padmet
+
+import docopt
+import os
+
+try:
+    import requests
+except ImportError:
+    raise ImportError('Requires gevent, requests and grequests, try:\npip install gevent requests grequests')
+
+try:
+    import grequests
+except ImportError:
+    raise ImportError('Requires gevent, requests and grequests, try:\npip install gevent requests grequests')
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def biggAPI_to_padmet_cli(command_args):
+    #parsing args
+    args = docopt.docopt(__doc__, argv=command_args)
+    output = args["--output"]
+    verbose = args["-v"]
+    pwy_file = args["--pwy_file"]
+    biggAPI_to_padmet(output, pwy_file, verbose)
+
 
 def biggAPI_to_padmet(output, pwy_file=None, verbose=False):
     """
@@ -50,24 +92,9 @@ def biggAPI_to_padmet(output, pwy_file=None, verbose=False):
     verbose: bool
         if True print information
     """
-    now = datetime.now()
-    today_date = now.strftime("%Y-%m-%d")
-    #print(verbose,today_date,version, output, classes_file, compounds_file, proteins_file, reactions_file, enzrxns_file, pathways_file)
-    policyInArray = [['compound','has_name','name'], ['compound','has_xref','xref'], ['compound','has_suppData','suppData'],
-                    ['gene','has_name','name'], ['gene','has_xref','xref'], ['gene','has_suppData','suppData'], ['gene','codes_for','protein'],
-                    ['pathway','has_name','name'], ['pathway','has_xref','xref'], ['pathway','is_in_pathway','pathway'], 
-                    ['protein','has_name','name'], ['protein','has_xref','xref'], ['protein','has_suppData','suppData'], ['protein','catalyses','reaction'],
-                    ['reaction','has_name','name'], ['reaction','has_xref','xref'], ['reaction','has_suppData','suppData'], ['reaction','has_reconstructionData','reconstructionData'], ['reaction','is_in_pathway','pathway'],  
-                    ['reaction','consumes','class','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','class','STOICHIOMETRY','X','COMPARTMENT','Y'], 
-                    ['reaction','consumes','compound','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','compound','STOICHIOMETRY','X','COMPARTMENT','Y'], 
-                    ['reaction','consumes','protein','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','protein','STOICHIOMETRY','X','COMPARTMENT','Y'], 
-                    ['reaction','is_linked_to','gene','SOURCE:ASSIGNMENT','X:Y']]
-    dbNotes = {"PADMET":{"Creation":today_date, "version":"2.6"}, "DB_info":{"DB":"BIGG", "version":"1.5"}}
-    padmetRef = PadmetRef()
-    if verbose: print("setting policy")
-    padmetRef.setPolicy(policyInArray)
-    if verbose: print("setting dbInfo")
-    padmetRef.setInfo(dbNotes)
+    padmet_id = os.path.splitext(os.path.basename(output))[0]
+    padmetRef = instantiate_padmet("PadmetRef", None, padmet_id, "BIGG", "1.5", verbose)
+
     list_of_relation = []
     if verbose: print("Getting all reactions ids")
     url_bigg = 'http://bigg.ucsd.edu/api/v2/'
@@ -186,7 +213,11 @@ def biggAPI_to_padmet(output, pwy_file=None, verbose=False):
             padmetRef.dicOfRelationOut[rlt.id_out] = [rlt]
     
     if pwy_file:
+        if not os.path.exists(pwy_file):
+            raise FileNotFoundError("No KEGG Pathway file (--pwy_file/pwy_file) accessible at " + pwy_file)
+
         add_kegg_pwy(pwy_file, padmetRef, verbose)
+
     if verbose: print("Generating file: %s" %output)
     padmetRef.generateFile(output)
 

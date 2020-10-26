@@ -63,9 +63,9 @@ def parseGeneAssoc(GeneAssocStr):
         the list of unique ids
     """
     # remplace ' and ' or ' or ' by a tag '_FORSPLIT_'
-    GeneAssocStr_tmp = re.sub(" and | or ", "_FORSPLIT_", GeneAssocStr)
+    GeneAssocStr_tmp = re.sub(r" and | or ", "_FORSPLIT_", GeneAssocStr)
     # remove '(' or ')' or ' '
-    resultat = re.sub("\(|\)|\s", "", GeneAssocStr_tmp)
+    resultat = re.sub(r"\(|\)|\s", "", GeneAssocStr_tmp)
     # create a set by splitting '_FORSPLIT_' then convert to list, set for unique genes
     if len(resultat) != 0:
         resultat = list(set(resultat.split("_FORSPLIT_")))
@@ -208,11 +208,14 @@ def convert_from_coded_id(
     if coded.startswith("_"):
         coded = coded[1:]
     # reg ex to find the ascii used to replace not allowed char
-    ascii_pattern = "{0}(\d+){0}".format(pattern)
+    ascii_pattern = r"{0}(\d+){0}".format(pattern)
     codepat = re.compile(ascii_pattern)
     # replace ascii by the not allowed char of sbml
     coded = codepat.sub(ascii_replace, coded)
-    str_reg = "(?P<_type>^[{0}{1}]_)(?P<_id>.*)(?P<compart>_.*)".format(
+
+    # Regular expression for coded ID from:
+    # https://github.com/SBRG/bigg_models/wiki/BiGG-Models-ID-Specification-and-Guidelines
+    str_reg = r"(?P<_type>^[{0}{1}]_)(?P<_id>.*)(?P<compart>_[a-z][a-z0-9]?$)".format(
         species_tag, reaction_tag
     )
     reg_expr = re.compile(str_reg)
@@ -222,7 +225,7 @@ def convert_from_coded_id(
         _type = search_result.group("_type").replace("_", "")
         uncoded = search_result.group("_id")
     else:
-        str_reg = "(?P<_type>^[{0}{1}]_)(?P<_id>.*)".format(species_tag, reaction_tag)
+        str_reg = r"(?P<_type>^[{0}{1}]_)(?P<_id>.*)".format(species_tag, reaction_tag)
         reg_expr = re.compile(str_reg)
         search_result = reg_expr.search(coded)
         if search_result is not None:
@@ -230,7 +233,7 @@ def convert_from_coded_id(
             _type = search_result.group("_type").replace("_", "")
             uncoded = search_result.group("_id")
         else:
-            reg_expr = re.compile("(?P<_id>.*)(?P<compart>_.*)")
+            reg_expr = re.compile(r"(?P<_id>.*)(?P<compart>_.*)")
             search_result = reg_expr.search(coded)
             if search_result is not None:
                 _type = None
@@ -297,28 +300,3 @@ def get_all_decoded_version(element_id, _type):
             )
     return all_element_id_decoded
 
-
-def test():
-    # test convert_from_coded_id
-    coded = "R_RXN__45__11921"
-    assert convert_from_coded_id(coded) == ("RXN-11921", "R", None)
-
-    coded = "R_R00332_c"
-    assert convert_from_coded_id(coded) == ("R00332", "R", "c")
-
-    coded = "S_N6_45__40_L_45_1_44_3_45_Dicarboxypropyl_41__45_L_45_lysine_c"
-    assert convert_from_coded_id(coded, pattern="_", species_tag="S") == (
-        "N6-(L-1,3-Dicarboxypropyl)-L-lysine",
-        "S",
-        "c",
-    )
-
-    coded = "S__40_2R_41__45_2_45_Hydroxy_45_3_45__40_phosphonooxy_41__45_propanal_c"
-    assert convert_from_coded_id(coded, pattern="_", species_tag="S") == (
-        "(2R)-2-Hydroxy-3-(phosphonooxy)-propanal",
-        "S",
-        "c",
-    )
-
-    coded = "M_citr_L_m"
-    assert convert_from_coded_id(coded) == ("citr_L", "M", "m")

@@ -25,10 +25,61 @@ Description:
     Finally if a reaction from sbml is not in padmetRef, it is possible to force the copy and creating
     a new reaction in padmetSpec with the arg -f
 
+::
+
+    usage:
+        padmet sbml_to_padmet --sbml=DIR/FILE --padmetRef=FILE [--output=FILE] [--db=STR] [--version=STR] [-v]
+        padmet sbml_to_padmet --sbml=DIR/FILE --padmetSpec=FILE [--output=FILE] [--source_tool=STR] [--source_category=STR] [--source_id=STR] [-v]
+        padmet sbml_to_padmet --sbml=DIR/FILE --padmetSpec=FILE  --padmetRef=FILE  [--mapping=DIR/FILE] [--mapping_tag=STR] [--output=FILE] [--source_tool=STR] [--source_category=STR] [--source_id=STR] [-v] [-f]
+
+    options:
+        -h --help     Show help.
+        --padmetSpec=FILE    path to the padmet file to update with the sbml. If there's no padmetSpec, just specify the output
+        --padmetRef=FILE    path to the padmet file representing to the database of reference (ex: metacyc_18.5.padmet)
+        --sbml=FILE    1 sbml file to convert into padmetSpec (ex: my_network.xml/sbml) OR a directory with n SBML
+        --output=FILE   pathanme to the new padmet file
+        --mapping=FILE    dictionnary of association id_origin id_ref
+        --mapping_tag=STR    if sbml is a folder, use a tag to define mapping files ex: org1.sbml and org1_dict.csv, '_dict.csv' will be the mapping tag. [default: _dict.csv]
+        --db=STR    database name
+        --version=STR    database version
+        -v   print info
 """
-from padmet.classes import PadmetSpec, PadmetRef
-from datetime import datetime
+import docopt
 import os
+
+from datetime import datetime
+from padmet.classes import PadmetSpec, PadmetRef, instantiate_padmet
+
+
+def command_help():
+    """
+    Show help for analysis command.
+    """
+    print(docopt.docopt(__doc__))
+
+
+def sbml_to_padmet_cli(command_args):
+    args = docopt.docopt(__doc__, argv=command_args)
+    padmetRef_file = args["--padmetRef"]
+    sbml = args["--sbml"]
+    output = args["--output"]
+    verbose = args["-v"]
+    db = args["--db"]
+    if not db: db = "NA"
+    version = args["--version"]
+    if not version: version = "NA"
+    padmetSpec_file = args["--padmetSpec"]
+    source_tool = args["--source_tool"]
+    source_category = args["--source_category"]
+    mapping = args["--mapping"]
+    mapping_tag = args["--mapping_tag"]
+
+
+    if padmetSpec_file:
+        sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=padmetRef_file, output=output, mapping=mapping, mapping_tag=mapping_tag, source_tool=source_tool, source_category=source_category, db=db, version=version, verbose=verbose)
+    else:
+        sbml_to_padmetRef(sbml, padmetRef_file, output, db, version, verbose)
+
         
 def sbml_to_padmetRef(sbml, padmetRef_file, output=None, db="NA", version="NA", verbose=False):
     """
@@ -54,7 +105,8 @@ def sbml_to_padmetRef(sbml, padmetRef_file, output=None, db="NA", version="NA", 
     if os.path.isfile(padmetRef_file):
         padmet_to_update = PadmetRef(padmetRef_file)
     else:
-        padmet_to_update = create_padmet_instance(padmetRef_file, "PadmetRef", db, version)
+        padmet_id = os.path.splitext(os.path.basename(output))[0]
+        padmet_to_update = instantiate_padmet("PadmetRef", None, padmet_id, db, version, verbose)
 
     for sbml_file in sbml_files:
         if verbose:
@@ -62,6 +114,7 @@ def sbml_to_padmetRef(sbml, padmetRef_file, output=None, db="NA", version="NA", 
         padmet_to_update.updateFromSbml(sbml_file, verbose)
 
     padmet_to_update.generateFile(output)
+
 
 def sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=None, output=None, mapping=None, mapping_tag="_dict.csv", source_tool=None, source_category=None, db="NA", version="NA", verbose=False):
     """
@@ -90,6 +143,12 @@ def sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=None, output=None, 
     
     #TODO
     """
+    if verbose:
+        print('sbml_to_padmet decodes reactions and metabolites using regular expression.')
+        print('The reaction/metabolites IDs format used by sbml_to_padmet is: prefix + "_" + ID + "_" + optional_suffix. ')
+        print('prefix is a one character indicating the type, like R for reaction or M for metabolite.')
+        print('optional_suffix is a one or two characters indicating the compartment.')
+
     if output is None:
         output = padmetSpec_file
     #if sbml is a dir: sbml_files are all files with extension .sbml or .xml within dir
@@ -108,7 +167,8 @@ def sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=None, output=None, 
     if os.path.isfile(padmetSpec_file):
         padmet_to_update = PadmetSpec(padmetSpec_file)
     else:
-        padmet_to_update = create_padmet_instance(padmetSpec_file, "PadmetSpec", db, version, padmetRef)
+        padmet_id = os.path.splitext(os.path.basename(output))[0]
+        padmet_to_update = instantiate_padmet("PadmetSpec", padmetRef_file, padmet_id, db, version, verbose)
 
     #if sbml is a directory, recover all file path in a list. if no => only one file: create a list with only this file
     #sbml_mapping_dict = {'/path/to/my_sbml1.sbml': '/path/to/my_sbml1_dict.csv' // None}  
@@ -140,41 +200,3 @@ def sbml_to_padmetSpec(sbml, padmetSpec_file, padmetRef_file=None, output=None, 
         padmet_to_update.updateFromSbml(sbml_file=sbml_file, padmetRef=padmetRef, mapping_file=mapping_file, verbose=verbose, force=force, source_category=source_category, source_tool=source_tool)
 
     padmet_to_update.generateFile(output)
-
-
-
-def create_padmet_instance(padmet_file, padmet_type, db, version, padmetRef=None):
-    """
-    #TODO
-    """
-    if padmet_type not in ["PadmetRef","PadmetSpec"]:
-        raise TypeError('padmet_type must be in ["PadmetRef","PadmetSpec"], given:%s' %padmet_type)
-    now = datetime.now()
-    today_date = now.strftime("%Y-%m-%d")
-
-    if padmet_type == "PadmetSpec":
-        padmet = PadmetSpec()
-    elif padmet_type == "PadmetRef":
-        padmet = PadmetRef()
-        
-    if padmetRef:
-        padmet.setInfo(padmetRef)
-        padmet.info["PADMET"]["creation"] = today_date
-        padmet.setPolicy(padmetRef)
-    else:
-        POLICY_IN_ARRAY = [['class','is_a_class','class'], ['class','has_name','name'], ['class','has_xref','xref'], ['class','has_suppData','suppData'],
-                        ['compound','is_a_class','class'], ['compound','has_name','name'], ['compound','has_xref','xref'], ['compound','has_suppData','suppData'],
-                        ['gene','is_a_class','class'], ['gene','has_name','name'], ['gene','has_xref','xref'], ['gene','has_suppData','suppData'], ['gene','codes_for','protein'],
-                        ['pathway','is_a_class','class'], ['pathway','has_name','name'], ['pathway','has_xref','xref'], ['pathway','is_in_pathway','pathway'],
-                        ['protein','is_a_class','class'], ['protein','has_name','name'], ['protein','has_xref','xref'], ['protein','has_suppData','suppData'], ['protein','catalyses','reaction'],
-                        ['protein','is_in_species','class'],
-                        ['reaction','is_a_class','class'], ['reaction','has_name','name'], ['reaction','has_xref','xref'], ['reaction','has_suppData','suppData'], ['reaction','has_reconstructionData','reconstructionData'], ['reaction','is_in_pathway','pathway'],
-                        ['reaction','consumes','class','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','class','STOICHIOMETRY','X','COMPARTMENT','Y'],
-                        ['reaction','consumes','compound','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','compound','STOICHIOMETRY','X','COMPARTMENT','Y'],
-                        ['reaction','consumes','protein','STOICHIOMETRY','X','COMPARTMENT','Y'], ['reaction','produces','protein','STOICHIOMETRY','X','COMPARTMENT','Y'],
-                        ['reaction','is_linked_to','gene','SOURCE:ASSIGNMENT','X:Y']]
-        dbNotes = {"PADMET":{"creation":today_date,"version":"2.6"},"DB_info":{"DB":db,"version":version}}
-        padmet.setInfo(dbNotes)
-        padmet.setPolicy(POLICY_IN_ARRAY)
-    return padmet
-

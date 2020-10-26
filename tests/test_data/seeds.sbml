@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version1" level="3" version="1" fbc:required="false">
+  <model id="fabo" substanceUnits="mole" timeUnits="second" extentUnits="mole">
+    <listOfCompartments>
+      <compartment id="c" name="cytosol" size="1" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species metaid="M_Saturated__45__Fatty__45__Acyl__45__CoA_c" id="M_Saturated__45__Fatty__45__Acyl__45__CoA_c" name="a 2,3,4-saturated fatty acyl CoA" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_ETF__45__Oxidized_c" id="M_ETF__45__Oxidized_c" name="an oxidized electron-transfer flavoprotein" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_PROTON_c" id="M_PROTON_c" name="H+" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_TRANS__45__D2__45__ENOYL__45__COA_c" id="M_TRANS__45__D2__45__ENOYL__45__COA_c" name="a (2E)-2-enoyl-CoA" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_ETF__45__Reduced_c" id="M_ETF__45__Reduced_c" name="a reduced electron-transfer flavoprotein" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_CPD66__45__39_c" id="M_CPD66__45__39_c" name="CPD66-39" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_CO__45__A_c" id="M_CO__45__A_c" name="coenzyme A" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_ATP_c" id="M_ATP_c" name="ATP" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_PPI_c" id="M_PPI_c" name="diphosphate" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_AMP_c" id="M_AMP_c" name="AMP" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_D__45__3__45__HYDROXYACYL__45__COA_c" id="M_D__45__3__45__HYDROXYACYL__45__COA_c" name="a 2,3,4-saturated (3R)-3-hydroxyacyl-CoA" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_L__45__3__45__HYDROXYACYL__45__COA_c" id="M_L__45__3__45__HYDROXYACYL__45__COA_c" name="a 2,3,4-saturated (3S)-3-hydroxyacyl-CoA" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_3__45__KETOACYL__45__COA_c" id="M_3__45__KETOACYL__45__COA_c" name="3-KETOACYL-COA" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_NAD_c" id="M_NAD_c" name="NAD+" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_NADH_c" id="M_NADH_c" name="NADH" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_HOLO__45__CITRATE__45__LYASE_c" id="M_HOLO__45__CITRATE__45__LYASE_c" name="HOLO-CITRATE-LYASE" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_S__45__ACETYLPHOSPHOPANTETHEINE_c" id="M_S__45__ACETYLPHOSPHOPANTETHEINE_c" name="S-ACETYLPHOSPHOPANTETHEINE" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_CITRATE__45__LYASE_c" id="M_CITRATE__45__LYASE_c" name="CITRATE-LYASE" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_PANTETHEINE__45__P_c" id="M_PANTETHEINE__45__P_c" name="PANTETHEINE-P" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_WATER_c" id="M_WATER_c" name="H2O" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_CPD0__45__1163_c" id="M_CPD0__45__1163_c" name="CPD0-1163" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_CPD0__45__1162_c" id="M_CPD0__45__1162_c" name="CPD0-1162" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_CIS__45__DELTA3__45__ENOYL__45__COA_c" id="M_CIS__45__DELTA3__45__ENOYL__45__COA_c" name="a (3Z)-alk-3-enoyl-CoA" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="M_CPD0__45__1158_c" id="M_CPD0__45__1158_c" name="CPD0-1158" compartment="c" initialAmount="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+  </model>
+</sbml>
