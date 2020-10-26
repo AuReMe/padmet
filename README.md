@@ -29,8 +29,8 @@ For the padmet classes file (to handle PADMet format) and most of the padmet uti
 * [biopython](https://github.com/biopython/biopython) to handle fasta files.
 * [cobra](https://github.com/opencobra/cobrapy) to handle sbml files and make Flux Balance Analysis.
 * [docopt](https://github.com/docopt/docopt) for the command-line.
-* [python-libsbml](https://github.com/sbmlteam/python-libsbml) to handle sbml files.
 * [lxml](https://github.com/lxml/lxml) to handle XML file.
+* [python-libsbml](https://github.com/sbmlteam/python-libsbml) to handle sbml files.
 
 These 4 dependencies are installed with padmet.
 
@@ -50,6 +50,14 @@ For the padmet utils scripts (to use the PADMet format and the command-line):
 * [supervenn](https://github.com/gecko984/supervenn) to create Venn diagram of reactions between multiple organisms (in dendrogram_reactions_distance).
 
 Contrary to the 4 first depedencies, you have to install these packages with a pip install if you want to use them.
+
+Scripts that need to install one of these optional dependencies:
+
+* biggAPI_to_padmet.py
+* dendrogram_reactions_distance.py
+* visu_network.py
+* visu_path.py
+* visu_similarity_gsmn.py
 
 ## Installation
 
