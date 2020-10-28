@@ -24,7 +24,7 @@ The main concept underlying PADMet-Package is to provide solutions that ensure t
 
 ## Requirements
 
-For the padmet classes file (to handle PADMet format) and most of the padmet utisl scritps handling PADMet this package needs:
+Padmet classes scripts (handling PADMet format) and most of the padmet utils scripts require:
 
 * [biopython](https://github.com/biopython/biopython) to handle fasta files.
 * [cobra](https://github.com/opencobra/cobrapy) to handle sbml files and make Flux Balance Analysis.
@@ -32,7 +32,7 @@ For the padmet classes file (to handle PADMet format) and most of the padmet uti
 * [lxml](https://github.com/lxml/lxml) to handle XML file.
 * [python-libsbml](https://github.com/sbmlteam/python-libsbml) to handle sbml files.
 
-These 4 dependencies are installed with padmet.
+These 5 dependencies are installed with padmet.
 
 For the padmet utils scripts (to use the PADMet format and the command-line):
 
@@ -50,7 +50,7 @@ For the padmet utils scripts (to use the PADMet format and the command-line):
 * [grequests](https://github.com/spyoungtech/grequests) to asynchronously download files (in biggAPI_to_padmet).
 * [supervenn](https://github.com/gecko984/supervenn) to create Venn diagram of reactions between multiple organisms (in dendrogram_reactions_distance).
 
-Contrary to the 4 first depedencies, you have to install these packages with a pip install if you want to use them.
+Contrary to the 5 first depedencies, you have to install these packages with a pip install if you want to use them.
 
 Scripts that need to install one of these optional dependencies:
 
