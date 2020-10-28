@@ -58,8 +58,6 @@ def visu_similarity_gsmn(reaction_file, output_file, group_file=None):
     df = pa.read_csv(reaction_file, sep='\t')
     df.set_index('reaction', inplace=True)
     df = df[[column for column in df.columns if "(" not in column and "_formula" not in column]]
-    df = df.replace('present', 1)
-    df = df.replace(np.nan, 0)
 
     df = df.transpose()
 

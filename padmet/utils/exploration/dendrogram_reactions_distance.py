@@ -268,7 +268,8 @@ def create_supervenn(absence_presence_matrix, reactions_dataframe, output_folder
         for species in cluster_classes[cluster]:
             species_reactions_dataframe = reactions_dataframe[reactions_dataframe[species] == True]
             reactions_temp.extend(species_reactions_dataframe.index.tolist())
-        cluster_reactions[cluster] = set(reactions_temp)
+        supervenn_sets.append(set(reactions_temp))
+        supervenn_labels.append(cluster)
 
     supervenn(supervenn_sets, supervenn_labels, sets_ordering='minimize gaps')
     plt.savefig(output_folder_upset + '/supervenn.png', bbox_inches='tight')
@@ -575,8 +576,6 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
         if not os.path.isdir(folder):
             os.mkdir(folder)
 
-    path_to_intervene = 'intervene'
-
     if not os.path.exists(reaction_file):
         raise FileNotFoundError("No reactions.tsv file accessible at " + reaction_file)
 
@@ -590,10 +589,6 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
     reactions_dataframe = all_reactions_dataframe[columns].copy()
 
     reactions_dataframe.set_index('reaction', inplace=True)
-
-    # Translate 'present'/(nan) data into a True/False absence-presence matrix.
-    for column in reactions_dataframe.columns.tolist():
-        reactions_dataframe[column] = [True if data == 'present' else False for data in reactions_dataframe[column]]
 
     # Transpose the matrix to have species as index and reactions as columns.
     absence_presence_matrix = reactions_dataframe.transpose()
@@ -624,8 +619,6 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
         pvclust_reactions_dataframe = all_reactions_dataframe[columns].copy()
 
         pvclust_reactions_dataframe.set_index('reaction', inplace=True)
-        for column in pvclust_reactions_dataframe.columns.tolist():
-            pvclust_reactions_dataframe[column] = [1 if data == 'present' else 0 for data in pvclust_reactions_dataframe[column]]
         # Create pvclust dendrogram.
         pvclust_dendrogram(pvclust_reactions_dataframe, organisms, output_folder)
 

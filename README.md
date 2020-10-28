@@ -40,6 +40,7 @@ For the padmet utils scripts (to use the PADMet format and the command-line):
 * [matplotlib](https://github.com/matplotlib/matplotlib) to create data visualization.
 * [networkx](https://github.com/networkx/networkx) for network analysis (in visu_* scripts).
 * [igraph](https://github.com/igraph/python-igraph) for network analysis (in visu_* scripts).
+* [tzlocal](https://github.com/regebro/tzlocal): required by rpy2.
 * [rpy2](https://github.com/rpy2/rpy2) to interface R and Python.
 * [scipy](https://github.com/scipy/scipy) to create dendrogram (in dendrogram_reactions_distance).
 * [pandas](https://github.com/pandas-dev/pandas) to use dataframe of reaction presence/asbence.
@@ -54,7 +55,7 @@ Contrary to the 4 first depedencies, you have to install these packages with a p
 Scripts that need to install one of these optional dependencies:
 
 * [biggAPI_to_padmet.py](https://github.com/AuReMe/padmet/blob/master/padmet/utils/connection/biggAPI_to_padmet.py): gevent, requests and grequests
-* [dendrogram_reactions_distance.py](https://github.com/AuReMe/padmet/blob/master/padmet/utils/exploration/dendrogram_reactions_distance.py): matplotlib, seaborn, scipy, supervenn, rpy2 and pandas
+* [dendrogram_reactions_distance.py](https://github.com/AuReMe/padmet/blob/master/padmet/utils/exploration/dendrogram_reactions_distance.py): matplotlib, seaborn, scipy, supervenn, rpy2 (with 'ape' and 'pvclust'), tzlocal and pandas
 * [visu_network.py](https://github.com/AuReMe/padmet/blob/master/padmet/utils/exploration/visu_network.py): python-igraph
 * [visu_path.py](https://github.com/AuReMe/padmet/blob/master/padmet/utils/exploration/visu_path.py): matplotlib, networkx and seaborn
 * [visu_similarity_gsmn.py](https://github.com/AuReMe/padmet/blob/master/padmet/utils/exploration/visu_similarity_gsmn.py): matplotlib, pandas and scikit-learn
