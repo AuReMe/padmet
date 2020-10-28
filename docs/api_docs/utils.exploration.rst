@@ -1,6 +1,5 @@
-====================
-Exploration
-====================
+API for padmet.utils.exploration
+================================
 Description:
 
 #TODO
@@ -61,14 +60,6 @@ get\_pwy\_from\_rxn
     :undoc-members:
     :show-inheritance:
 
-padmet\_stats
-========================================
-
-.. automodule:: padmet.utils.exploration.get_pwy_from_rxn
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 padmet_stats
 ==========================================
 
@@ -85,6 +76,21 @@ prot2genome
     :undoc-members:
     :show-inheritance:
 
+report\_network
+==========================================
+
+.. automodule:: padmet.utils.exploration.report_network
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+visu\_network
+=====================================
+
+.. automodule:: padmet.utils.exploration.visu_network
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 visu\_path
 =====================================
@@ -94,3 +100,10 @@ visu\_path
     :undoc-members:
     :show-inheritance:
 
+visu\_similarity\_gsmn
+=====================================
+
+.. automodule:: padmet.utils.exploration.visu_similarity_gsmn
+    :members:
+    :undoc-members:
+    :show-inheritance:

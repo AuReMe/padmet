@@ -1,6 +1,6 @@
-========
+======
 PADMET
-========
+======
 
 Installation
 ============
@@ -26,7 +26,7 @@ to do so. To start, simply fork the `Git repository`_ on Github and start playin
 it. Then, issue pull requests.
 
 Tutorial
-=================
+========
 
 .. toctree::
     :maxdepth: 2
@@ -39,7 +39,7 @@ API Documentation
 =================
 
 Classes API
-~~~~~~~~~~~~
+~~~~~~~~~~~
 
 .. toctree::
     :maxdepth: 2
@@ -48,7 +48,7 @@ Classes API
     api_docs/padmet.classes
 
 Utils API
-~~~~~~~~~~~~
+~~~~~~~~~
 
 .. toctree::
     :maxdepth: 2

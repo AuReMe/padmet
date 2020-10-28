@@ -1,6 +1,5 @@
-===================
-Management
-===================
+API for padmet.utils.management
+===============================
 Description:
 
 #TODO

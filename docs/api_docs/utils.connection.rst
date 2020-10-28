@@ -1,6 +1,5 @@
-===================
-Connection
-===================
+API for padmet.utils.connection
+===============================
 Description:
 
 #TODO
@@ -57,6 +56,14 @@ gene\_to\_targets
 ======================================
 
 .. automodule:: padmet.utils.connection.gene_to_targets
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+get\_metacyc\_ontology
+======================================
+
+.. automodule:: padmet.utils.connection.get_metacyc_ontology
     :members:
     :undoc-members:
     :show-inheritance:

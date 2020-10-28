@@ -1,6 +1,12 @@
-===============================================
-API documentation for padmet.classes
-===============================================
+API for padmet.classes
+======================
+
+Instantiation
+--------------------------
+
+.. automodule::  padmet.classes.instantiation
+    :members:
+    :undoc-members:
 
 Node
 --------------------------
