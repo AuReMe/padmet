@@ -3,12 +3,17 @@
 
 """Definition of setup function for setuptools module."""
 
+from distutils.util import convert_path
 from setuptools import setup, find_packages
 
+init_data = {}
+init_pathname = convert_path('padmet/__init__.py')
+with open(init_pathname) as init_file:
+    exec(init_file.read(), init_data)
 
 setup(
     name='padmet',
-    version="5.0.1",
+    version=init_data['__version__'],
  
     packages=find_packages(),
  
