@@ -6,29 +6,29 @@ Description:
     
 ::
 
-usage:
-    padmet prot2genome --query_faa=FILE --query_ids=FILE/STR --subject_gbk=FILE --subject_fna=FILE --subject_faa=FILE --output_folder=FILE [--cpu=INT] [blastp] [tblastn] [debug]
-    padmet prot2genome --query_faa=FILE --query_ids=FILE/STR --subject_gbk=FILE --subject_fna=FILE --subject_faa=FILE --output_folder=FILE --exonerate=PATH  [--cpu=INT] [blastp] [tblastn] [debug]
-    padmet prot2genome --padmet=FOLDER --output=FOLDER
-    padmet prot2genome --studied_organisms=FOLDER --output=FOLDER
-    padmet prot2genome --run=FOLDER --padmetRef=FILE [--cpu=INT] [debug]
+    usage:
+        padmet prot2genome --query_faa=FILE --query_ids=FILE/STR --subject_gbk=FILE --subject_fna=FILE --subject_faa=FILE --output_folder=FILE [--cpu=INT] [blastp] [tblastn] [debug]
+        padmet prot2genome --query_faa=FILE --query_ids=FILE/STR --subject_gbk=FILE --subject_fna=FILE --subject_faa=FILE --output_folder=FILE --exonerate=PATH  [--cpu=INT] [blastp] [tblastn] [debug]
+        padmet prot2genome --padmet=FOLDER --output=FOLDER
+        padmet prot2genome --studied_organisms=FOLDER --output=FOLDER
+        padmet prot2genome --run=FOLDER --padmetRef=FILE [--cpu=INT] [debug]
 
-    From aucome run fromAucome():
-        -1. Extract specifique reactions in spec_reactions folder with extractReactions()
-        -2. Extract genes from spec_reactions files with extractGenes()
-        -3. Run tblastn + exonerate with runAllAnalysis()
-    
-options:
-    --query_faa=FILE #TODO.
-    --query_ids=FILE/STR #TODO.
-    --subject_gbk=FILE #TODO.
-    --subject_fna=FILE #TODO.
-    --subject_faa=FILE #TODO.
-    --output_folder=FILE #TODO.
-    --cpu=INT     Number of cpu to use for the multiprocessing (if none use 1 cpu). [default: 1]
-    blastp #TODO.
-    tblastn #TODO.
-    debug #TODO.
+        From aucome run fromAucome():
+            -1. Extract specifique reactions in spec_reactions folder with extractReactions()
+            -2. Extract genes from spec_reactions files with extractGenes()
+            -3. Run tblastn + exonerate with runAllAnalysis()
+
+    options:
+        --query_faa=FILE #TODO.
+        --query_ids=FILE/STR #TODO.
+        --subject_gbk=FILE #TODO.
+        --subject_fna=FILE #TODO.
+        --subject_faa=FILE #TODO.
+        --output_folder=FILE #TODO.
+        --cpu=INT     Number of cpu to use for the multiprocessing (if none use 1 cpu). [default: 1]
+        blastp #TODO.
+        tblastn #TODO.
+        debug #TODO.
 """
 
 import csv

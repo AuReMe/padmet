@@ -12,13 +12,13 @@ Description:
 
 ::
 
-usage:
-    padmet padmet_stats --padmet=FILE --output=FOLDER
+    usage:
+        padmet padmet_stats --padmet=FILE --output=FOLDER
 
-option:
-    -h --help    Show help.
-    -p --padmet=FILE    padmet file or folder containing padmet(s).
-    -o --output=FOLDER    path to output folder.
+    option:
+        -h --help    Show help.
+        -p --padmet=FILE    padmet file or folder containing padmet(s).
+        -o --output=FOLDER    path to output folder.
 """
 
 import csv
