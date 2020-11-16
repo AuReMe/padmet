@@ -148,3 +148,34 @@ The input folder (--pgdb) should be like:
         └── transunits.dat
 
 This command will create a padmet file.
+
+Explore padmet
+--------------
+
+List of reactions, compounds, pathways and genes of a metabolic network can be extracted using getter on the padmet:
+
+.. code:: python
+
+    >>> from padmet.classes import PadmetSpec
+
+    # Creation of a padmet object from the padmet file.
+    >>> padmet_object = PadmetSpec('test_data/padmet/padmet_1.padmet')
+
+    # Get the list of reaction IDs in the padmet.
+    >>> list_reaction_ids = padmet_object.getReactions()
+
+    # Get the list of compounds in the padmet.
+    >>> list_compound_ids = padmet_object.getCompounds()
+
+    # Get the list of genes in the padmet.
+    >>> list_gene_ids = padmet_object.getGenes()
+
+    # Get the list of pathways in the padmet.
+    >>> list_pathway_ids = padmet_object.getPathways()
+
+It is also possible to get a list of nodes:
+
+.. code:: python
+
+    # Get the list of reaction IDs in the padmet.
+    >>> list_reaction_nodes = padmet_object.getReactions(get_id=False)

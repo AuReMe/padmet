@@ -152,6 +152,21 @@ class PadmetRef:
         return all_relation
 
     def getCompounds(self, get_id=True):
+        """
+        Get all the compounds from a padmet instance.
+
+        Parameters
+        ----------
+        self: padmet
+            padmet instance
+        get_id: bool
+            True for the ID and False for the node corresponding to the compounds
+
+        Returns
+        -------
+        list
+            list of compound IDs or nodes
+        """
         total_cpd_id = set()
 
         all_rxns = [node for node in self.dicOfNode.values() if node.type == "reaction"]
@@ -167,18 +182,63 @@ class PadmetRef:
         return all_cpds
 
     def getReactions(self, get_id=True):
+        """
+        Get all the reactions from a padmet instance.
+
+        Parameters
+        ----------
+        self: padmet
+            padmet instance
+        get_id: bool
+            True for the ID and False for the node corresponding to the reactions
+
+        Returns
+        -------
+        list
+            list of reactions IDs or nodes
+        """
         if get_id is True:
             return [node.id for node in self.dicOfNode.values() if node.type == "reaction"]
         else:
             return [node for node in self.dicOfNode.values() if node.type == "reaction"]
 
     def getGenes(self, get_id=True):
+        """
+        Get all the genes from a padmet instance.
+
+        Parameters
+        ----------
+        self: padmet
+            padmet instance
+        get_id: bool
+            True for the ID and False for the node corresponding to the genes
+
+        Returns
+        -------
+        list
+            list of genes IDs or nodes
+        """
         if get_id is True:
             return [node.id for node in self.dicOfNode.values() if node.type == "gene"]
         else:
             return [node for node in self.dicOfNode.values() if node.type == "gene"]
 
     def getPathways(self, get_id=True):
+        """
+        Get all the pathways from a padmet instance.
+
+        Parameters
+        ----------
+        self: padmet
+            padmet instance
+        get_id: bool
+            True for the ID and False for the node corresponding to the pathways
+
+        Returns
+        -------
+        list
+            list of pathways IDs or nodes
+        """
         total_pwy_id = set()
 
         all_rxns = [node for node in self.dicOfNode.values() if node.type == "reaction"]
