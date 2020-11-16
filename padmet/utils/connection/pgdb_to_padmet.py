@@ -564,9 +564,9 @@ def reactions_parser(filePath, padmet, extract_gene, source, verbose = False):
                         compartment = def_compart_out
                     else:
                         compartment = def_compart_in
-                    try:
+                    if reactant_id in padmet.dicOfNode:
                         reactant_node = padmet.dicOfNode[reactant_id]
-                    except KeyError:
+                    else:
                         reactant_node = Node("compound", reactant_id)
                         padmet.dicOfNode[reactant_id] = reactant_node
     
@@ -586,9 +586,9 @@ def reactions_parser(filePath, padmet, extract_gene, source, verbose = False):
                         compartment = def_compart_out
                     else:
                         compartment = def_compart_in
-                    try:
+                    if product_id in padmet.dicOfNode:
                         product_node = padmet.dicOfNode[product_id]
-                    except KeyError:
+                    else:
                         product_node = Node("compound", product_id)
                         padmet.dicOfNode[product_id] = product_node
 

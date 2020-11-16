@@ -67,8 +67,7 @@ def compute_stats(padmet_file_folder, output_folder):
 
     output_file = open(output_folder + '/padmet_stats.tsv', 'w')
     output_writer = csv.writer(output_file, delimiter='\t')
-    output_writer.writerow(['padmet_file', 'pathways_wtih_reactions', 'reactions', 'reactions_with_gene_association', 'genes', 'compounds'])
-
+    output_writer.writerow(['padmet_file', 'pathways_wtih_reactions', 'reactions', 'reactions_with_gene_association', 'genes', 'compounds', 'class compounds'])
 
     orthologs_species = []
     orthologs_stats = {}
@@ -118,7 +117,7 @@ def padmet_stat(padmet_file):
     Returns
     -------
     list:
-        [path to padmet, number of pathways, number of reactions, number of genes, number of compounds]
+        [path to padmet, number of pathways, number of reactions, number of genes, number of compounds, number of class compounds]
     """
     padmetSpec = PadmetSpec(padmet_file)
     padmet_name = os.path.basename(padmet_file).replace('.padmet', '')
@@ -138,9 +137,11 @@ def padmet_stat(padmet_file):
         total_pwy_id.update(pathways_ids)
 
     all_pwys = [node for (node_id, node) in padmetSpec.dicOfNode.items() if node_id in total_pwy_id]
-    all_cpds = [node for (node_id, node) in padmetSpec.dicOfNode.items() if node_id in total_cpd_id]
 
-    return [padmet_name, len(all_pwys), len(all_rxns), nb_rxn_with_ga, len(all_genes), len(all_cpds)]
+    class_cpds = [node.id for (node_id, node) in padmetSpec.dicOfNode.items() if node_id in total_cpd_id if node.type == "class"]
+    compound_cpds = [node.id for (node_id, node) in padmetSpec.dicOfNode.items() if node_id in total_cpd_id if node.type == "compound"]
+
+    return [padmet_name, len(all_pwys), len(all_rxns), nb_rxn_with_ga, len(all_genes), len(compound_cpds), len(class_cpds)]
 
 
 def orthology_result(padmet_file, padmet_names):
