@@ -183,6 +183,49 @@ class PadmetSpec:
         ]
         return rlts
 
+    def getCompounds(self, get_id=True):
+        total_cpd_id = set()
+
+        all_rxns = [node for node in self.dicOfNode.values() if node.type == "reaction"]
+
+        for rxn_node in all_rxns:
+            total_cpd_id.update([rlt.id_out for rlt in self.dicOfRelationIn[rxn_node.id] if rlt.type in ["consumes","produces"]])
+
+        if get_id is True:
+            all_cpds = [node_id for (node_id, node) in self.dicOfNode.items() if node_id in total_cpd_id]
+        else:
+            all_cpds = [node for (node_id, node) in self.dicOfNode.items() if node_id in total_cpd_id]
+
+        return all_cpds
+
+    def getReactions(self, get_id=True):
+        if get_id is True:
+            return [node.id for node in self.dicOfNode.values() if node.type == "reaction"]
+        else:
+            return [node for node in self.dicOfNode.values() if node.type == "reaction"]
+
+    def getGenes(self, get_id=True):
+        if get_id is True:
+            return [node for node in self.dicOfNode.values() if node.type == "gene"]
+        else:
+            return [node.id for node in self.dicOfNode.values() if node.type == "gene"]
+
+    def getPathways(self, get_id=True):
+        total_pwy_id = set()
+
+        all_rxns = [node for node in self.dicOfNode.values() if node.type == "reaction"]
+
+        for rxn_node in all_rxns:
+            pathways_ids = set([rlt.id_out for rlt in self.dicOfRelationIn[rxn_node.id] if rlt.type == "is_in_pathway"])
+            total_pwy_id.update(pathways_ids)
+
+        if get_id is True:
+            all_pwys = [node_id for (node_id, node) in self.dicOfNode.items() if node_id in total_pwy_id]
+        else:
+            all_pwys = [node for (node_id, node) in self.dicOfNode.items() if node_id in total_pwy_id]
+
+        return all_pwys
+
     def loadGraph(self, padmet_file):
         """
         Allow to recover all the information of the padmet file.
