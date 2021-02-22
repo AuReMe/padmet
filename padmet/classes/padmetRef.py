@@ -254,6 +254,27 @@ class PadmetRef:
 
         return all_pwys
 
+    def getPathwaysReactions(self):
+        """
+        Get all the pathways from a padmet instance with their reactions.
+
+        Parameters
+        ----------
+        self: padmet
+            padmet instance
+
+        Returns
+        -------
+        dict
+            dictionary of pathways IDs as key with list of reactions IDs as value
+        """
+        # Iterate through node of type "pathway", then for each node found the relations linking the pathway to the reaction it contains.
+        return {node.id: [
+                            rlt.id_in for rlt in self.dicOfRelationOut[node.id]
+                            if rlt.type == "is_in_pathway" and self.dicOfNode[rlt.id_in].type == 'reaction'
+                            ]
+                        for node in self.dicOfNode.values() if node.type == "pathway"}
+
     def loadGraph(self, padmet_file):
         """
         Allow to recover all the informations of the padmet file.

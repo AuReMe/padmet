@@ -23,3 +23,5 @@ def test_getter():
     assert set(FABO_CPDS).issubset(set(test_padmetSpec.getCompounds()))
 
     assert set(FABO_GENES).issubset(set(test_padmetSpec.getGenes()))
+
+    assert set(FABO_RXNS) == set(test_padmetSpec.getPathwaysReactions()['FAO-PWY'])
