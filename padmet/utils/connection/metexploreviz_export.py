@@ -124,7 +124,7 @@ def create_json_from_sbml(input_file, verbose=False):
     return json_dicts
 
 
-def metexploreviz_export(input_file_folder, output_file, verbose):
+def metexploreviz_export(input_file_folder, output_file, verbose=False):
     if os.path.isdir(input_file_folder):
         input_type = "dir"
     elif os.path.isfile(input_file_folder):

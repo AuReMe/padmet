@@ -355,4 +355,3 @@ def test_flux_analysis_cli():
 
     os.remove('fabo.sbml')
     os.remove('test.padmet')
-test_compare_sbml()

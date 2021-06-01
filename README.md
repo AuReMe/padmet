@@ -99,6 +99,7 @@ connection:
     gbk_to_faa    Extract the proteome from a genbank file
     gene_to_targets    From a list of genes and a PADMet extract the targets linked to each gene
     get_metacyc_ontology    From a PADMet Ref file of MetaCyc create an XML ontology file
+    metexploreviz_export    Create a metexploreviz JSON to visualize metabolic network from padmet or sbml
     modelSeed_to_padmet    Create a PADMet file from modelSeed reactions and pathways files
     padmet_to_asp    Convert PADMet to ASP
     padmet_to_matrix    Create a a stoichiometry matrix from a PADMet file
@@ -156,6 +157,7 @@ padmet_instance = from_pgdb_to_padmet(pgdb_folder, extract_gene=True)
 | gbk_to_faa                    | ```from padmet.utils.connection.gbk_to_faa import gbk_to_faa```                                   | padmet gbk_to_faa                  |
 | gene_to_targets               | ```from padmet.utils.connection.gene_to_targets import gene_to_targets```                         | padmet gene_to_targets             |
 | get_metacyc_ontology          | ```from padmet.utils.connection.get_metacyc_ontology import metacyc_to_ontology```                | padmet get_metacyc_ontology        |
+| metexploreviz_export          | ```from padmet.utils.connection.metexploreviz_export import metexploreviz_export```               | padmet metexploreviz_export         |
 | modelSeed_to_padmet           | ```from padmet.utils.connection.modelSeed_to_padmet import modelSeed_to_padmet```                 | padmet modelSeed_to_padmet         |
 | padmet_to_asp                 | ```from padmet.utils.connection.padmet_to_asp import padmet_to_asp```                             | padmet padmet_to_asp               |
 | padmet_to_matrix              | ```from padmet.utils.connection.padmet_to_matrix import padmet_to_matrix```                       | padmet padmet_to_matrix            |
