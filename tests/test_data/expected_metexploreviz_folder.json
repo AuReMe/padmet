@@ -1,0 +1,59 @@
+{
+    "nodes": [
+        {
+            "name": "ENOYL-COA-HYDRAT-RXN",
+            "id": 0,
+            "reactionReversibility": true,
+            "biologicalType": "reaction",
+            "selected": false,
+            "labelVisible": false
+        },
+        {
+            "name": "L-3-HYDROXYACYL-COA",
+            "id": 1,
+            "biologicalType": "metabolite",
+            "compartment": "c",
+            "selected": false,
+            "labelVisible": false
+        },
+        {
+            "name": "TRANS-D2-ENOYL-COA",
+            "id": 2,
+            "biologicalType": "metabolite",
+            "compartment": "c",
+            "selected": false,
+            "labelVisible": false
+        },
+        {
+            "name": "WATER",
+            "id": 3,
+            "biologicalType": "metabolite",
+            "compartment": "c",
+            "selected": false,
+            "labelVisible": false
+        }
+    ],
+    "links": [
+        {
+            "id": "1 -- 0",
+            "source": 1,
+            "target": 0,
+            "interaction": "in",
+            "reversible": "True"
+        },
+        {
+            "id": "0 -- 2",
+            "source": 0,
+            "target": 2,
+            "interaction": "out",
+            "reversible": "True"
+        },
+        {
+            "id": "0 -- 3",
+            "source": 0,
+            "target": 3,
+            "interaction": "out",
+            "reversible": "True"
+        }
+    ]
+}

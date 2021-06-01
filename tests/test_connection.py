@@ -1,5 +1,6 @@
 import csv
 import libsbml
+import json
 import os
 import shutil
 import subprocess
@@ -19,6 +20,7 @@ from padmet.utils.connection.gene_to_targets import gene_to_targets
 from padmet.utils.connection.padmet_to_padmet import padmet_to_padmet
 from padmet.utils.connection.padmet_to_matrix import padmet_to_matrix
 from padmet.utils.connection.extract_rxn_with_gene_assoc import extract_rxn_with_gene_assoc
+from padmet.utils.connection.metexploreviz_export import metexploreviz_export
 
 FABO_RXNS = ['ACYLCOADEHYDROG-RXN', 'ACYLCOASYN-RXN', 'ENOYL-COA-HYDRAT-RXN',
             'ENOYL-COA-DELTA-ISOM-RXN', 'OHBUTYRYL-COA-EPIM-RXN', 'KETOACYLCOATHIOL-RXN',
@@ -672,3 +674,65 @@ def test_extract_rxn_with_gene_assoc_cli():
     os.remove('fabo_rxn_with_genes.sbml')
 
     assert '2.3.1.49-RXN' not in id_reactions
+
+
+def test_metexploreviz_export_padmet_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene'])
+
+    subprocess.call(['padmet', 'metexploreviz_export', '--input', 'test.padmet', '--output', 'fabo.json'])
+
+    with open('fabo.json', 'r') as loadfile:
+        json_data = json.load(loadfile)
+
+    with open('test_data/expected_metexploreviz.json', 'r') as loadfile:
+        expected_json = json.load(loadfile)
+
+    os.remove('test.padmet')
+    os.remove('fabo.json')
+
+    for first_key in expected_json:
+        for first_index, first_element in enumerate(expected_json[first_key]):
+            for second_key in expected_json[first_key][first_index]:
+                assert expected_json[first_key][first_index][second_key] == json_data[first_key][first_index][second_key]
+
+
+def test_metexploreviz_export_sbml_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene'])
+
+    subprocess.call(['padmet', 'sbmlGenerator', '--padmet', 'test.padmet', '--output', 'fabo.sbml'])
+
+    subprocess.call(['padmet', 'metexploreviz_export', '--input', 'fabo.sbml', '--output', 'fabo.json'])
+
+    with open('fabo.json', 'r') as loadfile:
+        json_data = json.load(loadfile)
+
+    with open('test_data/expected_metexploreviz_sbml.json', 'r') as loadfile:
+        expected_json = json.load(loadfile)
+
+
+    for first_key in expected_json:
+        for first_index, first_element in enumerate(expected_json[first_key]):
+            for second_key in expected_json[first_key][first_index]:
+                assert expected_json[first_key][first_index][second_key] == json_data[first_key][first_index][second_key]
+
+    os.remove('test.padmet')
+    os.remove('fabo.json')
+    os.remove('fabo.sbml')
+
+
+def test_metexploreviz_export_folder_cli():
+    subprocess.call(['padmet', 'metexploreviz_export', '--input', 'test_data/padmet', '--output', 'fabo.json'])
+
+    with open('fabo.json', 'r') as loadfile:
+        json_data = json.load(loadfile)
+
+    with open('test_data/expected_metexploreviz_folder.json', 'r') as loadfile:
+        expected_json = json.load(loadfile)
+
+
+    for first_key in expected_json:
+        for first_index, first_element in enumerate(expected_json[first_key]):
+            for second_key in expected_json[first_key][first_index]:
+                assert expected_json[first_key][first_index][second_key] == json_data[first_key][first_index][second_key]
+
+    os.remove('fabo.json')

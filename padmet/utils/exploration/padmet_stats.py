@@ -67,7 +67,7 @@ def compute_stats(padmet_file_folder, output_folder):
 
     output_file = open(output_folder + '/padmet_stats.tsv', 'w')
     output_writer = csv.writer(output_file, delimiter='\t')
-    output_writer.writerow(['padmet_file', 'pathways_wtih_reactions', 'reactions', 'reactions_with_gene_association', 'genes', 'compounds', 'class compounds'])
+    output_writer.writerow(['padmet_file', 'pathways_with_reactions', 'reactions without class compounds', 'reactions with class compounds', 'reactions_with_gene_association', 'genes', 'compounds', 'class compounds'])
 
     orthologs_species = []
     orthologs_stats = {}
@@ -141,7 +141,16 @@ def padmet_stat(padmet_file):
     class_cpds = [node.id for (node_id, node) in padmetSpec.dicOfNode.items() if node_id in total_cpd_id if node.type == "class"]
     compound_cpds = [node.id for (node_id, node) in padmetSpec.dicOfNode.items() if node_id in total_cpd_id if node.type == "compound"]
 
-    return [padmet_name, len(all_pwys), len(all_rxns), nb_rxn_with_ga, len(all_genes), len(compound_cpds), len(class_cpds)]
+    rxn_with_class_cpds = []
+    rxn_without_class_cpds = []
+    for rxn_node in all_rxns:
+        rxn_compounds = [rlt.id_out for rlt in padmetSpec.dicOfRelationIn[rxn_node.id] if rlt.type in ["consumes","produces"]]
+        if len(set(rxn_compounds).intersection(set(class_cpds))) > 0:
+            rxn_with_class_cpds.append(rxn_node)
+        else:
+            rxn_without_class_cpds.append(rxn_node)
+
+    return [padmet_name, len(all_pwys), len(rxn_without_class_cpds), len(rxn_with_class_cpds), nb_rxn_with_ga, len(all_genes), len(compound_cpds), len(class_cpds)]
 
 
 def orthology_result(padmet_file, padmet_names):

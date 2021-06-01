@@ -21,6 +21,7 @@ connection:
     gbk_to_faa    Extract the proteome from a genbank file
     gene_to_targets    From a list of genes and a PADMet extract the targets linked to each gene
     get_metacyc_ontology    From a PADMet Ref file of MetaCyc create an XML ontology file
+    metexploreviz_export    Create a metexploreviz JSON to visualize metabolic network from padmet or sbml
     modelSeed_to_padmet    Create a PADMet file from modelSeed reactions and pathways files
     padmet_to_asp    Convert PADMet to ASP
     padmet_to_matrix    Create a a stoichiometry matrix from a PADMet file
@@ -74,12 +75,12 @@ def main(args=None):
             'enhanced_meneco_output', 'extract_orthofinder',
             'extract_rxn_with_gene_assoc', 'gbk_to_faa',
             'gene_to_targets', 'get_metacyc_ontology',
-            'modelSeed_to_padmet', 'padmet_to_asp',
-            'padmet_to_matrix', 'padmet_to_padmet',
-            'padmet_to_tsv', 'pgdb_to_padmet',
-            'sbml_to_curation_form', 'sbml_to_padmet',
-            'sbml_to_sbml', 'sbmlGenerator',
-            'wikiGenerator',
+            'metexploreviz_export', 'modelSeed_to_padmet',
+            'padmet_to_asp', 'padmet_to_matrix',
+            'padmet_to_padmet', 'padmet_to_tsv',
+            'pgdb_to_padmet', 'sbml_to_curation_form',
+            'sbml_to_padmet', 'sbml_to_sbml',
+            'sbmlGenerator', 'wikiGenerator',
             ],
         'utils.exploration': [
             'compare_padmet', 'compare_sbml',

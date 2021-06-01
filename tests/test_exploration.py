@@ -273,13 +273,13 @@ def test_padmet_stats():
     fabo_padmetSpec.generateFile('fabo.padmet')
     compute_stats('fabo.padmet', 'output_folder')
 
-    # Expected stats: nb pathways, nb reactions, nb reactions with gene, nb genes, nb compounds
+    # Expected stats: nb pathways, nb reactions, nb reactions with gene, nb genes, nb compounds, nb class compounds
     expected_stats = ['1', '11', '7', '9', '19', '9']
     with open('output_folder/padmet_stats.tsv', 'r') as reactions_file:
         csvreader = csv.reader(reactions_file, delimiter='\t')
         for row in csvreader:
             if row[0] != 'padmet_file':
-                fabo_stats = [row[1], row[2], row[3], row[4], row[5], row[6]]
+                fabo_stats = [row[1], str(int(row[2]) + int(row[3])), row[4], row[5], row[6], row[7]]
 
     assert fabo_stats == expected_stats
 
@@ -292,13 +292,13 @@ def test_padmet_stats_cli():
 
     subprocess.call(['padmet', 'padmet_stats', '--padmet', 'fabo.padmet', '--output', 'output_folder'])
 
-    # Expected stats: nb pathways, nb reactions, nb reactions with gene, nb genes, nb compounds
+    # Expected stats: nb pathways, nb reactions, nb reactions with gene, nb genes, nb compounds, nb class compounds
     expected_stats = ['1', '11', '7', '9', '19', '9']
     with open('output_folder/padmet_stats.tsv', 'r') as reactions_file:
         csvreader = csv.reader(reactions_file, delimiter='\t')
         for row in csvreader:
             if row[0] != 'padmet_file':
-                fabo_stats = [row[1], row[2], row[3], row[4], row[5], row[6]]
+                fabo_stats = [row[1], str(int(row[2]) + int(row[3])), row[4], row[5], row[6], row[7]]
 
     assert fabo_stats == expected_stats
 
