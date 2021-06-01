@@ -69,6 +69,14 @@ get\_metacyc\_ontology
     :undoc-members:
     :show-inheritance:
 
+metexploreviz\_export
+======================================
+
+.. automodule:: padmet.utils.connection.metexploreviz_export
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 modelSeed\_to\_padmet
 ======================================
 

@@ -37,8 +37,18 @@ def metexploreviz_export_cli(command_args):
 
 
 def create_json_from_padmet(input_file, verbose=False):
-    """
-    #TODO
+    """ Create JSON formatted for metexploreviz using a padmet file
+    Parameters
+    ----------
+    input_file: str
+        path to padmet input file
+    verbose: bool
+        if True print information
+
+    Returns
+    -------
+    json_dicts: dict
+        JSON formatted for metexploreviz
     """
     json_dicts = {}
     json_dicts['nodes'] = []
@@ -83,8 +93,18 @@ def create_json_from_padmet(input_file, verbose=False):
 
 
 def create_json_from_sbml(input_file, verbose=False):
-    """
-    #TODO
+    """ Create JSON formatted for metexploreviz using a sbml file
+    Parameters
+    ----------
+    input_file: str
+        path to sbml input file
+    verbose: bool
+        if True print information
+
+    Returns
+    -------
+    json_dicts: dict
+        JSON formatted for metexploreviz
     """
     json_dicts = {}
     json_dicts['nodes'] = []
@@ -125,6 +145,17 @@ def create_json_from_sbml(input_file, verbose=False):
 
 
 def metexploreviz_export(input_file_folder, output_file, verbose=False):
+    """ Create JSON formatted for metexploreviz using an inptu file or a folder
+    Parameters
+    ----------
+    input_file_folder: str
+        path to input file (either padmet or sbml) or a folder containing padmet or sbml
+    output_file: str
+        path to JSON formatted for metexploreviz
+    verbose: bool
+        if True print information
+
+    """
     if os.path.isdir(input_file_folder):
         input_type = "dir"
     elif os.path.isfile(input_file_folder):
