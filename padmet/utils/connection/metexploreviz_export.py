@@ -38,6 +38,7 @@ def metexploreviz_export_cli(command_args):
 
 def create_json_from_padmet(input_file, verbose=False):
     """ Create JSON formatted for metexploreviz using a padmet file
+
     Parameters
     ----------
     input_file: str
@@ -94,6 +95,7 @@ def create_json_from_padmet(input_file, verbose=False):
 
 def create_json_from_sbml(input_file, verbose=False):
     """ Create JSON formatted for metexploreviz using a sbml file
+
     Parameters
     ----------
     input_file: str
@@ -146,6 +148,7 @@ def create_json_from_sbml(input_file, verbose=False):
 
 def metexploreviz_export(input_file_folder, output_file, verbose=False):
     """ Create JSON formatted for metexploreviz using an inptu file or a folder
+
     Parameters
     ----------
     input_file_folder: str

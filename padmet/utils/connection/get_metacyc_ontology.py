@@ -37,7 +37,7 @@ def get_metacyc_ontology_cli(command_args):
 
 def metacyc_to_ontology(padmetRef_file, output_file, ontology_root='FRAMES'):
     """
-    Extract teh ontology of MetaCyc from the padmetRef.
+    Extract the ontology of MetaCyc from the padmetRef.
 
     Parameters
     ----------
