@@ -60,24 +60,28 @@ def create_json_from_padmet(input_file, verbose=False):
     if verbose:
         print('Loading %s' %input_file)
     padmetSpec = PadmetSpec(input_file)
-    padmetSpec_name = os.path.splitext(os.path.basename(input_file))[0]
 
+    nodes_data = {}
     for node in padmetSpec.dicOfNode.values():
         if node.type == 'reaction':
             if node.misc["DIRECTION"][0] == 'REVERSIBLE':
                 reversibility = True
             else:
                 reversibility = False
+            pathways_ids = list(set([rlt.id_out for rlt in padmetSpec.dicOfRelationIn[node.id] if rlt.type == "is_in_pathway"]))
             if node.id not in nodes_in_json:
                 nodes_in_json[node.id] = len(nodes_in_json)
-                json_dicts['nodes'].append({'name':node.id, 'id': nodes_in_json[node.id], 'reactionReversibility':reversibility, 'biologicalType':'reaction', 'selected': False, 'labelVisible': False})
+                nodes_data[node.id] = {'name':node.id, 'id': nodes_in_json[node.id], 'reactionReversibility':reversibility, 'biologicalType':'reaction', 'selected': False, 'labelVisible': False, 'pathways': pathways_ids}
             for rlt in padmetSpec.dicOfRelationIn[node.id]:
                 if rlt.type in ['consumes']:
                     reactant_id = rlt.id_out
                     reactant_compartment = rlt.misc['COMPARTMENT'][0]
                     if reactant_id not in nodes_in_json:
                         nodes_in_json[reactant_id] = len(nodes_in_json)
-                        json_dicts['nodes'].append({'name':reactant_id, 'id': nodes_in_json[reactant_id], 'biologicalType':'metabolite', 'compartment': reactant_compartment, 'selected': False, 'labelVisible': False})
+                        nodes_data[reactant_id] = {'name':reactant_id, 'id': nodes_in_json[reactant_id], 'biologicalType':'metabolite', 'compartment': reactant_compartment, 'selected': False, 'labelVisible': False, 'pathways': pathways_ids}
+                    else:
+                        nodes_data[reactant_id]['pathways'].extend(pathways_ids)
+                        nodes_data[reactant_id]['pathways'] = list(set(nodes_data[reactant_id]['pathways']))
                     json_id =  str(nodes_in_json[reactant_id]) + ' -- ' + str(nodes_in_json[node.id])
                     json_dicts['links'].append({'id':json_id, 'source': nodes_in_json[reactant_id], 'target': nodes_in_json[node.id], 'interaction': 'in', 'reversible': str(reversibility)})
 
@@ -86,9 +90,15 @@ def create_json_from_padmet(input_file, verbose=False):
                     product_compartment = rlt.misc['COMPARTMENT'][0]
                     if product_id not in nodes_in_json:
                         nodes_in_json[product_id] = len(nodes_in_json)
-                        json_dicts['nodes'].append({'name':product_id, 'id': nodes_in_json[product_id], 'biologicalType':'metabolite', 'biologicalType':'metabolite', 'compartment': product_compartment, 'selected': False, 'labelVisible': False})
+                        nodes_data[product_id] = {'name':product_id, 'id': nodes_in_json[product_id], 'biologicalType':'metabolite', 'biologicalType':'metabolite', 'compartment': product_compartment, 'selected': False, 'labelVisible': False, 'pathways': pathways_ids}
+                    else:
+                        nodes_data[reactant_id]['pathways'].extend(pathways_ids)
+                        nodes_data[reactant_id]['pathways'] = list(set(nodes_data[reactant_id]['pathways']))
                     json_id =  str(nodes_in_json[node.id]) + ' -- ' + str(nodes_in_json[product_id])
                     json_dicts['links'].append({'id':json_id, 'source': nodes_in_json[node.id], 'target': nodes_in_json[product_id], 'interaction': 'out', 'reversible': str(reversibility)})
+
+    for node_id in nodes_data:
+        json_dicts['nodes'].append(nodes_data[node_id])
 
     return json_dicts
 
