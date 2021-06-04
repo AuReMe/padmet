@@ -54,14 +54,14 @@ def create_json_from_padmet(input_file, verbose=False):
     json_dicts: dict
         JSON formatted for metexploreviz
     """
-    nodes_in_json = {}
+    nodes_in_json = OrderedDict()
     #loading padmetSpec
     if verbose:
         print('Loading %s' %input_file)
     padmetSpec = PadmetSpec(input_file)
 
-    nodes_data = {}
-    links_data = {}
+    nodes_data = OrderedDict()
+    links_data = OrderedDict()
     for node in padmetSpec.dicOfNode.values():
         if node.type == 'reaction':
             if node.misc["DIRECTION"][0] == 'REVERSIBLE':
