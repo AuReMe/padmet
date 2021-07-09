@@ -34,6 +34,7 @@ import re
 import padmet.utils.sbmlPlugin as sp
 from padmet.classes import PadmetRef, PadmetSpec
 from padmet.utils.gbr import compile_input
+from padmet.utils.utils import is_valid_path
 
 #default variables
 global def_max_lower_bound, def_max_upper_bound, BOUNDARY_ID
@@ -111,6 +112,10 @@ def padmet_to_sbml(padmet, output, model_id = None, obj_fct = None, sbml_lvl = 3
         print informations
     """
     global all_ga
+
+    # Check if output file is writable.
+    is_valid_path(output)
+
     if isinstance(padmet, str):
         padmet = PadmetSpec(padmet)
 
@@ -231,7 +236,7 @@ def padmet_to_sbml(padmet, output, model_id = None, obj_fct = None, sbml_lvl = 3
                 except (ValueError, KeyError) as e:
                     charge = 0
                 formula = species_prop.get("formula","")
-                if re.findall("\(|\)|\.",formula): formula = None
+                if re.findall(r"\(|\)|\.",formula): formula = None
                 inchi = species_prop.get("inchi", None)
                 if sbml_lvl == 3:
                     splugin = s.getPlugin("fbc")
@@ -401,7 +406,7 @@ def padmet_to_sbml(padmet, output, model_id = None, obj_fct = None, sbml_lvl = 3
                     ga_for_gbr = re.sub(r" and " , "&", ga_for_gbr)
                     ga_for_gbr = re.sub(r"\s" , "", ga_for_gbr)
                     #ga_for_gbr = "\"" + ga_for_gbr + "\""
-                    if re.findall("\||\&",ga_for_gbr) and len(re.findall("\||\&",ga_for_gbr)) < 100:
+                    if re.findall(r"\||\&",ga_for_gbr) and len(re.findall(r"\||\&",ga_for_gbr)) < 100:
                         ga_subsets = []
                         [ga_subsets.append(set(i)) for i in compile_input(ga_for_gbr)]
                         for ga in ga_subsets:
