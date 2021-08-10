@@ -24,6 +24,9 @@ The main concept underlying PADMet-Package is to provide solutions that ensure t
 
 ## Requirements
 
+Padmet requires Python. It is tested on Python 3.6, 3.7 and 3.8 (with GitHub Actions).
+Due to dependencies (like biopython or docopt) it is recommended to use these versions and not version below 3.6.
+
 Padmet classes scripts (handling PADMet format) and most of the padmet utils scripts require:
 
 * [biopython](https://github.com/biopython/biopython) to handle fasta files.
