@@ -9,8 +9,8 @@ Description:
 
     usage:
         padmet gene_to_targets --padmetSpec=FILE --genes=FILE --output=FILE [-v]
-    
-    option:
+
+    options:
         -h --help     Show help
         --padmetSpec=FILE    path to the padmet file
         --genes=FILE   path to the file containing gene ids, one id by line

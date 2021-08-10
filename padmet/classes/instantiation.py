@@ -1,16 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pkg_resources
-
 from padmet.classes import PadmetRef, PadmetSpec
+from padmet import __version__ as padmet_version
 from datetime import datetime
 
 
 def instantiate_padmet(padmet_type, padmetRef_file=None, padmet_id=None, db='NA', version='NA', verbose=None):
     now = datetime.now()
     today_date = now.strftime("%Y-%m-%d")
-    padmet_version = pkg_resources.require("padmet")[0].version
 
     POLICY_IN_ARRAY = [['class','is_a_class','class'], ['class','has_name','name'], ['class','has_xref','xref'], ['class','has_suppData','suppData'],
                     ['compound','is_a_class','class'], ['compound','has_name','name'], ['compound','has_xref','xref'], ['compound','has_suppData','suppData'],
