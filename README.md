@@ -27,6 +27,10 @@ The main concept underlying PADMet-Package is to provide solutions that ensure t
 Padmet requires Python. It is tested on Python 3.6, 3.7 and 3.8 (with GitHub Actions).
 Due to dependencies (like biopython or docopt) it is recommended to use these versions and not version below 3.6.
 
+If you use pip to install padmet, you should check that you have a version of `setuptools` >= 46.4.0. Version before the 46.4.0 will cause issue with how the [padmet/__init__.py](https://github.com/AuReMe/padmet/blob/master/padmet/__init__.py) file is written. In this file, we have the version number with variable `__version__` and 2 imports of padmet subfolder. In version before the 46.4.0, setuptools will search for `__version__` in `__init__.py` but it will also use the import in this file. So if you use a pip install with this version, the package that will be installed by pip will be imported before being installed leading to an import error (it is explained in the point 1 of the [versioning page of python](https://packaging.python.org/guides/single-sourcing-package-version/)).
+
+To avoid this issue, if you have a version of setuptools < 46.4.0 you should upgrade `setuptools` with `pip install --upgrade setuptools`.
+
 Padmet classes scripts (handling PADMet format) and most of the padmet utils scripts require:
 
 * [biopython](https://github.com/biopython/biopython) to handle fasta files.
