@@ -112,6 +112,7 @@ def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=
     spec_reactions_folder = os.path.join(prot2genome_folder, "0_specifics_reactions")
     blast_result_folder = os.path.join(prot2genome_folder, "1_blast_results")
     blast_analysis_folder = os.path.join(blast_result_folder, "analysis")
+    predicted_folder = os.path.join(blast_result_folder, "reactions_sequences")
     tmp_folder = os.path.join(blast_result_folder, "tmp")
     reactions_to_add_folder = os.path.join(prot2genome_folder, "2_reactions_to_add")
     prot2genome_padmet_folder = os.path.join(prot2genome_folder, "3_PADMETs")
@@ -126,7 +127,7 @@ def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=
     print("Extracting specific reactions...")
     mp_extractReactions(padmet_folder, spec_reactions_folder, pool)
     print("Running blast analysis...")
-    mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, blast_analysis_folder, tmp_folder, pool, blastp, tblastn, exonerate, keep_tmp, debug)
+    mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, blast_analysis_folder, tmp_folder, pool, blastp, tblastn, exonerate, keep_tmp, debug, predicted_folder)
     print("Extracting reactions to add...")
     extractAnalysis(blast_analysis_folder, spec_reactions_folder, reactions_to_add_folder)
     print("Creating padmet files...")
@@ -186,8 +187,6 @@ def createPadmet(dict_args):
     verbose = dict_args["verbose"]
     manual_curation.add_delete_rxn(reactions_to_add_path, padmet_to_update, output, padmetRef=padmetRef, category="MANUAL", verbose=verbose)
     
-
-
 
 ##### extract reactions #####
     
@@ -311,8 +310,18 @@ def extractReactions(dict_args):
     print("%s reaction in %s but not in %s have no annotation source" %(nb_rxn_with_no_annot_source, org_b, org_a))
 
 
+def analysisOutput(analysis_result, analysis_output):
+    """
+    """
+    analysis_header = ["query_seq_id", "blastp_sseqid", "blastp_evalue", "blastp_bitscore",  "tblastn_sseqid", "tblastn_evalue", "tblastn_bitscore", "tblastn_sstart", "tblastn_send", "exonerate_score", "exonerate_hit_range", "predicted_gene"]
+    with open(analysis_output,"w") as csvfile:
+        dict_writer = csv.DictWriter(csvfile, fieldnames=analysis_header, delimiter="\t")
+        dict_writer.writeheader()
+        dict_writer.writerows(analysis_result)
+
+
 ##### run all analysis in multiprocess #####
-def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folder, tmp_folder, pool, blastp, tblastn, exonerate, keep_tmp, debug):
+def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folder, tmp_folder, pool, blastp, tblastn, exonerate, keep_tmp, debug, predicted_folder):
     """
     Run different blast analysis based on files representing specific reactions of 2 padmet files.
     For each specific reaction file in spec_reactions_folder (ex: org_a_vs_org_b.tsv):
@@ -370,7 +379,7 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
     
             all_dict_args = []
             for query_seq_id in all_query_seq_ids:
-                dict_args = {"query_seq_id": query_seq_id, "query_faa": query_faa, "subject_faa": subject_faa, "subject_fna": subject_fna, "output_folder": tmp_folder, "blastp": blastp, "tblastn": tblastn, "exonerate": exonerate, "debug": debug}
+                dict_args = {"query_seq_id": query_seq_id, "query_faa": query_faa, "subject_faa": subject_faa, "subject_fna": subject_fna, "output_folder": tmp_folder, "blastp": blastp, "tblastn": tblastn, "exonerate": exonerate, "debug": debug, 'predicted_folder': predicted_folder, 'org_receiver': org_b}
                 all_dict_args.append(dict_args)
             #list of dict to give to dictWritter
             all_analysis_result = []
@@ -440,6 +449,8 @@ def runAllAnalysis(dict_args):
     tblastn = dict_args["tblastn"]
     exonerate = dict_args["exonerate"]
     debug = dict_args["debug"]
+    predicted_folder = dict_args['predicted_folder']
+    org_receiver = dict_args['org_receiver']
 
     with open(query_faa, "r") as faa:
         query_seqs = [seq_record for seq_record in SeqIO.parse(faa, "fasta") if seq_record.id.startswith(query_seq_id+"_isoform") or seq_record.id == query_seq_id]
@@ -485,11 +496,18 @@ def runAllAnalysis(dict_args):
                 createSeqFromTblastn(subject_fna, sseq_seq_faa, exonerate_target_id, start_match, end_match)
                 exonerate_output = os.path.join(output_folder, "exonerate_output_%s_vs_%s.txt"%(query_seq_id, exonerate_target_id))
                 exonerate_result = runExonerate(query_seq_faa, sseq_seq_faa, exonerate_output, debug=debug)
-                exonerate_sequence = os.path.join(output_folder, "%s_vs_%s.fasta"%(query_seq_id, exonerate_target_id))
+                predicted_gene_name = "predicted_%s_vs_%s"%(query_seq_id, exonerate_target_id)
+                exonerate_sequence = os.path.join(output_folder, predicted_gene_name+'.fasta')
                 extract_sequence(exonerate_output, exonerate_sequence)
+                org_receiver_folder = os.path.join(predicted_folder, org_receiver)
+                if not os.path.exists(org_receiver_folder):
+                    os.mkdir(org_receiver_folder)
+                predict_sequence_path = os.path.join(org_receiver_folder, predicted_gene_name+'.fasta')
+                shutil.copyfile(exonerate_sequence, predict_sequence_path)
                 current_result.update(exonerate_result)
                 if 'exonerate_hit_range' in current_result:
                     current_result['exonerate_hit_range'] = '-'.join([str(hit_range) for hit_range in current_result['exonerate_hit_range']])
+                    current_result['predicted_gene'] = predicted_gene_name
         analysis_result.append(current_result)
 
     return analysis_result
@@ -501,7 +519,7 @@ def extract_sequence(exonerate_output, exonerate_sequence):
     """
     with open(exonerate_sequence, 'w') as output_file:
         with open(exonerate_output, 'r') as input_file:
-            for chunk in input_file.read().split('Fasta_seq'):
+            for chunk in input_file.read().split('Fasta_seq\n'):
                 if '-- completed exonerate analysis' in chunk:
                     fasta_seq = chunk.split('-- completed exonerate analysis')[0]
                     output_file.write(fasta_seq)
@@ -784,16 +802,16 @@ def extractAnalysis(blast_analysis_folder, spec_reactions_folder, output_folder)
     orthologue_dict = {}
     for analysis_file in [os.path.join(blast_analysis_folder, i) for i in next(os.walk(blast_analysis_folder))[2]]:
         org_b, org_a = os.path.basename(analysis_file).replace(".tsv","").split("_VS_")
-        try:
+        if org_a in orthologue_dict:
             orthologue_dict[org_a][org_b] = set()
-        except KeyError:
+        else:
             orthologue_dict[org_a] = {org_b: set()}
 
         with open(analysis_file, 'r') as csvfile:
             reader = csv.DictReader(csvfile, delimiter="\t")
             for line in reader:
                 if not line['blastp_bitscore'] and (line['exonerate_score'] and line['tblastn_bitscore']):
-                    orthologue_dict[org_a][org_b].add(line['query_seq_id'])
+                    orthologue_dict[org_a][org_b].add((line['query_seq_id'], line['predicted_gene']))
 
     # {org_id: {reaction_id:{org_id:{total_genes: set(genes_ids), orthologues: set(genes_ids)}}}
     reactions_dict = {}
@@ -801,18 +819,19 @@ def extractAnalysis(blast_analysis_folder, spec_reactions_folder, output_folder)
         org_b, org_a = os.path.basename(rxn_file).replace(".tsv","").split("_VS_")
         if org_a not in reactions_dict.keys():
             reactions_dict[org_a] = dict()
-        all_orthologues = orthologue_dict[org_a][org_b]
+        all_orthologues = {orth_genes[0]: orth_genes[1] for orth_genes in orthologue_dict[org_a][org_b]}
         with open(rxn_file, 'r') as csvfile:
             reader = csv.DictReader(csvfile, delimiter="\t")
             for line in reader:
                 reaction_id = line['reaction_id']
                 genes_ids = set(line['genes_ids'].split(";"))
-                orthologues = genes_ids.intersection(all_orthologues)
-                try:
-                    reactions_dict[org_a][reaction_id][org_b] = {'total_genes': genes_ids, 'orthologues': orthologues}
-                except KeyError:
-                    reactions_dict[org_a][reaction_id] = {org_b: {'total_genes': genes_ids, 'orthologues': orthologues}}
-                    
+                orthologues = genes_ids.intersection(set(all_orthologues.keys()))
+                predicted_genes = [all_orthologues[gene_id] for gene_id in orthologues]
+                if reaction_id in reactions_dict[org_a]:
+                    reactions_dict[org_a][reaction_id][org_b] = {'total_genes': genes_ids, 'orthologues': orthologues, 'predicted_genes': predicted_genes}
+                else:
+                    reactions_dict[org_a][reaction_id] = {org_b: {'total_genes': genes_ids, 'orthologues': orthologues, 'predicted_genes': predicted_genes}}
+
     for org_a, org_dict in reactions_dict.items():
         output_file = os.path.join(output_folder, "%s.tsv"%org_a)
         with open(output_file, 'w') as csvfile:
@@ -822,17 +841,10 @@ def extractAnalysis(blast_analysis_folder, spec_reactions_folder, output_folder)
             for reaction_id, reaction_dict in org_dict.items():
                 total_org = set(reaction_dict.keys())
                 org_with_orthologues = set([org_b for org_b, org_b_dict in reaction_dict.items() if org_b_dict['total_genes'] == org_b_dict['orthologues']])
+                inferred_genes = set([infer_gene for org_b, org_b_dict in reaction_dict.items() if org_b_dict['total_genes'] == org_b_dict['orthologues']
+                                                for infer_gene in org_b_dict['predicted_genes']])
                 rate = round(float(len(org_with_orthologues)/len(total_org)),2)
                 if rate > 0.0:
-                    line = {'idRef': reaction_id, 'Comment': 'Has Orthologues with %s'%";".join(org_with_orthologues),'Action':'add'}
+                    line = {'idRef': reaction_id, 'Comment': 'Has Orthologues with %s'%";".join(org_with_orthologues),'Action':'add', 'Genes':';'.join(inferred_genes)}
                     writer.writerow(line)
 
-
-def analysisOutput(analysis_result, analysis_output):
-    """
-    """
-    analysis_header = ["query_seq_id", "blastp_sseqid", "blastp_evalue", "blastp_bitscore",  "tblastn_sseqid", "tblastn_evalue", "tblastn_bitscore", "tblastn_sstart", "tblastn_send", "exonerate_score", "exonerate_hit_range"]
-    with open(analysis_output,"w") as csvfile:
-        dict_writer = csv.DictWriter(csvfile, fieldnames=analysis_header, delimiter="\t")
-        dict_writer.writeheader()            
-        dict_writer.writerows(analysis_result)    
