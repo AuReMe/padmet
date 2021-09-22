@@ -101,6 +101,29 @@ def pvclust_dendrogram(reactions_dataframe, organisms, output_folder):
     ape.write_tree(phylo_result, file=output_folder+"/"+"dendrogram.nwk", tree_names=True, digits=2)
 
 
+def create_pvclust_dendrogram(reaction_file, output_folder):
+    # Check if output_folder exists, if not create it.
+    if not os.path.isdir(output_folder):
+        os.mkdir(output_folder)
+
+    # Read the reactions file with pandas.
+    all_reactions_dataframe = pa.read_csv(reaction_file, sep='\t')
+    # Keep column containing absence-presence of reactions.
+    # (columns with (sep=;) are column with gene name linked to reactions)
+    # (columns with _formula contain the reaction formula)
+    columns = [column for column in all_reactions_dataframe.columns if '(sep=;)' not in column]
+    columns = [column for column in columns if '_formula' not in column]
+    reactions_dataframe = all_reactions_dataframe[columns].copy()
+
+    reactions_dataframe.set_index('reaction', inplace=True)
+
+    # Extract organisms.
+    organisms = reactions_dataframe.index.tolist()
+
+    # Create pvclust dendrogram.
+    pvclust_dendrogram(reactions_dataframe, organisms, output_folder)
+
+
 def hclust_to_xml(linkage_matrix):
     """
     Using a distance matrix from scipy linkage, create a xml tree corresponding to the hierarchical clustering. Return the root of the tree.
@@ -514,33 +537,6 @@ def absent_and_specific_reactions(reactions_dataframe, output_folder_tree_cluste
                                         len(list(reactions_in_species.intersection(reactions_absent_in_others))),
                                         len(list(reactions_not_in_species.intersection(reactions_in_others)))])
     specific_output.close()
-
-
-def create_pvclust_dendrogram(reaction_file, output_folder):
-    # Check if output_folder exists, if not create it.
-    if not os.path.isdir(output_folder):
-        os.mkdir(output_folder)
-
-    # Read the reactions file with pandas.
-    all_reactions_dataframe = pa.read_csv(reaction_file, sep='\t')
-    # Keep column containing absence-presence of reactions.
-    # (columns with (sep=;) are column with gene name linked to reactions)
-    # (columns with _formula contain the reaction formula)
-    columns = [column for column in all_reactions_dataframe.columns if '(sep=;)' not in column]
-    columns = [column for column in columns if '_formula' not in column]
-    reactions_dataframe = all_reactions_dataframe[columns].copy()
-
-    reactions_dataframe.set_index('reaction', inplace=True)
-
-    # Translate 'present'/(nan) data into a True/False absence-presence matrix.
-    for column in reactions_dataframe.columns.tolist():
-        reactions_dataframe[column] = [1 if data == 'present' else 0 for data in reactions_dataframe[column]]
-
-    # Extract organisms.
-    organisms = reactions_dataframe.index.tolist()
-
-    # Create pvclust dendrogram.
-    pvclust_dendrogram(reactions_dataframe, organisms, output_folder)
 
 
 def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, padmetRef_file=None, pvclust=None, verbose=False):
