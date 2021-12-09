@@ -128,6 +128,7 @@ exploration:
     flux_analysis    Run Flux Balance Analysis on a defined reaction
     get_pwy_from_rxn    Return Pathway using a list of reactions from a PADMet Ref file
     padmet_stats    Compute stats on a PADMet file
+    pathway_production    Show the input/output of pathways from multiple PADMet
     prot2genome    Perfoms the structural annotation of AuCoMe
     report_network    Creates reports for a PADMet file
     visu_network    Allows to visualize a PADMet or SBML network
@@ -184,6 +185,7 @@ padmet_instance = from_pgdb_to_padmet(pgdb_folder, extract_gene=True)
 | flux_analysis                 | ```from padmet.utils.exploration.flux_analysis import flux_analysis```                            | padmet flux_analysis               |
 | get_pwy_from_rxn              | ```from padmet.utils.exploration.get_pwy_from_rxn import get_pwy_from_rxn```                      | padmet get_pwy_from_rxn            |
 | padmet_stats                  | ```from padmet.utils.exploration.padmet_stats import compute_stats```                             | padmet padmet_stats                |
+| pathway_production            | ```from padmet.utils.exploration.pathway_production import pathway_production```                  | padmet pathway_production          |
 | prot2genome                   | ```from padmet.utils.exploration.prot2genome import fromAucome```                                 | padmet prot2genome                 |
 | report_network                | ```padmetSpec.network_report(output_dir, padmetRef_file, verbose)```                              | padmet report_network              |
 | visu_network                  | ```from padmet.utils.exploration.visu_network import create_compounds_graph```                    | padmet visu_network                |
