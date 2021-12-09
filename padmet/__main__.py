@@ -43,6 +43,7 @@ exploration:
     flux_analysis    Run Flux Balance Analysis on a defined reaction
     get_pwy_from_rxn    Return Pathway using a list of reactions from a PADMet Ref file
     padmet_stats    Compute stats on a PADMet file
+    pathway_production    Show the input/output of pathways from multiple PADMet
     prot2genome    Perfoms the structural annotation of AuCoMe
     report_network    Creates reports for a PADMet file
     visu_network    Allows to visualize a PADMet or SBML network
@@ -87,6 +88,7 @@ def main(args=None):
             'compare_sbml_padmet', 'convert_sbml_db',
             'dendrogram_reactions_distance', 'flux_analysis',
             'get_pwy_from_rxn', 'padmet_stats',
+            'pathway_production',
             'prot2genome', 'visu_path',
             'visu_network', 'visu_similarity_gsmn',
             'report_network',

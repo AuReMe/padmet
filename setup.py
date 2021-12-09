@@ -3,7 +3,6 @@
 
 """Definition of setup function for setuptools module."""
 
-from distutils.util import convert_path
 from setuptools import setup, find_packages
 
 setup(
@@ -11,8 +10,8 @@ setup(
  
     packages=find_packages(),
  
-    author="Meziane AITE",
-    author_email="meziane.aite@inria.fr",
+    author="AuReMe",
+    author_email="gem-aureme@inria.fr",
  
     description="Padmet package for metabolic network",
  
@@ -23,7 +22,7 @@ setup(
                        'python-libsbml>=5.18.0',
                        'cobra>=0.17.1',
                        'biopython>=1.78',
-                       'lxml>=4.3.4',
+                       'lxml>=4.3.4'
                        ],
  
     include_package_data=True,

@@ -14,5 +14,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with padmet. If not, see <http://www.gnu.org/licenses/>.
 """
-
 __version__='5.0.1'
+
+import setuptools
+import sys
+from distutils.version import StrictVersion
+if StrictVersion(setuptools.__version__) < StrictVersion('46.4.0'):
+    sys.exit('padmet needs a version of setuptools superior to 46.4.0')
+
+import padmet.classes
+import padmet.utils

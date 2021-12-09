@@ -10,6 +10,7 @@ from padmet.utils.connection.sbmlGenerator import padmet_to_sbml
 from padmet.utils.exploration.compare_padmet import compare_padmet
 from padmet.utils.exploration.compare_sbml import compare_multiple_sbml
 from padmet.utils.exploration.padmet_stats import compute_stats
+from padmet.utils.exploration.pathway_production import pathway_production
 from padmet.utils.exploration.get_pwy_from_rxn import extract_pwys
 from padmet.utils.exploration.flux_analysis import flux_analysis
 from padmet.utils import sbmlPlugin
@@ -26,6 +27,13 @@ FABO_CPDS = ['D-3-HYDROXYACYL-COA', 'L-3-HYDROXYACYL-COA', 'TRANS-D2-ENOYL-COA',
             'CIS-DELTA3-ENOYL-COA', 'Saturated-Fatty-Acyl-CoA', 'ETF-Oxidized',
             'ETF-Reduced', 'WATER', 'PROTON', 'CPD66-39', 'CO-A', 'ATP', 'PPI', 'AMP', 'ACETYL-COA',
             '3-KETOACYL-COA', 'NAD', 'NADH']
+
+FABO_PATHWAYS_PRODUCTION_OUTPUTS = {'ACETYL-COA': {'test': ['FAO-PWY']}}
+
+FABO_PATHWAYS_PRODUCTION_INPUTS = {'D-3-HYDROXYACYL-COA': {'test': ['FAO-PWY']},
+                                    'CPD66-39': {'test': ['FAO-PWY']},
+                                    'CO-A': {'test': ['FAO-PWY']},
+                                    'CIS-DELTA3-ENOYL-COA': {'test': ['FAO-PWY']}}
 
 
 def test_compare_padmet():
@@ -354,4 +362,75 @@ def test_flux_analysis_cli():
     subprocess.call(['padmet', 'flux_analysis', '--sbml', 'fabo.sbml', '--seeds', 'test_data/seeds.sbml', '--targets', 'test_data/targets.sbml', '--all_species'])
 
     os.remove('fabo.sbml')
+    os.remove('test.padmet')
+
+
+def extract_output_result_pathway_production(output_folder):
+    pathway_inputs = {}
+    pathways_outputs = {}
+
+    degradation_file = os.path.join(output_folder, 'degradation_matrix.tsv')
+    with open(degradation_file, 'r') as degradation_output_file:
+        csvreader = csv.reader(degradation_output_file, delimiter='\t')
+        header = next(csvreader)[1:]
+        for row in csvreader:
+            metabolite = row[0]
+            if metabolite not in pathway_inputs:
+                for index, col in enumerate(row[1:]):
+                    pathway_inputs[metabolite] = {header[index]: [col]}
+            else:
+                if header[index] not in pathway_inputs[metabolite]:
+                    pathway_inputs[metabolite] = {header[index]: [col]}
+                else:
+                    pathway_inputs[metabolite][header[index]].append([col])
+
+
+    biosynthesis_file = os.path.join(output_folder, 'biosynthesis_matrix.tsv')
+    with open(biosynthesis_file, 'r') as biosynthesis_output_file:
+        csvreader = csv.reader(biosynthesis_output_file, delimiter='\t')
+        header = next(csvreader)[1:]
+        for row in csvreader:
+            metabolite = row[0]
+            if metabolite not in pathways_outputs:
+                for index, col in enumerate(row[1:]):
+                    pathways_outputs[metabolite] = {header[index]: [col]}
+            else:
+                if header[index] not in pathways_outputs[metabolite]:
+                    pathways_outputs[metabolite] = {header[index]: [col]}
+                else:
+                    pathways_outputs[metabolite][header[index]].append([col])
+
+    return pathway_inputs, pathways_outputs
+
+
+def test_pathway_production_analysis():
+    from_pgdb_to_padmet('test_data/pgdb', output_file='test.padmet', extract_gene=True)
+    pathway_production('test.padmet', 'pathway_production')
+
+    pathway_inputs, pathways_outputs = extract_output_result_pathway_production('pathway_production')
+    for metabolite in pathway_inputs:
+        for species in pathway_inputs[metabolite]:
+            assert pathway_inputs[metabolite][species] == FABO_PATHWAYS_PRODUCTION_INPUTS[metabolite][species]
+
+    for metabolite in pathways_outputs:
+        for species in pathways_outputs[metabolite]:
+            assert pathways_outputs[metabolite][species] == FABO_PATHWAYS_PRODUCTION_OUTPUTS[metabolite][species]
+
+    os.remove('test.padmet')
+
+
+def test_pathway_production_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--extract-gene'])
+    subprocess.call(['padmet', 'pathway_production', '--padmet', 'test.padmet', '--output', 'pathway_production'])
+
+    pathway_inputs, pathways_outputs = extract_output_result_pathway_production('pathway_production')
+
+    for metabolite in pathway_inputs:
+        for species in pathway_inputs[metabolite]:
+            assert pathway_inputs[metabolite][species] == FABO_PATHWAYS_PRODUCTION_INPUTS[metabolite][species]
+
+    for metabolite in pathways_outputs:
+        for species in pathways_outputs[metabolite]:
+            assert pathways_outputs[metabolite][species] == FABO_PATHWAYS_PRODUCTION_OUTPUTS[metabolite][species]
+
     os.remove('test.padmet')
