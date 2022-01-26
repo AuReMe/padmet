@@ -381,6 +381,9 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
             for query_seq_id in all_query_seq_ids:
                 dict_args = {"query_seq_id": query_seq_id, "query_faa": query_faa, "subject_faa": subject_faa, "subject_fna": subject_fna, "output_folder": tmp_folder, "blastp": blastp, "tblastn": tblastn, "exonerate": exonerate, "debug": debug, 'predicted_folder': predicted_folder, 'org_receiver': org_b}
                 all_dict_args.append(dict_args)
+                org_receiver_folder = os.path.join(predicted_folder, org_b)
+                if not os.path.exists(org_receiver_folder):
+                    os.mkdir(org_receiver_folder)
             #list of dict to give to dictWritter
             all_analysis_result = []
             #Run runAllAnalysis in multiproccess.
@@ -500,8 +503,6 @@ def runAllAnalysis(dict_args):
                 exonerate_sequence = os.path.join(output_folder, predicted_gene_name+'.fasta')
                 extract_sequence(exonerate_output, exonerate_sequence)
                 org_receiver_folder = os.path.join(predicted_folder, org_receiver)
-                if not os.path.exists(org_receiver_folder):
-                    os.mkdir(org_receiver_folder)
                 predict_sequence_path = os.path.join(org_receiver_folder, predicted_gene_name+'.fasta')
                 shutil.copyfile(exonerate_sequence, predict_sequence_path)
                 current_result.update(exonerate_result)
