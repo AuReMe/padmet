@@ -39,7 +39,8 @@ Description:
     create new node / class = compound
     UNIQUE-ID (1) => node.id = UNIQUE-ID
     COMMON-NAME (0-n) => node.Misc['COMMON-NAME'] = COMMON-NAME
-    INCHI-KEY (0-1) {InChIKey=XXX} => node.misc['INCHI_KEY': XXX]
+    INCHI (0-1) {InChI=XXX} => node.misc['INCHI': InChI=XXX]
+    INCHI-KEY (0-1) {InChIKey=XXX} => node.misc['INCHI_KEY': InChIKey=XXX]
     MOLECULAR-WEIGHT (0-1) => node.misc()['MOLECULAR_WEIGHT'] = MOLECULAR-WEIGHT
     SMILES (0-1) => node.misc()['SMILES'] = SMILES
     TYPES (0-n) => for each, check or create new node class, create rlt (node is_a_class types)
@@ -51,7 +52,7 @@ Description:
     create new node / class = protein
     UNIQUE-ID (1) => node.id = UNIQUE-ID
     COMMON-NAME (0-n) => node.Misc['COMMON-NAME'] = COMMON-NAME
-    INCHI-KEY (0-1) {InChIKey=XXX} => node.misc['INCHI_KEY': XXX]
+    INCHI-KEY (0-1) {InChIKey=XXX} => node.misc['INCHI_KEY': InChIKey=XXX]
     MOLECULAR-WEIGHT (0-1) => node.misc()['MOLECULAR_WEIGHT'] = MOLECULAR-WEIGHT
     SMILES (0-1) => node.misc()['SMILES'] = SMILES
     TYPES (0-n) => for each, check or create new node class, create rlt (node is_a_class types)
@@ -112,7 +113,7 @@ Description:
         --enhance    use the metabolic-reactions.xml file to enhance the database.
         --extract-gene    extract genes from genes_file (use if its a specie's pgdb, if metacyc, do not use).
         --no-orhpan    remove reactions without gene associaiton (use if its a specie's pgdb, if metacyc, do not use).
-        --keep-self-rxn    remove reactions with no reactants (use if its a specie's pgdb, if metacyc, do not use).
+        --keep-self-rxn    keep reactions with no reactants (use if its a specie's pgdb, if metacyc, do not use).
         -v   print info.
 """
 import docopt
@@ -156,7 +157,10 @@ def pgdb_to_padmet_cli(command_args):
                                                 padmetRef_file=padmetRef_file, verbose=verbose, output_file=output)
 
 
-def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA', source='GENOME', extract_gene=False, no_orphan=False, no_self_producing_rxn=True, enhanced_db=False, padmetRef_file=None, verbose=False, output_file=None):
+def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA',
+                        source='GENOME', extract_gene=False, no_orphan=False,
+                        no_self_producing_rxn=True, enhanced_db=False, padmetRef_file=None,
+                        verbose=False, output_file=None):
     """
     Parameters
     ----------
@@ -760,8 +764,9 @@ def compounds_parser(filePath, padmet, verbose = False):
                 if attrib == "UNIQUE-ID":
                     current_id = value
                     dict_data[current_id] = {}
-                if attrib in ["COMMON-NAME","INCHI-KEY","MOLECULAR-WEIGHT","SMILES",\
-                "TYPES", "SYNONYMS", "DBLINKS"]:
+                if attrib in ["COMMON-NAME","INCHI-KEY","INCHI",\
+                                "MOLECULAR-WEIGHT","SMILES","TYPES",\
+                                "SYNONYMS", "DBLINKS"]:
                     try:
                         dict_data[current_id][attrib].append(value)
                     except KeyError:
@@ -783,6 +788,10 @@ def compounds_parser(filePath, padmet, verbose = False):
             pass
         try:
             compound_node.misc["INCHI-KEY"] = dict_values["INCHI-KEY"]
+        except KeyError:
+            pass
+        try:
+            compound_node.misc["INCHI"] = dict_values["INCHI"]
         except KeyError:
             pass
         try:
