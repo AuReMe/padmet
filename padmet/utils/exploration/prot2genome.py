@@ -35,6 +35,7 @@ import csv
 import docopt
 import itertools
 import os
+import pandas as pd
 import shutil
 import subprocess
 import sys
@@ -45,8 +46,9 @@ from Bio import SearchIO
 from Bio import SeqIO
 from padmet.classes import PadmetSpec
 from padmet.utils.management import manual_curation
+from padmet.utils.exploration.compare_padmet import compare_padmet
+from sklearn.manifold import MDS
 from multiprocessing import Pool
-
 
 def command_help():
     """
@@ -77,6 +79,26 @@ def prot2genome_cli(command_args):
 #pident a ajouter
 #TODO:
 #Seq to gbk, match to faa
+
+def find_closest_gsmns(padmet_folder, output):
+    padmet_files = ','.join([os.path.join(padmet_folder, padmet_file) for padmet_file in os.listdir(padmet_folder) if '.padmet' in padmet_file])
+    compare_padmet(padmet_files, output)
+    reaction_file = os.path.join(output, 'reactions.tsv')
+    # Convert the reaction table into a matrix.
+    df = pd.read_csv(reaction_file, sep='\t')
+    df.set_index('reaction', inplace=True)
+    df = df[[column for column in df.columns if "(" not in column and "_formula" not in column]]
+
+    df = df.transpose()
+    # Projection with MDS.
+    embedding = MDS(n_components=2)
+    X_transformed = embedding.fit_transform(df)
+    mds_matrix = pd.DataFrame(embedding.dissimilarity_matrix_)
+    mds_matrix.columns = df.index
+    mds_matrix.index = df.index
+    closest_gsmns = mds_matrix.idxmax().to_dict()
+
+    return closest_gsmns
 
 def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=True, keep_tmp=False, debug=False):
     """
@@ -109,6 +131,7 @@ def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=
     prot2genome_folder = os.path.join(run_folder,"structural_check")
     padmet_folder = os.path.join(run_folder,"orthology_based","3_padmet_filtered")
     studied_organisms_folder = os.path.join(run_folder,"studied_organisms")
+    closest_gsmns = os.path.join(prot2genome_folder,"0_gsmn_closest")
     spec_reactions_folder = os.path.join(prot2genome_folder, "0_specifics_reactions")
     blast_result_folder = os.path.join(prot2genome_folder, "1_blast_results")
     blast_analysis_folder = os.path.join(blast_result_folder, "analysis")
@@ -125,16 +148,21 @@ def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=
     pool = Pool(cpu)
 
     print("Extracting specific reactions...")
-    mp_extractReactions(padmet_folder, spec_reactions_folder, pool)
+    closest_gsmns = find_closest_gsmns(padmet_folder, closest_gsmns)
+    for org_a in closest_gsmns:
+        org_b = closest_gsmns[org_a]
+        path_a = os.path.join(padmet_folder, org_a+'.padmet')
+        path_b = os.path.join(padmet_folder, org_b+'.padmet')
+        output_a = os.path.join(spec_reactions_folder, "%s_VS_%s.tsv"%(os.path.splitext(org_a)[0], os.path.splitext(org_b)[0]))
+        output_b = os.path.join(spec_reactions_folder, "%s_VS_%s.tsv"%(os.path.splitext(org_b)[0], os.path.splitext(org_a)[0]))
+        extractReactions(org_a, org_b, path_a, path_b, output_a, output_b)
     print("Running blast analysis...")
-    mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, blast_analysis_folder, tmp_folder, pool, blastp, tblastn, exonerate, keep_tmp, debug, predicted_folder)
+    mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, blast_analysis_folder, tmp_folder, pool, blastp, tblastn, exonerate, keep_tmp, debug, predicted_folder, cpu)
     print("Extracting reactions to add...")
     extractAnalysis(blast_analysis_folder, spec_reactions_folder, reactions_to_add_folder)
     print("Creating padmet files...")
     mp_createPadmet(reactions_to_add_folder, padmet_folder, prot2genome_padmet_folder, padmetRef, pool, verbose=True)
 
-    pool.close()
-    pool.join()
 
 ##### create padmets #####
 def mp_createPadmet(reactions_to_add_folder, padmet_folder, output_folder, padmetRef, pool, verbose=False):
@@ -221,7 +249,7 @@ def mp_extractReactions(padmet_folder, output_folder, pool):
     pool.map(extractReactions, all_dict_args)
 
 
-def extractReactions(dict_args):
+def extractReactions(org_a, org_b, path_a, path_b, output_a, output_b):
     """
     function used in mp_cextractReactions by each worker the Pool
     for org_a.padmet and org_b.padmet:
@@ -231,14 +259,6 @@ def extractReactions(dict_args):
         rxn-1 in org_a but not in org_b, if rxn-1 doesn't come from org_a annotation, skip the reaction
         4./ create output file: header = ["reaction_id", "genes_ids", "sources"]
     """
-    org_a = dict_args["org_a"]
-    path_a = dict_args["path_a"]
-    output_a = dict_args["output_a"]
-
-    org_b = dict_args["org_b"]
-    path_b = dict_args["path_b"]
-    output_b = dict_args["output_b"]
-
     padmet_a = PadmetSpec(path_a)
     padmet_b = PadmetSpec(path_b)
 
@@ -282,32 +302,7 @@ def extractReactions(dict_args):
                 genes_ids_for_blast.update(genes_assoc)
                 line = {"reaction_id": rxn_id, "genes_ids": ";".join(genes_assoc), "sources": "ANNOTATION+"+";".join(recData_dict["ORTHOLOGY"])}
                 dict_writer.writerow(line)
-    print("%s reaction in %s but not in %s have no annotation source" %(nb_rxn_with_no_annot_source, org_a, org_b))
-
-    genes_ids_for_blast = set()
-    nb_rxn_with_no_annot_source = 0
-    with open(output_b,"w") as csvfile:
-        header = ["reaction_id", "genes_ids", "sources"]
-        dict_writer = csv.DictWriter(csvfile, fieldnames=header, delimiter="\t")
-        dict_writer.writeheader()
-        for rxn_id in rxn_spec_to_b:
-            genes_assoc = set([rlt.id_out for rlt in padmet_b.dicOfRelationIn[rxn_id] if rlt.type == "is_linked_to"])
-            recData_dict = {"ANNOTATION":None, "ORTHOLOGY": set()}
-            for recData in [padmet_b.dicOfNode[rlt.id_out].misc for rlt in padmet_b.dicOfRelationIn[rxn_id] if rlt.type == "has_reconstructionData"]:
-                category = recData["CATEGORY"][0]
-                if category == "ANNOTATION":
-                    recData_dict["ANNOTATION"] = recData["SOURCE"][0]
-                elif category == "ORTHOLOGY":
-                    org_info = recData["SOURCE"][0].replace("OUTPUT_ORTHOFINDER_FROM_","")
-                    recData_dict["ORTHOLOGY"].add(org_info)
-            if recData_dict["ANNOTATION"] is None:
-                nb_rxn_with_no_annot_source += 1
-                #print("reaction %s from %s has no annotation source" %(rxn_id, org_b))
-            else:
-                genes_ids_for_blast.update(genes_assoc)
-                line = {"reaction_id": rxn_id, "genes_ids": ";".join(genes_assoc), "sources": "ANNOTATION+"+";".join(recData_dict["ORTHOLOGY"])}
-                dict_writer.writerow(line)
-    print("%s reaction in %s but not in %s have no annotation source" %(nb_rxn_with_no_annot_source, org_b, org_a))
+    print("%s reaction in %s but not in %s" %(len(genes_ids_for_blast), org_a, org_b))
 
 
 def analysisOutput(analysis_result, analysis_output):
@@ -321,7 +316,7 @@ def analysisOutput(analysis_result, analysis_output):
 
 
 ##### run all analysis in multiprocess #####
-def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folder, tmp_folder, pool, blastp, tblastn, exonerate, keep_tmp, debug, predicted_folder):
+def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folder, tmp_folder, pool, blastp, tblastn, exonerate, keep_tmp, debug, predicted_folder, nb_cpu):
     """
     Run different blast analysis based on files representing specific reactions of 2 padmet files.
     For each specific reaction file in spec_reactions_folder (ex: org_a_vs_org_b.tsv):
@@ -377,22 +372,23 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
             print("Extracting all data for %s vs %s" %(org_a, org_b))
             print("%s query ids to search" %len(all_query_seq_ids))
     
-            all_dict_args = []
+            current_result = []
             for query_seq_id in all_query_seq_ids:
-                dict_args = {"query_seq_id": query_seq_id, "query_faa": query_faa, "subject_faa": subject_faa, "subject_fna": subject_fna, "output_folder": tmp_folder, "blastp": blastp, "tblastn": tblastn, "exonerate": exonerate, "debug": debug, 'predicted_folder': predicted_folder, 'org_receiver': org_b}
-                all_dict_args.append(dict_args)
                 org_receiver_folder = os.path.join(predicted_folder, org_b)
                 if not os.path.exists(org_receiver_folder):
                     os.mkdir(org_receiver_folder)
-            #list of dict to give to dictWritter
-            all_analysis_result = []
-            #Run runAllAnalysis in multiproccess.
-            mp_results = pool.map(runAllAnalysis, all_dict_args)
-            for _list in mp_results:
-                all_analysis_result += _list
+                dict_args = {"query_seq_id": query_seq_id, "query_faa": query_faa, "subject_faa": subject_faa, "subject_fna": subject_fna, "output_folder": tmp_folder, "blastp": blastp, "tblastn": tblastn, "exonerate": exonerate, "debug": debug, 'predicted_folder': predicted_folder, 'org_receiver': org_b}
+                analysis_results = runAllAnalysis(query_seq_id, query_faa, subject_faa, subject_fna, tmp_folder, blastp, tblastn, exonerate, debug, predicted_folder, org_b, nb_cpu)
+                for analysis_result in analysis_results:
+                    current_result.append(analysis_result)
+
             print("Creating output analysis: %s" %analysis_output)
             #Create output file
-            analysisOutput(all_analysis_result, analysis_output)
+            analysis_header = ["query_seq_id", "blastp_sseqid", "blastp_evalue", "blastp_bitscore",  "tblastn_sseqid", "tblastn_evalue", "tblastn_bitscore", "tblastn_sstart", "tblastn_send", "exonerate_score", "exonerate_hit_range", "predicted_gene"]
+            with open(analysis_output,"w") as csvfile:
+                dict_writer = csv.DictWriter(csvfile, fieldnames=analysis_header, delimiter="\t")
+                dict_writer.writeheader()
+                dict_writer.writerows(current_result)
             if not keep_tmp:
                 cleanTmp(tmp_folder)
 
@@ -430,7 +426,7 @@ def extractGenes(reactions_file):
     return all_query_seq_ids
 
 
-def runAllAnalysis(dict_args):
+def runAllAnalysis(query_seq_id, query_faa, subject_faa, subject_fna, output_folder, blastp, tblastn, exonerate, debug, predicted_folder, org_receiver, nb_cpu):
     """
     For a given gene query id:
         1/ extract from query_faa the sequence and create a faa file output_folder/query_id.faa
@@ -443,18 +439,6 @@ def runAllAnalysis(dict_args):
     list
         list of dict with all analysis output
     """
-    query_seq_id = dict_args["query_seq_id"]
-    query_faa = dict_args["query_faa"]
-    subject_faa = dict_args["subject_faa"]
-    subject_fna = dict_args["subject_fna"]
-    output_folder = dict_args["output_folder"]
-    blastp = dict_args["blastp"]
-    tblastn = dict_args["tblastn"]
-    exonerate = dict_args["exonerate"]
-    debug = dict_args["debug"]
-    predicted_folder = dict_args['predicted_folder']
-    org_receiver = dict_args['org_receiver']
-
     with open(query_faa, "r") as faa:
         query_seqs = [seq_record for seq_record in SeqIO.parse(faa, "fasta") if seq_record.id.startswith(query_seq_id+"_isoform") or seq_record.id == query_seq_id]
     if len(query_seqs) > 1:
@@ -469,12 +453,12 @@ def runAllAnalysis(dict_args):
     
         # Run BLASTP and parse the output
         if blastp:
-            blastp_result = runBlastp(query_seq_faa, subject_faa, debug=debug)
+            blastp_result = runBlastp(query_seq_faa, subject_faa, nb_cpu=nb_cpu, debug=debug)
             if blastp_result:
                 current_result.update(blastp_result)
         # Run TBLASTN and parse the output
         if tblastn:
-            tblastn_result = runTblastn(query_seq_faa, subject_fna, debug=debug)
+            tblastn_result = runTblastn(query_seq_faa, subject_fna, nb_cpu=nb_cpu, debug=debug)
             if tblastn_result:
                 current_result.update(tblastn_result)
         
@@ -583,7 +567,7 @@ def runSearchOnProteome(proteome_orgA, genome_orgB, output_folder, proteome_orgB
         analysisOutput(analysis_result, prot2genomes_output)
 
 
-def runBlastp(query_seq_faa, subject_faa, header=["sseqid", "evalue", "bitscore"], debug=False):
+def runBlastp(query_seq_faa, subject_faa, header=["sseqid", "evalue", "bitscore"], nb_cpu=1, debug=False):
     """
     Run blastp on querry_seq vs subectj faa and return output based on header
     Use NcbiblastpCommandline fct and extract output
@@ -608,7 +592,7 @@ def runBlastp(query_seq_faa, subject_faa, header=["sseqid", "evalue", "bitscore"
     if debug:
         print("\tRunning Blastp %s vs %s" %(os.path.basename(query_seq_faa), os.path.basename(subject_faa)))
     outfmt_arg = '"%s %s"'%(6, " ".join(header))
-    output = NcbiblastpCommandline(query=query_seq_faa, subject=subject_faa, evalue=1e-20, outfmt=outfmt_arg)()[0]
+    output = NcbiblastpCommandline(query=query_seq_faa, subject=subject_faa, evalue=1e-20, outfmt=outfmt_arg,  num_threads=nb_cpu)()[0]
     output = [line.split("\t") for line in output.splitlines()]
     blastp_result = {}
     count = 0
@@ -636,7 +620,7 @@ def runBlastp(query_seq_faa, subject_faa, header=["sseqid", "evalue", "bitscore"
     return result
 
 
-def runTblastn(query_seq_faa, subject_fna, header=["sseqid", "evalue", "bitscore", "sstart", "send"], debug=False):
+def runTblastn(query_seq_faa, subject_fna, header=["sseqid", "evalue", "bitscore", "sstart", "send"], nb_cpu=1, debug=False):
     """
     Run tblastn on querry_seq vs subectj fna and return output based on header
     Use NcbitblastnCommandline fct and extract output
@@ -660,7 +644,7 @@ def runTblastn(query_seq_faa, subject_fna, header=["sseqid", "evalue", "bitscore
     """    
     print("\tRunning tBlastn %s vs %s" %(os.path.basename(query_seq_faa), os.path.basename(subject_fna)))
     outfmt_arg = '"%s %s"'%(6, " ".join(header))
-    output = NcbitblastnCommandline(query=query_seq_faa, subject=subject_fna, evalue=1e-20, outfmt=outfmt_arg)()[0]
+    output = NcbitblastnCommandline(query=query_seq_faa, subject=subject_fna, evalue=1e-20, outfmt=outfmt_arg, num_threads=nb_cpu)()[0]
     output = [line.split("\t") for line in output.splitlines()]
     tblastn_result = {}
     count = 0
