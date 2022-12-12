@@ -85,8 +85,8 @@ def enhanced_meneco_output(meneco_output_file, padmetRef, output, verbose=False)
         file_in_array = f.read().splitlines()
         start_index = None
         for line in file_in_array:
-            if line.startswith("Computing union of reactions from all completion"):
-                start_index = file_in_array.index(line) + 1
+            if line.startswith("Union of cardinality minimal completions"):
+                start_index = file_in_array.index(line)
         #recover reactions, delete ' " ' and space.
         if start_index is None:
             print("No line starting with: Computing union of reactions from all completion. Enable to extracts reactions")
