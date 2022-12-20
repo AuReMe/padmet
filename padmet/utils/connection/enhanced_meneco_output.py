@@ -57,7 +57,7 @@ def enhanced_meneco_output(meneco_output_file, padmetRef, output, verbose=False)
     The standard output of meneco return ids of reactions corresponding to the solution for gapfilling.
     The ids are those from the sbml and so they are encoded.
     This script extract the solution corresponding to the union of reactions
-    "Computing union of reactions from all completion"
+    "Union of cardinality minimal completions"
     Based on padmetRef return a file with more information for each reaction.
 
     ex: RXN__45__5
