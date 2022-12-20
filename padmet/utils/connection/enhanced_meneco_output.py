@@ -89,7 +89,7 @@ def enhanced_meneco_output(meneco_output_file, padmetRef, output, verbose=False)
                 start_index = file_in_array.index(line)
         #recover reactions, delete ' " ' and space.
         if start_index is None:
-            print("No line starting with: Computing union of reactions from all completion. Enable to extracts reactions")
+            print("No line starting with: Union of cardinality minimal completions. Enable to extracts reactions")
             #return
         encoded_reactions = [line.strip().replace("\"","") 
         for line in file_in_array[start_index:]]
