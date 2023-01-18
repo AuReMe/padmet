@@ -101,9 +101,9 @@ Description:
 
     usage:
         padmet pgdb_to_padmet --pgdb=DIR --output=FILE [--version=V] [--db=ID] [--padmetRef=FILE] [--source=STR] [-v]
-                              [--enhance]
+                              [--enhance] [--prot-ids70]
         padmet pgdb_to_padmet --pgdb=DIR --output=FILE --extract-gene [--no-orphan] [--keep-self-rxn] [--version=V]
-                              [--db=ID] [--padmetRef=FILE] [--source=STR] [-v] [--enhance]
+                              [--db=ID] [--padmetRef=FILE] [--source=STR] [--prot-ids70] [-v] [--enhance]
 
     options:
         -h --help     Show help.
@@ -117,6 +117,7 @@ Description:
         --extract-gene    extract genes from genes_file (use if it's a specie's pgdb, if MetaCyc, do not use).
         --no-orhpan    remove reactions without gene association (use if it's a specie's pgdb, if MetaCyc, do not use).
         --keep-self-rxn    keep reactions with no reactants (use if it's a specie's pgdb, if MetaCyc, do not use).
+        --prot-ids70    Will extract UNIPROT and PID ids linked to rxn from protein-seq-ids-reduced-70.dat file
         -v   print info.
 """
 import docopt
@@ -149,6 +150,7 @@ def pgdb_to_padmet_cli(command_args):
     no_orphan = args["--no-orphan"]
     keep_self_producing_rxn = args["--keep-self-rxn"]
     padmetRef_file = args["--padmetRef"]
+    prot_ids70 = args["--prot-ids70"]
     verbose = args["-v"]
 
     # if keep_self_producing_rxn:
@@ -160,12 +162,12 @@ def pgdb_to_padmet_cli(command_args):
 
     from_pgdb_to_padmet(pgdb_folder=pgdb_folder, db=db, version=version, source=source, extract_gene=extract_gene,
                         no_orphan=no_orphan, no_self_producing_rxn=no_self_producing_rxn, enhanced_db=enhanced_db,
-                        padmetRef_file=padmetRef_file, verbose=verbose, output_file=output)
+                        padmetRef_file=padmetRef_file, verbose=verbose, output_file=output, prot_ids70=prot_ids70)
 
 
 def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA', source='GENOME', extract_gene=False, no_orphan=False,
                         no_self_producing_rxn=True, enhanced_db=False, padmetRef_file=None, verbose=False,
-                        output_file=None, prot_ids70=False):
+                        output_file=None, prot_ids70: bool = False):
     """
     Parameters
     ----------
@@ -1379,13 +1381,3 @@ def map_gene_id(dict_protein_gene_id, map_gene_ids):
         mapped_dict_protein_gene_id[prot_id] = mapped_gene_ids
 
     return mapped_dict_protein_gene_id
-
-
-# =====================================================================================================================
-
-from_pgdb_to_padmet(pgdb_folder='../../../Files/PGDB', db='MetaCyc', version='26.0', source='GENOME',
-                    extract_gene=False, no_orphan=False, no_self_producing_rxn=False, enhanced_db=False,
-                    padmetRef_file=None, verbose=True, output_file='../../../Files/metacyc_26.0.padmet',
-                    prot_ids70=True)
-
-# =====================================================================================================================
