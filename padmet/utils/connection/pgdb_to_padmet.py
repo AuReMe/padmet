@@ -153,11 +153,6 @@ def pgdb_to_padmet_cli(command_args):
     prot_ids70 = args["--prot-ids70"]
     verbose = args["-v"]
 
-    # if keep_self_producing_rxn:
-    #     no_self_producing_rxn = False
-    # else:
-    #     no_self_producing_rxn = True
-    # ?????? ->
     no_self_producing_rxn = not keep_self_producing_rxn
 
     from_pgdb_to_padmet(pgdb_folder=pgdb_folder, db=db, version=version, source=source, extract_gene=extract_gene,
@@ -236,6 +231,11 @@ def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA', source='GENOME'
         if not os.path.exists(prot_seq_70_file):
             raise FileNotFoundError('No protein-seq-ids-reduced-70.dat file at ' + prot_seq_70_file)
         rxn_prot_ids = proteins_seq_ids_reduced_70_dat_parser(prot_seq_70_file)
+
+        prot_seq_70_sequences = os.path.join(pgdb_folder, "protein-seq-ids-reduced-70.seq")
+        if not os.path.exists(prot_seq_70_sequences):
+            raise FileNotFoundError('No protein-seq-ids-reduced-70.dat file at ' + prot_seq_70_sequences)
+        create_prot_ids_fasta(prot_seq_70_sequences)
     else:
         rxn_prot_ids = None
 
@@ -1279,6 +1279,21 @@ def extract_prot_ids(e_list: List[str]) -> Set[str]:
         if 'UNIPROT' in e or 'PID' in e:
             uniprot_set.add(e.split('"')[1].split('"')[0])
     return uniprot_set
+
+
+def create_prot_ids_fasta(file_path: str):
+    fasta_file = 'proteins_seq_ids_reduced_70.fasta'
+    with open(file_path, 'r') as seq_f, open(fasta_file, 'w') as fasta_f:
+        file_lines = seq_f.readlines()
+        file_str = ' '.join([s.strip() for s in file_lines])
+        file_elem_list = file_str.split('(')
+        for elem in file_elem_list:
+            elem = elem.strip().split('"')
+            if elem != ['']:
+                prot_id = elem[1]
+                prot_seq = elem[3]
+                fasta_f.write(f'>{prot_id}\n{prot_seq}\n')
+
 
 # ====================================================================================================================
 

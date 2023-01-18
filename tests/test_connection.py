@@ -196,6 +196,9 @@ def test_pgdb_to_padmet_prot_ids70_cli():
                                                                              'O04469', 'Q8W1L6', 'Q9ZCZ1'}
     assert set(all_xref['ENOYL-COA-DELTA-ISOM-RXN_xrefs']['PID_70']) == {'AAC83700.1'}
 
+    os.remove('test.padmet')
+    os.remove('proteins_seq_ids_reduced_70.fasta')
+
 
 def test_sbmlGenerator():
     fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
