@@ -571,7 +571,9 @@ def reactions_parser(filePath, padmet, extract_gene, source, rxn_prot_ids: Dict[
                 xrefs = dict_values["DBLINKS"]
                 _setXrefs(xrefs, rxn_id, padmet, rxn_prot_ids)
             except KeyError:
-                pass
+                if rxn_prot_ids is not None:
+                    if rxn_id in rxn_prot_ids.keys():
+                        _setXrefs([], rxn_id, padmet, rxn_prot_ids)
             if extract_gene:
                 reconstructionData_id = rxn_id+"_reconstructionData_"+source
                 if reconstructionData_id in list(padmet.dicOfNode.keys()) and verbose:
@@ -1241,6 +1243,8 @@ def _setXrefs(xrefs, current_id, padmet, rxn_prot_ids: Dict[str, Set[str]] = Non
                 xref_node.misc[db] = [_id]
 
 
+# prot-ids70 option functions
+# ====================================================================================================================
 def proteins_seq_ids_reduced_70_dat_parser(file_path: str) -> Dict[str, Set[str]]:
     rxn_prot_ids_dict = dict()
     with open(file_path, 'r') as f:
@@ -1275,6 +1279,8 @@ def extract_prot_ids(e_list: List[str]) -> Set[str]:
         if 'UNIPROT' in e or 'PID' in e:
             uniprot_set.add(e.split('"')[1].split('"')[0])
     return uniprot_set
+
+# ====================================================================================================================
 
 
 def enhance_db(metabolic_reactions, padmet, with_genes, verbose = False):
