@@ -8,7 +8,7 @@ Description:
         output: path to the padmet to create
         version: to specify the version of the pgdb (20.0, 22.0)
         db: to specify the name of the database (METACYC, ECOCYC, ...)
-        enhance: to also read the file metabolic-reaction.xml and add the to the padmet
+        enhance: to also read the file metabolic-reaction.xml and add the ? to the padmet
     2./ To create a padmet and add only reactions from pgdb if they are in padmetRef specifier.
         Copy information of the reaction not from the pgdb but from the padmetRef.
         This allows to uniform reaction to the same version of metacyc represented in the padmetRef
@@ -108,15 +108,15 @@ Description:
     options:
         -h --help     Show help.
         --version=V    Xcyc version [default: N.A].
-        --db=ID    Biocyc database corresponding to the pgdb (metacyc, ecocyc, ...) [default: N.A].
+        --db=ID    Biocyc database corresponding to the pgdb (MetaCyc, ecocyc, ...) [default: N.A].
         --output=FILE    padmet file corresponding to the DB.
-        --pgdb=DIR    directory containg all the .dat files of metacyc (data).
+        --pgdb=DIR    directory containing all the .dat files of MetaCyc (data).
         --padmetRef=FILE    padmet of reference.
         --source=STR    Tag associated to the source of the reactions, used to ensure traceability [default: GENOME].
         --enhance    use the metabolic-reactions.xml file to enhance the database.
-        --extract-gene    extract genes from genes_file (use if its a specie's pgdb, if metacyc, do not use).
-        --no-orhpan    remove reactions without gene associaiton (use if its a specie's pgdb, if metacyc, do not use).
-        --keep-self-rxn    keep reactions with no reactants (use if its a specie's pgdb, if metacyc, do not use).
+        --extract-gene    extract genes from genes_file (use if it's a specie's pgdb, if MetaCyc, do not use).
+        --no-orhpan    remove reactions without gene association (use if it's a specie's pgdb, if MetaCyc, do not use).
+        --keep-self-rxn    keep reactions with no reactants (use if it's a specie's pgdb, if MetaCyc, do not use).
         -v   print info.
 """
 import docopt
@@ -151,20 +151,21 @@ def pgdb_to_padmet_cli(command_args):
     padmetRef_file = args["--padmetRef"]
     verbose = args["-v"]
 
-    if keep_self_producing_rxn:
-        no_self_producing_rxn = False
-    else:
-        no_self_producing_rxn = True
+    # if keep_self_producing_rxn:
+    #     no_self_producing_rxn = False
+    # else:
+    #     no_self_producing_rxn = True
+    # ?????? ->
+    no_self_producing_rxn = not keep_self_producing_rxn
 
     from_pgdb_to_padmet(pgdb_folder=pgdb_folder, db=db, version=version, source=source, extract_gene=extract_gene,
                         no_orphan=no_orphan, no_self_producing_rxn=no_self_producing_rxn, enhanced_db=enhanced_db,
                         padmetRef_file=padmetRef_file, verbose=verbose, output_file=output)
 
 
-def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA',
-                        source='GENOME', extract_gene=False, no_orphan=False,
-                        no_self_producing_rxn=True, enhanced_db=False, padmetRef_file=None,
-                        verbose=False, output_file=None, uniprot=False):
+def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA', source='GENOME', extract_gene=False, no_orphan=False,
+                        no_self_producing_rxn=True, enhanced_db=False, padmetRef_file=None, verbose=False,
+                        output_file=None, prot_ids70=False):
     """
     Parameters
     ----------
@@ -183,13 +184,15 @@ def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA',
     no_self_producing_rxn: bool
         if true, remove reactions with no reactants (auto-producing reactions)
     enhanced_db: bool
-        if true, read metabolix-reactions.xml sbml file and add information in final padmet
+        if true, read metabolic-reactions.xml sbml file and add information in final padmet
     padmetRef_file: str
-        path to padmetRef corresponding to metacyc in padmet format
+        path to padmetRef corresponding to MetaCyc in padmet format
     verbose: bool
         if True print information
     output_file: str
         pathname of padmet output file
+    prot_ids70 : bool
+        if True will extract UNIPROT and PID ids linked to rxn from protein-seq-ids-reduced-70.dat file
 
     Returns
     -------
@@ -202,7 +205,7 @@ def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA',
     list_of_relation = []
     def_compart_in = "c"
     def_compart_out = "e"
-    #parsing args
+    # parsing args
     source = source.upper()
 
     if output_file:
@@ -226,16 +229,16 @@ def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA',
     else:
         genes_file = None
 
-    if uniprot:
+    if prot_ids70:
         prot_seq_70_file = os.path.join(pgdb_folder, "protein-seq-ids-reduced-70.dat")
-        rxn_prot_ids = proteins_seq_ids_reduced_70_dat_parser(prot_seq_70_file, verbose)
+        if not os.path.exists(prot_seq_70_file):
+            raise FileNotFoundError('No protein-seq-ids-reduced-70.dat file at ' + prot_seq_70_file)
+        rxn_prot_ids = proteins_seq_ids_reduced_70_dat_parser(prot_seq_70_file)
     else:
         rxn_prot_ids = None
 
-
     if padmetRef_file:
         padmetRef = PadmetRef(padmetRef_file)
-
         padmet = instantiate_padmet("PadmetSpec", padmetRef_file, padmet_id, db, version, verbose)
 
         with open(reactions_file, 'r') as f:
@@ -286,7 +289,7 @@ def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA',
         rnas = rnas_parser(os.path.join(pgdb_folder,'rnas.dat'), padmet, verbose)
     
         if verbose: print("parsing reactions")
-        reactions_parser(reactions_file, padmet, extract_gene, source, uniprot, rxn_prot_ids, verbose)
+        reactions_parser(reactions_file, padmet, extract_gene, source, rxn_prot_ids, verbose)
 
         if verbose: print("parsing pathways")
         pathways_parser(pathways_file, padmet, verbose)
@@ -344,6 +347,7 @@ def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA',
 
     return padmet
 
+
 def classes_parser(filePath, padmet, verbose = False):
     """
     from class.dat: get for each class, the UNIQUE-ID, COMMON-NAME, TYPES, SYNONYMS, DBLINKS
@@ -353,12 +357,12 @@ def classes_parser(filePath, padmet, verbose = False):
     check if the type is already in the padmet
     if not create a new class_node (var: subClass) with subClass_node.id = type
     Create a relation current node is_a_class type
-    - For each Synonyms:
+    - For each "SYNONYMS":
     this information is stocked in padmet as: has_name relation btw a node and a name_node
     create a new name_node with name_node.id = class_id+"_names" and name_node.misc = {LABEL:[synonyms]}
     Create a relation current node has_name name_node.id
-    - For each DBLINKS:
-    DBLINKS is parsed with regex_xref to get the db and the id
+    - For each "DBLINKS":
+    "DBLINKS" is parsed with regex_xref to get the db and the id
     this information is stocked in padmet as: has_xref relation btw a node and a xref_node
     create a new xref_node with xref_node.id = class_id+"_xrefs" and xref_node.misc = {db:[id]}
     Create a relation current node has_xref xref_node.id
@@ -424,7 +428,7 @@ def classes_parser(filePath, padmet, verbose = False):
     return id_classes
 
 
-def reactions_parser(filePath, padmet, extract_gene, source, uniprot, rxn_prot_ids=None, verbose=False):
+def reactions_parser(filePath, padmet, extract_gene, source, rxn_prot_ids: Dict[str, Set[str]] = None, verbose=False):
     """
     from reaction.dat: get for each reaction, the UNIQUE-ID, COMMON-NAME, TYPES, SYNONYMS, DBLINKS
     Create a reaction node with node.id = UNIQUE-ID,  node.misc = {COMMON-NAME:[COMMON-NAMES]}
@@ -433,12 +437,12 @@ def reactions_parser(filePath, padmet, extract_gene, source, uniprot, rxn_prot_i
     check if the type is already in the padmet
     if not create a new class_node (var: subClass) with subClass_node.id = type
     Create a relation current node is_a_class type
-    - For each Synonyms:
+    - For each "SYNONYMS":
     this information is stocked in padmet as: has_name relation btw a node and a name_node
     create a new name_node with name_node.id = reaction_id+"_names" name_node.misc = {LABEL:[synonyms]}
     Create a relation current node has_name name_node.id
-    - For each DBLINKS:
-    DBLINKS is parsed with regex_xref to get the db and the id
+    - For each "DBLINKS":
+    "DBLINKS" is parsed with regex_xref to get the db and the id
     this information is stocked in padmet as: has_xref relation btw a node and a xref_node
     create a new xref_node with xref_node.id = reaction_id+"_xrefs" and xref_node.misc = {db:[id]}
     Create a relation current node has_xref xref_node.id
@@ -449,6 +453,8 @@ def reactions_parser(filePath, padmet, extract_gene, source, uniprot, rxn_prot_i
         path to reactions.dat
     padmet: padmet.PadmetRef
         padmet instance
+    rxn_prot_ids: Dict[str, Set[str]]
+        Dictionary associating for each rxn, UNIPROT or PID ids extracted from protein-seq-ids-reduced-70.dat file
     verbose: bool
         if True print information
     """
@@ -530,12 +536,12 @@ def reactions_parser(filePath, padmet, extract_gene, source, uniprot, rxn_prot_i
                 if rxn_dir == "REVERSIBLE":
                     rxn_node.misc["DIRECTION"] = ["REVERSIBLE"]
                 elif "LEFT-TO-RIGHT" in rxn_dir:
-                    #if:LEFT-TO-RIGHT, IRREVERSIBLE-LEFT-TO-RIGHT, PHYSIOL-RIGHT-TO-LEFT
+                    # if:LEFT-TO-RIGHT, IRREVERSIBLE-LEFT-TO-RIGHT, PHYSIOL-RIGHT-TO-LEFT
                     rxn_node.misc["DIRECTION"] = ["LEFT-TO-RIGHT"]
                 elif "RIGHT-TO-LEFT" in rxn_dir:
-                    #Temporarily set direaction as RIGHT-TO-LEFT
-                    #then, RIGHT' metabolites will be LEFT and LEFT -> RIGHT
-                    #To finish set back DIRECTION to LEFT-TO-RIGHT
+                    # Temporarily set direction as RIGHT-TO-LEFT
+                    # then, RIGHT metabolites will be LEFT and LEFT -> RIGHT
+                    # To finish set back DIRECTION to LEFT-TO-RIGHT
                     rxn_node.misc["DIRECTION"] = ["RIGHT-TO-LEFT"] 
             except KeyError:
                 rxn_node.misc["DIRECTION"] = ["REVERSIBLE"]
@@ -561,7 +567,7 @@ def reactions_parser(filePath, padmet, extract_gene, source, uniprot, rxn_prot_i
                 pass
             try:
                 xrefs = dict_values["DBLINKS"]
-                _setXrefs(xrefs, rxn_id, padmet, uniprot, rxn_prot_ids)
+                _setXrefs(xrefs, rxn_id, padmet, rxn_prot_ids)
             except KeyError:
                 pass
             if extract_gene:
@@ -1175,7 +1181,7 @@ def _setSyns(syns, current_id, padmet):
     if syn not in name_node.misc["LABEL"]]
 
 
-def _setXrefs(xrefs, current_id, padmet, uniprot=False, rxn_prot_ids=None):
+def _setXrefs(xrefs, current_id, padmet, rxn_prot_ids: Dict[str, Set[str]] = None):
     """
     For id current_id, create relation 'has_xref' to a node xref 'current_id'_xrefs
     store a list of external reference from xrefs list in the node xref 'current_id'_xrefs
@@ -1190,11 +1196,9 @@ def _setXrefs(xrefs, current_id, padmet, uniprot=False, rxn_prot_ids=None):
         element id to link to node xref 'current_id'_xref
     padmet: padmet.PadmetRef
         padmet instance
+    rxn_prot_ids: Dict[str, Set[str]]
+        Dictionary associating for each rxn, UNIPROT or PID ids extracted from protein-seq-ids-reduced-70.dat file
     """
-    if uniprot:
-        proteins_ids = rxn_prot_ids[current_id]
-    db_assoc = {'UNIPROT': 'UNIPROT70', 'PID': 'PID70'}
-
     xref_id = current_id+"_xrefs"
     try:
         xref_node = padmet.dicOfNode[xref_id]
@@ -1222,17 +1226,20 @@ def _setXrefs(xrefs, current_id, padmet, uniprot=False, rxn_prot_ids=None):
             xref_node.misc[db].append(_id)
         else:
             xref_node.misc[db] = [_id]
-    if uniprot:
-        print('---> ', xref_id)
-        print('->', proteins_ids)
 
-        for id in proteins_ids:
-            id_el = id.split(':')
-            xref_node.misc[db_assoc[id_el[0]]].append(id_el[1])
-        # xref_node.misc['UNIPROUT'] = ['wé', 'youpi']
+    if rxn_prot_ids is not None:
+        uniprot_suffix = '_70'
+        proteins_ids = rxn_prot_ids[current_id]
+        for p_id in proteins_ids:
+            db = p_id.split(':')[0] + uniprot_suffix
+            _id = p_id.split(':')[1]
+            if db in list(xref_node.misc.keys()) and _id not in xref_node.misc[db]:
+                xref_node.misc[db].append(_id)
+            else:
+                xref_node.misc[db] = [_id]
 
 
-def proteins_seq_ids_reduced_70_dat_parser(file_path: str, verbose: bool = False) -> Dict[str, Set[str]]:
+def proteins_seq_ids_reduced_70_dat_parser(file_path: str) -> Dict[str, Set[str]]:
     rxn_prot_ids_dict = dict()
     with open(file_path, 'r') as f:
         file_lines = f.readlines()
@@ -1298,8 +1305,7 @@ def enhance_db(metabolic_reactions, padmet, with_genes, verbose = False):
     # recovere the reactions that are not in the basic metacyc but in the sbml file
     # use the reactions_name instead of ids because the ids are encoded, the name is the non-encoded version of the id
     padmet_reactions_id = set([node.id for node in list(padmet.dicOfNode.values()) if node.type == "reaction"])
-    reaction_to_add = [reaction for reaction in listOfReactions 
-    if reaction.getName() not in padmet_reactions_id]
+    reaction_to_add = [reaction for reaction in listOfReactions if reaction.getName() not in padmet_reactions_id]
     count = 0
     if verbose:
         print(str(len(reaction_to_add))+" reactions to add")
@@ -1375,26 +1381,11 @@ def map_gene_id(dict_protein_gene_id, map_gene_ids):
     return mapped_dict_protein_gene_id
 
 
-# ====================================================
-version = '26.0'
-db = 'MetaCyc'
-output = '../../../Files/metacyc_26.0.padmet'
-pgdb_folder = '../../../Files/PGDB'
-enhanced_db = False
-extract_gene = False
-source = 'GENOME'
-no_orphan = False
-padmetRef_file = None
-keep_self_producing_rxn = True
-verbose = True
-uniprot = True
+# =====================================================================================================================
 
-if keep_self_producing_rxn:
-    no_self_producing_rxn = False
-else:
-    no_self_producing_rxn = True
+from_pgdb_to_padmet(pgdb_folder='../../../Files/PGDB', db='MetaCyc', version='26.0', source='GENOME',
+                    extract_gene=False, no_orphan=False, no_self_producing_rxn=False, enhanced_db=False,
+                    padmetRef_file=None, verbose=True, output_file='../../../Files/metacyc_26.0.padmet',
+                    prot_ids70=True)
 
-from_pgdb_to_padmet(pgdb_folder=pgdb_folder, db=db, version=version, source=source, extract_gene=extract_gene,
-                    no_orphan=no_orphan, no_self_producing_rxn=no_self_producing_rxn, enhanced_db=enhanced_db,
-                    padmetRef_file=padmetRef_file, verbose=verbose, output_file=output, uniprot=uniprot)
-# ====================================================
+# =====================================================================================================================
