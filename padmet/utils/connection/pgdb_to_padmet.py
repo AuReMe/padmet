@@ -117,7 +117,8 @@ Description:
         --extract-gene    extract genes from genes_file (use if it's a specie's pgdb, if MetaCyc, do not use).
         --no-orhpan    remove reactions without gene association (use if it's a specie's pgdb, if MetaCyc, do not use).
         --keep-self-rxn    keep reactions with no reactants (use if it's a specie's pgdb, if MetaCyc, do not use).
-        --prot-ids70    Will extract UNIPROT and PID ids linked to rxn from protein-seq-ids-reduced-70.dat file
+        --prot-ids70    Will extract UNIPROT and PID ids linked to rxn from protein-seq-ids-reduced-70.dat file and
+                        create fasta file from protein-seq-ids-reduced-70.seq file
         -v   print info.
 """
 import docopt
@@ -189,7 +190,8 @@ def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA', source='GENOME'
     output_file: str
         pathname of padmet output file
     prot_ids70 : bool
-        if True will extract UNIPROT and PID ids linked to rxn from protein-seq-ids-reduced-70.dat file
+        if True will extract UNIPROT and PID ids linked to rxn from protein-seq-ids-reduced-70.dat file and
+        create fasta file from protein-seq-ids-reduced-70.seq file
 
     Returns
     -------
@@ -227,11 +229,13 @@ def from_pgdb_to_padmet(pgdb_folder, db='MetaCyc', version='NA', source='GENOME'
         genes_file = None
 
     if prot_ids70:
+        # Dictionary : Dict[rxn_id, Set[prot_ids]] association creation
         prot_seq_70_file = os.path.join(pgdb_folder, "protein-seq-ids-reduced-70.dat")
         if not os.path.exists(prot_seq_70_file):
             raise FileNotFoundError('No protein-seq-ids-reduced-70.dat file at ' + prot_seq_70_file)
         rxn_prot_ids = proteins_seq_ids_reduced_70_dat_parser(prot_seq_70_file)
 
+        # Fasta file (prot sequences) creation
         prot_seq_70_sequences = os.path.join(pgdb_folder, "protein-seq-ids-reduced-70.seq")
         if not os.path.exists(prot_seq_70_sequences):
             raise FileNotFoundError('No protein-seq-ids-reduced-70.dat file at ' + prot_seq_70_sequences)
