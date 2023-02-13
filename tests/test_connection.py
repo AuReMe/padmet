@@ -181,6 +181,38 @@ def test_pgdb_to_padmet_no_orphan_with_genes_cli():
     os.remove('test.padmet')
 
 
+def test_pgdb_to_padmet_prot_ids70_cli():
+    # Get data
+    subprocess.call(
+        ['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--prot-ids70'])
+    test_padmetSpec = PadmetSpec('test.padmet')
+    all_xref = dict()
+    for node in test_padmetSpec.dicOfNode.values():
+        if node.type == "xref":
+            all_xref[node.id] = node.misc
+
+    # Test test.padmet content
+    assert set(all_xref['ACYLCOADEHYDROG-RXN_xrefs']['UNIPROT_70']) == {'Q47146'}
+    assert set(all_xref['ENOYL-COA-DELTA-ISOM-RXN_xrefs']['UNIPROT_70']) == {'O75521', 'Q6NYL3', 'P42126', 'Q489W3',
+                                                                             'P77399', 'P55100', 'O23299', 'B5XYH0',
+                                                                             'O04469', 'Q8W1L6', 'Q9ZCZ1'}
+    assert set(all_xref['ENOYL-COA-DELTA-ISOM-RXN_xrefs']['PID_70']) == {'AAC83700.1'}
+
+    # Test proteins_seq_ids_reduced_70.fasta file
+    files_records = list(SeqIO.parse("proteins_seq_ids_reduced_70.fasta", "fasta"))
+    assert len([record.id for record in files_records]) == 24
+    assert files_records[0].id == 'UNIPROT:Q58DM8'
+    assert files_records[0].seq == 'MAALRALLPRVRAPLRPWLFCPVQRSFASSAAFEYIITAKKGRNSNVGLIQLNRPKALNALCNGLIVELNQALQAFEE' \
+                                   'DPAVGAIVLTGGEKVFAAGADIKEMQSLTFQNCYSGGFLSHWDQLTRVKKPVIAAVNGYALGGGCELAMMCDIIYAGE' \
+                                   'KAQFGQPEILIGTIPGAGGTQRLTRAVGKSLAMEMVLTGDRISAQDAKQAGLVSKIFPVETVVEEAIQCAEKIASNSK' \
+                                   'IVTAMAKESVNAAFEMTLAEGVKLEKKLFYSTFATEDRKEGMAAFVEKRKANFKDQ'
+    assert files_records[-1].id == 'UNIPROT:Q9P4U7'
+
+    # Delete created files
+    os.remove('test.padmet')
+    os.remove('proteins_seq_ids_reduced_70.fasta')
+
+
 def test_sbmlGenerator():
     fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
     padmet_to_sbml(fabo_padmetSpec, 'fabo.sbml')

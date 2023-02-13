@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-    """TODO"""
+"""TODO"""
 import docopt
 import os
 import sys
