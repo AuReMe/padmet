@@ -20,14 +20,19 @@ Description:
 ::
 
     usage:
-        padmet enhanced_meneco_output --meneco_output=FILE --padmetRef=FILE --output=FILE [-v]
+        padmet enhanced_meneco_output --meneco_output=FILE --padmetRef=FILE --output=FILE [--json] [--reactions=STR] [-v]
 
     options:
         -h --help     Show help.
         --meneco_output=FILE    pathname of a meneco run' result
         --padmetRef=FILE    path to padmet file corresponding to the database of reference (the repair network)
         --output=FILE    path to tsv output file
+        --json  if meneco output in json format
+        --reactions=STR set of reactions to extract (default=union) values : union, intersection, essential, minimal
+            (works if meneco output given in json format)
 """
+import json
+
 import docopt
 import os
 
@@ -43,16 +48,25 @@ def command_help():
 
 
 def enhanced_meneco_output_cli(command_args):
+    reactions_type = ['union', 'intersection', 'essential', 'minimal']
     args = docopt.docopt(__doc__, argv=command_args)
 
     meneco_output_file = args["--meneco_output"]
     output = args["--output"]
     verbose = args["-v"]
     padmetRef = PadmetRef(args["--padmetRef"])
-    enhanced_meneco_output(meneco_output_file, padmetRef, output, verbose)
+    json_fmt = args["--json"]
+    if args["--reactions"] is None:
+        reactions_to_extract = reactions_type[0]
+    elif args["--reactions"] not in reactions_type:
+        raise AttributeError(f'reactions attribute must be in : {", ".join(reactions_type)}')
+    else:
+        reactions_to_extract = args["--reactions"]
+    enhanced_meneco_output(meneco_output_file, padmetRef, output, json_fmt, reactions_to_extract, verbose)
 
 
-def enhanced_meneco_output(meneco_output_file, padmetRef, output, verbose=False):
+def enhanced_meneco_output(meneco_output_file, padmetRef, output, json_fmt: bool, reactions_to_extract: str,
+                           verbose=False):
     """
     The standard output of meneco return ids of reactions corresponding to the solution for gapfilling.
     The ids are those from the sbml and so they are encoded.
@@ -74,28 +88,46 @@ def enhanced_meneco_output(meneco_output_file, padmetRef, output, verbose=False)
         path to padmet file corresponding to the database of reference (the repair network)
     output: str
         path to tsv output file
+    json_fmt: bool
+        True if the meneco output is in json format
+    reactions_to_extract: str
+        What group of reactions to extract
     verbose: bool
         if True print information    
     """
     if not os.path.exists(meneco_output_file):
         raise FileNotFoundError("No Meneco result (--meneco_output/meneco_output_file) accessible at " + meneco_output_file)
 
-    with open(meneco_output_file,'r') as f:
-        #recovering union reactions
-        file_in_array = f.read().splitlines()
-        start_index = None
-        for line in file_in_array:
-            if line.startswith("Union of cardinality minimal completions"):
-                start_index = file_in_array.index(line)
-        #recover reactions, delete ' " ' and space.
-        if start_index is None:
-            print("No line starting with: Union of cardinality minimal completions. Enable to extracts reactions")
-            #return
-        encoded_reactions = [line.strip().replace("\"","") 
-        for line in file_in_array[start_index:]]
+    with open(meneco_output_file, 'r') as f:
+        if json_fmt:
+            reactions_keys = dict(union='Union of cardinality minimal completions',
+                                  intersection='Intersection of cardinality minimal completions',
+                                  essential='Essential reactions',
+                                  minimal='One minimal completion')
+
+            meneco_res_dict = json.load(f)
+            encoded_reactions = meneco_res_dict[reactions_keys[reactions_to_extract]]
+            if reactions_to_extract == 'essential':
+                reactions_set = set()
+                for l_rxn in encoded_reactions.values():
+                    for rxn in l_rxn:
+                        reactions_set.add(rxn)
+                encoded_reactions = list(reactions_set)
+
+        else:
+            # recovering union reactions
+            file_in_array = f.read().splitlines()
+            start_index = None
+            for line in file_in_array:
+                if line.startswith("Union of cardinality minimal completions"):
+                    start_index = file_in_array.index(line)
+            # recover reactions, delete ' " ' and space.
+            if start_index is None:
+                print("No line starting with: Union of cardinality minimal completions. Enable to extracts reactions")
+            encoded_reactions = [line.strip().replace("\"", "") for line in file_in_array[start_index:]]
         nb_reactions = len(encoded_reactions)
-    if verbose: print("%s reactions to check" %nb_reactions)
-    with open(output,'w') as f:
+    if verbose: print("%s reactions to check" % nb_reactions)
+    with open(output, 'w') as f:
         header = ["idRef","Common name","EC-number","Formula (with id)","Formula (with cname)","Action","Comment", "Genes"]
         header = "\t".join(header)+"\n"
         f.write(header)
