@@ -7,7 +7,7 @@ Description:
 
     usage:
         padmet visu_similarity_gsmn --reaction=FILE --output=FILE [--group=FILE]
-    
+
     options:
         -h --help     Show help.
         --reaction=FILE    pathname to the reaction file output of compare_padmet or compare_sbml.
@@ -107,7 +107,7 @@ def visu_similarity_gsmn(reaction_file, output_file, group_file=None):
 
             x = [row[0] for row in subset]
             y = [row[1] for row in subset]
-            plt.scatter(x, y, c=group_color, label=groups[i])
+            plt.scatter(x, y, c=group_color, label=groups[i], s=15**2)
             for i in range(len(x)):
                 plt.annotate(labels[i], (x[i],y[i]))
             plt.legend()
@@ -117,7 +117,7 @@ def visu_similarity_gsmn(reaction_file, output_file, group_file=None):
 
             x = [row[0] for row in subset]
             y = [row[1] for row in subset]
-            plt.scatter(x, y, c="black", label=genome)
+            plt.scatter(x, y, c="black", label=genome, s=15**2)
             for i in range(len(x)):
                 plt.annotate(genome, (x[i],y[i]))
 

@@ -7,7 +7,7 @@ Description:
 
     usage:
         padmet visu_network -i=FILE -o=FILE [--html=FILE] [--level=STR] [--hide-currency]
-    
+
     options:
         -h --help     Show help.
         -i=FILE    pathname to the input file (either PADMet or SBML).
@@ -51,7 +51,7 @@ def visu_network_cli(command_args):
         visualization_level = "compound"
     create_graph(metabolic_network_file, output_file, visualization_level, hide_currency_metabolites)
     if html_output_file:
-        create_html_graph(metabolic_network_file, html_output_file, visualization_level)
+        create_html_graph(metabolic_network_file, html_output_file, visualization_level, hide_currency_metabolites)
 
 
 def parse_compounds_padmet(padmet_file, hide_metabolites):
@@ -166,7 +166,7 @@ def parse_compounds_sbml(sbml_file, hide_metabolites):
                         edges.append((nodes[reactant], nodes[product]))
                         weights.append(1)
                         edges_label.append(reaction.id)
-                        if reaction.reversibility == True:
+                        if reaction.reversibility is True:
                             edges.append((nodes[product], nodes[reactant]))
                             weights.append(1)
                             edges_label.append(reaction.id)
@@ -282,6 +282,7 @@ def parse_pathways_padmet(padmet_file):
                     nodes_label.append(product)
                     nodes[product] = new_cpd_id
             reactant_product_tuples = [(reactant, product) for reactant in reactants for product in products]
+
             for reactant, product in reactant_product_tuples:
                 edges.append((nodes[reactant], nodes[product]))
                 weights.append(1)
@@ -324,7 +325,7 @@ def create_graph(metabolic_network_file, output_file, visualization_level, hide_
         if metabolic_network_file.endswith('.padmet'):
             edges, edges_label, weights, nodes, nodes_label = parse_reactions_padmet(metabolic_network_file)
         else:
-            sys.exit('No correct extension file as input for pathway level. Input must be a .padmet.')
+            sys.exit('No correct extension file as input for reaction level. Input must be a .padmet.')
 
     elif visualization_level == "pathway":
         if metabolic_network_file.endswith('.padmet'):
@@ -372,8 +373,8 @@ def create_graph(metabolic_network_file, output_file, visualization_level, hide_
 
     # Don't curve the edges
     visual_style["edge_curved"] = True
-
-    visual_style["edge_arrow_size"] = 0.5
+    visual_style["edge_width"] = 2
+    visual_style["edge_arrow_size"] = 0.2
 
     # Set the layout
     my_layout = compounds_graph.layout_fruchterman_reingold()
@@ -383,7 +384,7 @@ def create_graph(metabolic_network_file, output_file, visualization_level, hide_
     igraph.plot(compounds_graph, output_file, **visual_style)
 
 
-def create_html_graph(metabolic_network_file, output_file, visualization_level):
+def create_html_graph(metabolic_network_file, output_file, visualization_level, hide_currency_metabolites):
     """ Using output of parse_compounds_padmet or parse_compounds_sbml create an interactive graph in html.
 
     Parameters
@@ -394,17 +395,27 @@ def create_html_graph(metabolic_network_file, output_file, visualization_level):
         pathname of the output picture of the metabolic network
     visualization_level: str
         level of visualization either compound, reaction or pathway
+    hide_currency_metabolites: bool
+        hide currency metabolites
     """
     try:
         import pyvis
     except ImportError:
         raise ImportError('Requires pyvis, try:\npip install pyvis')
 
+    if hide_currency_metabolites:
+        hide_metabolites = ["PROTON", "WATER", "OXYGEN-MOLECULE", "NADP", "NADPH", "ATP",
+                            "PPI", "CARBON-DIOXIDE", "Pi", "ADP", "CO-A", "UDP", "NAD",
+                            "NADH", "AMP", "AMMONIA", "HYDROGEN-PEROXIDE", "Acceptor",
+                            "Donor-H2", "3-5-ADP", "GDP", "CARBON-MONOXIDE", "GTP", "FAD"]
+    else:
+        hide_metabolites = []
+
     if visualization_level == "compound":
         if metabolic_network_file.endswith('.padmet'):
-            edges, edges_label, weights, nodes, nodes_label = parse_compounds_padmet(metabolic_network_file)
+            edges, edges_label, weights, nodes, nodes_label = parse_compounds_padmet(metabolic_network_file, hide_metabolites)
         elif metabolic_network_file.endswith('.sbml'):
-            edges, edges_label, weights, nodes, nodes_label = parse_compounds_sbml(metabolic_network_file)
+            edges, edges_label, weights, nodes, nodes_label = parse_compounds_sbml(metabolic_network_file, hide_metabolites)
         else:
             sys.exit('No correct extension file as input. Input must be a .padmet or a .sbml file.')
 
@@ -412,7 +423,7 @@ def create_html_graph(metabolic_network_file, output_file, visualization_level):
         if metabolic_network_file.endswith('.padmet'):
             edges, edges_label, weights, nodes, nodes_label = parse_reactions_padmet(metabolic_network_file)
         else:
-            sys.exit('No correct extension file as input for pathway level. Input must be a .padmet.')
+            sys.exit('No correct extension file as input for reaciton level. Input must be a .padmet.')
 
     elif visualization_level == "pathway":
         if metabolic_network_file.endswith('.padmet'):

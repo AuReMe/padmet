@@ -11,7 +11,7 @@ compounds: skyblue
 
     usage:
         padmet visu_path --padmetSpec=FILE/FOLDER --padmetRef=FILE --pathway=ID --output=FILE [--hide-currency] [--level=STR]
-    
+
     options:
         -h --help     Show help.
         --padmetSpec=FILE/FOLDER    pathname to the PADMet file of the network or to a folder containing multiple padmets.
