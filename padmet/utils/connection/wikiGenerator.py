@@ -377,7 +377,10 @@ def extract_padmet_data(padmetFile, total_padmet_data, global_pwy_rxn_dict=None,
                     except ValueError:
                         source = source_data
                         assignment = "n.a"
-                    rec_data_node = next(node for node in list(padmet.dicOfNode.values()) if (node.type == "reconstructionData" and node.misc.get("SOURCE",["unknown-source"])[0] == source))
+                    try:
+                        rec_data_node = next(node for node in list(padmet.dicOfNode.values()) if (node.type == "reconstructionData" and node.misc.get("SOURCE",["unknown-source"])[0] == source))
+                        except StopIteration:
+                            rec_data_node = list(padmet.dicOfNode.values())[-1]
                     category = rec_data_node.misc.get("CATEGORY",["unknown-category"])[0].lower()
                     tool = rec_data_node.misc.get("TOOL",["unknown-tool"])[0].lower()
                     comment = rec_data_node.misc.get("COMMENT",["n.a"])[0].lower()
