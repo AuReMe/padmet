@@ -8,6 +8,7 @@ PADMet is a python library to manage metabolic networks.
 - [PADMet](#padmet)
   - [Table of contents](#table-of-contents)
   - [Description](#description)
+  - [License](#license)
   - [Requirements](#requirements)
   - [Installation](#installation)
     - [Installation with pip](#installation-with-pip)
@@ -25,6 +26,10 @@ The main concept underlying PADMet-Package is to provide solutions that ensure t
 If you use PADMet, _**please cite the following article**_:
 
 Aite, M., Chevallier, M., Frioux, C., Trottier, C., Got, J., Cortés, M. P., Mendoza, S. N., Carrier, G., Dameron, O., Guillaudeux, N., Latorre, M., Loira, N., Markov, G. V., Maass, A., and Siegel, A. (2018). Traceability, reproducibility and wiki-exploration for “à-la-carte” reconstructions of genome-scale metabolic models. PLOS Computational Biology, 14(5), e1006146. [https://doi.org/10.1371/journal.pcbi.1006146](https://doi.org/10.1371/journal.pcbi.1006146)
+
+## License
+
+This library is licensed under LGPL-3.0 or later.
 
 ## Requirements
 
