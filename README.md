@@ -29,7 +29,7 @@ Aite, M., Chevallier, M., Frioux, C., Trottier, C., Got, J., Cortés, M. P., Men
 
 ## License
 
-This project is licensed under the GNU LGPL-3.0-or-later - see the [LICENSE.md](https://github.com/AuReMe/padmet/blob/main/LICENSE) file for details.
+This project is licensed under the GNU LGPL-3.0-or-later - see the [LICENSE.md](https://github.com/AuReMe/padmet/blob/master/LICENSE) file for details.
 
 ## Requirements
 
