@@ -1355,7 +1355,7 @@ def enhance_db(metabolic_reactions, padmet, with_genes, verbose = False):
             reactant_id, _type, reactant_compart = sbmlPlugin.convert_from_coded_id(reactant.getSpecies())
             if reactant_id not in list(padmet.dicOfNode.keys()):
                 reactant_node = Node("compound", reactant_id)
-                padmet.dicOfNode[reaction_id] = reactant_node
+                padmet.dicOfNode[reactant_id] = reactant_node
             reactant_stoich = reactant.getStoichiometry()
             consumes_rlt = Relation(reaction_id, "consumes", reactant_id, {"STOICHIOMETRY": [reactant_stoich],
                                                                            "COMPARTMENT": [reactant_compart]})
