@@ -1,5 +1,15 @@
 # Changelog
 
+# Padmet 5.0.2 (2024-10-30)
+
+## Fix
+
+* Bug in `--enhance` functionality from pgdb_to_padmet, reaction IDs were put in dicOfNode instead of reactant IDs (issue #12). Add a test to check this.
+
+## Modification
+
+* Replace `setup.py` and `setup.cfg` by `pyproject.toml`.
+
 # Padmet 5.0.1 (2020-10-26)
 
 ## Fix
