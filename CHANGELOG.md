@@ -1,5 +1,30 @@
 # Changelog
 
+# Padmet 5.0.2 (2024-10-30)
+
+## Add
+
+* Add getter for pathway with reactions.
+* Add metexploreviz_export script.
+* Add script to create input for GNN from padmet or sbml.
+* Add pathway_production in padmet exploration.
+* Implement adding uniprot ids refs from protein-seq-ids-reduced-70.dat file in pgdb_to_padmet.
+
+## Fix
+
+* Bug in `--enhance` functionality from pgdb_to_padmet, reaction IDs were put in dicOfNode instead of reactant IDs (issue #12). Add a test to check this.
+* Check if output file is writable for sbmlGenerator.
+* Fix issue with pvclust dendrogram using old reactions.tsv.
+* Fix an issue with multiprocessing in prot2genomes.
+* Fix numerous issues in visualisation scripts.
+* Fix doc building.
+
+## Modification
+
+* Replace `setup.py` and `setup.cfg` by `pyproject.toml`.
+* Extract inchi from PGDB.
+* Update enhanced_meneco_output.py: add json + reactions options argument to consider json meneco output format and be able to extract other set of reactions than union (intersection, minimal, essential).
+
 # Padmet 5.0.1 (2020-10-26)
 
 ## Fix

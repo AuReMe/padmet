@@ -213,6 +213,42 @@ def test_pgdb_to_padmet_prot_ids70_cli():
     os.remove('proteins_seq_ids_reduced_70.fasta')
 
 
+def test_pgdb_to_padmet_enhance_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--enhance'])
+
+    test_padmetSpec = PadmetSpec('test.padmet')
+
+    all_pwys, all_cpds, all_rxns, all_genes = extract_data_padmet(test_padmetSpec)
+
+    all_reactants = []
+    all_products = []
+    for rxn in FABO_RXNS:
+        all_reactants.extend([rlt.id_out for rlt in test_padmetSpec.dicOfRelationIn[rxn] if rlt.type in ['consumes']])
+        all_products.extend([rlt.id_out for rlt in test_padmetSpec.dicOfRelationIn[rxn] if rlt.type in ['produces']])
+
+    added_metabolites = ['reactant_1', 'reactant_2', 'product_1']
+    # Test that added metabolites from metabolic-reactions.xml are correctly added in dicOfNode.
+    # There was an issue where reactant IDs were replaced by reaction IDs.
+    for added_metabolite in added_metabolites:
+        assert added_metabolite in test_padmetSpec.dicOfNode
+
+    assert all_pwys == FABO_PWYS
+
+    assert test_padmetSpec.dicOfNode['FAO-PWY'].misc['COMMON-NAME'][0] == 'fatty acid &beta;-oxidation I - (generic)'
+
+    assert set(FABO_RXNS).issubset(set(all_rxns))
+
+    assert set(FABO_CPDS).issubset(set(all_cpds))
+
+    assert set(all_reactants).issubset(FABO_CPDS)
+    assert set(all_products).issubset(FABO_CPDS)
+
+    #assert set(FABO_GENES).issubset(set(all_genes))
+
+    os.remove('test.padmet')
+
+
+
 def test_sbmlGenerator():
     fabo_padmetSpec = from_pgdb_to_padmet('test_data/pgdb', extract_gene=True)
     padmet_to_sbml(fabo_padmetSpec, 'fabo.sbml')

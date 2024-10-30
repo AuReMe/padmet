@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "padmet"
+dynamic = ["version"]
+authors = [{name = "AuReMe", email = "gem-aureme@inria.fr"}]
+readme = "README.md"
+description = "The PADMet package allows conciliating genomics and metabolic network information used to produce a genome-scale constraint-based metabolic model within a database that traces all the reconstruction process steps. It allows representing the metabolic model in the form of a Wiki containing all the used/traced information. Other standard outputs are made available with the package."
+license = {text = "GPL-3.0-or-later"}
+
+dependencies = ['docopt>=0.6.2',
+  'python-libsbml>=5.18.0',
+  'cobra>=0.17.1',
+  'biopython>=1.78',
+  'lxml>=4.3.4'
+  ]
+
+[project.scripts]
+padmet = "padmet.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/AuReMe/padmet"
+Changelog = "https://github.com/AuReMe/padmet/blob/main/CHANGELOG.md"
+
+
+[tool.setuptools]
+packages = ['padmet', 'padmet.classes', 'padmet.utils', 'padmet.utils.connection', 'padmet.utils.exploration', 'padmet.utils.management']
+package-dir = {'padmet' = 'padmet', 'padmet.classes' = 'padmet/classes' , 'padmet.utils' = 'padmet/utils', 'padmet.utils.connection' = 'padmet/utils/connection', 'padmet.utils.exploration' = 'padmet/utils/exploration', 'padmet.utils.management' = 'padmet/utils/management'}
+
+[tool.setuptools.dynamic]
+version = { attr = "padmet.__version__" }
+dependencies = {file = ["requirements.txt"]}
