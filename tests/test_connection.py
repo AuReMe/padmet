@@ -33,6 +33,16 @@ FABO_CPDS = ['D-3-HYDROXYACYL-COA', 'L-3-HYDROXYACYL-COA', 'TRANS-D2-ENOYL-COA',
             'ETF-Reduced', 'WATER', 'PROTON', 'CPD66-39', 'CO-A', 'ATP', 'PPI', 'AMP', 'ACETYL-COA',
             '3-KETOACYL-COA', 'NAD', 'NADH']
 
+FABO_REACTANTS = ['D-3-HYDROXYACYL-COA', 'L-3-HYDROXYACYL-COA', 'TRANS-D2-ENOYL-COA',
+            'CIS-DELTA3-ENOYL-COA', 'Saturated-Fatty-Acyl-CoA', 'ETF-Oxidized',
+            'ETF-Reduced', 'WATER', 'PROTON', 'CPD66-39', 'CO-A', 'ATP', 'PPI', 'AMP', 'ACETYL-COA',
+            '3-KETOACYL-COA', 'NAD', 'NADH']
+
+FABO_PRODUCTS = ['D-3-HYDROXYACYL-COA', 'L-3-HYDROXYACYL-COA', 'TRANS-D2-ENOYL-COA',
+            'CIS-DELTA3-ENOYL-COA', 'Saturated-Fatty-Acyl-CoA', 'ETF-Oxidized',
+            'ETF-Reduced', 'WATER', 'PROTON', 'CPD66-39', 'CO-A', 'ATP', 'PPI', 'AMP', 'ACETYL-COA',
+            '3-KETOACYL-COA', 'NAD', 'NADH']
+
 FABO_GENES = ['b2341', 'b0221', 'b1805', 'b1701', 'b2342', 'b3845', 'b3846']
 
 
@@ -211,6 +221,42 @@ def test_pgdb_to_padmet_prot_ids70_cli():
     # Delete created files
     os.remove('test.padmet')
     os.remove('proteins_seq_ids_reduced_70.fasta')
+
+
+def test_pgdb_to_padmet_enhance_cli():
+    subprocess.call(['padmet', 'pgdb_to_padmet', '--pgdb', 'test_data/pgdb', '--output', 'test.padmet', '--enhance'])
+
+    test_padmetSpec = PadmetSpec('test.padmet')
+
+    all_pwys, all_cpds, all_rxns, all_genes = extract_data_padmet(test_padmetSpec)
+
+    all_reactants = []
+    all_products = []
+    for rxn in FABO_RXNS:
+        all_reactants.extend([rlt.id_out for rlt in test_padmetSpec.dicOfRelationIn[rxn] if rlt.type in ['consumes']])
+        all_products.extend([rlt.id_out for rlt in test_padmetSpec.dicOfRelationIn[rxn] if rlt.type in ['produces']])
+
+    added_metabolites = ['reactant_1', 'reactant_2', 'product_1']
+    # Test that added metabolites from metabolic-reactions.xml are correctly added in dicOfNode.
+    # There was an issue where reactant IDs were replaced by reaction IDs.
+    for added_metabolite in added_metabolites:
+        assert added_metabolite in test_padmetSpec.dicOfNode
+
+    assert all_pwys == FABO_PWYS
+
+    assert test_padmetSpec.dicOfNode['FAO-PWY'].misc['COMMON-NAME'][0] == 'fatty acid &beta;-oxidation I - (generic)'
+
+    assert set(FABO_RXNS).issubset(set(all_rxns))
+
+    assert set(FABO_CPDS).issubset(set(all_cpds))
+
+    assert set(all_reactants).issubset(FABO_CPDS)
+    assert set(all_products).issubset(FABO_CPDS)
+
+    #assert set(FABO_GENES).issubset(set(all_genes))
+
+    os.remove('test.padmet')
+
 
 
 def test_sbmlGenerator():

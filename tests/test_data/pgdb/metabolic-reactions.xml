@@ -1,0 +1,1053 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SBML generated on 15-Nov-2023  15:55:43 for organism META (version 28.0) using MetaFlux (Pathway Tools version 27.5). -->
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" level="3" version="1" fbc:required="false">
+  <model metaid="META" id="META" name="Generated from the BioCyc Pathway/Genome Database MetaCyc" fbc:strict="false">
+    <listOfReactions>
+      <reaction
+       metaid=
+         "ENOYL__45__COA__45__HYDRAT__45__RXN__45__CPD__45__22313__47____47__POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C4__45__H8__47__WATER__46__55__46__"
+       id=
+         "ENOYL__45__COA__45__HYDRAT__45__RXN__45__CPD__45__22313__47____47__POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C4__45__H8__47__WATER__46__55__46__"
+       name="ENOYL-COA-HYDRAT-RXN-CPD-22313//POLYMER-INST-TRANS-D2-ENOYL-COA-C4-H8/WATER.55." reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_B2341"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C4__45__H8_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="WATER_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD__45__22313_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ENOYL__45__COA__45__HYDRAT__45__RXN__45__POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C16__45__H32__47____47__POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C16__45__H32__47__WATER__46__88__46__"
+       id=
+         "ENOYL__45__COA__45__HYDRAT__45__RXN__45__POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C16__45__H32__47____47__POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C16__45__H32__47__WATER__46__88__46__"
+       name="ENOYL-COA-HYDRAT-RXN-POLYMER-INST-L-3-HYDROXYACYL-COA-C16-H32//POLYMER-INST-TRANS-D2-ENOYL-COA-C16-H32/WATER.88."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_B2341"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C16__45__H32_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="WATER_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C16__45__H32_c"
+           stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ENOYL__45__COA__45__HYDRAT__45__RXN__45__POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C12__45__H24__47____47__CPD0__45__2117__47__WATER__46__58__46__"
+       id=
+         "ENOYL__45__COA__45__HYDRAT__45__RXN__45__POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C12__45__H24__47____47__CPD0__45__2117__47__WATER__46__58__46__"
+       name="ENOYL-COA-HYDRAT-RXN-POLYMER-INST-L-3-HYDROXYACYL-COA-C12-H24//CPD0-2117/WATER.58."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_B2341"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD0__45__2117_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="WATER_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C12__45__H24_c"
+           stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid="ENOYL__45__COA__45__HYDRAT__45__RXN__45__CPD0__45__2253__47____47__CPD__45__10262__47__WATER__46__27__46__"
+       id="ENOYL__45__COA__45__HYDRAT__45__RXN__45__CPD0__45__2253__47____47__CPD__45__10262__47__WATER__46__27__46__"
+       name="ENOYL-COA-HYDRAT-RXN-CPD0-2253//CPD-10262/WATER.27." reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_B2341"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__10262_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="WATER_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD0__45__2253_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction metaid="RXN0__45__5393" id="RXN0__45__5393" name="RXN0-5393" reversible="true" fast="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+           xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
+            <rdf:Description rdf:about="#RXN0__45__5393">
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/biocyc/META:RXN0-5393"/>
+                  <rdf:li rdf:resource="http://identifiers.org/ec-code/4.2.1.17"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+        <listOfReactants>
+          <speciesReference species="CPD0__45__1163_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD0__45__1162_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="WATER_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid="ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__CPD__45__14919__47____47__CPD0__45__2117__46__21__46__"
+       id="ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__CPD__45__14919__47____47__CPD0__45__2117__46__21__46__"
+       name="ENOYL-COA-DELTA-ISOM-RXN-CPD-14919//CPD0-2117.21." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03615"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YLR284C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14919_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD0__45__2117_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid="ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__CPD__45__14922__47____47__CPD__45__10262__46__21__46__"
+       id="ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__CPD__45__14922__47____47__CPD__45__10262__46__21__46__"
+       name="ENOYL-COA-DELTA-ISOM-RXN-CPD-14922//CPD-10262.21." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03615"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YLR284C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14922_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD__45__10262_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__POLYMER__45__INST__45__CIS__45__DELTA3__45__ENOYL__45__COA__45__C0__45__H0__47____47__CROTONYL__45__COA__46__54__46__"
+       id=
+         "ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__POLYMER__45__INST__45__CIS__45__DELTA3__45__ENOYL__45__COA__45__C0__45__H0__47____47__CROTONYL__45__COA__46__54__46__"
+       name="ENOYL-COA-DELTA-ISOM-RXN-POLYMER-INST-CIS-DELTA3-ENOYL-COA-C0-H0//CROTONYL-COA.54." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03615"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YLR284C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__CIS__45__DELTA3__45__ENOYL__45__COA__45__C0__45__H0_c"
+           stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CROTONYL__45__COA_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__CPD__45__14925__47____47__T2__45__DECENOYL__45__COA__46__27__46__"
+       id="ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__CPD__45__14925__47____47__T2__45__DECENOYL__45__COA__46__27__46__"
+       name="ENOYL-COA-DELTA-ISOM-RXN-CPD-14925//T2-DECENOYL-COA.27." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03615"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YLR284C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14925_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="T2__45__DECENOYL__45__COA_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid="ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__CPD__45__14727__47____47__CPD0__45__2121__46__21__46__"
+       id="ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__CPD__45__14727__47____47__CPD0__45__2121__46__21__46__"
+       name="ENOYL-COA-DELTA-ISOM-RXN-CPD-14727//CPD0-2121.21." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03615"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YLR284C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14727_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD0__45__2121_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__POLYMER__45__INST__45__CIS__45__DELTA3__45__ENOYL__45__COA__45__C16__45__H32__47____47__POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C16__45__H32__46__83__46__"
+       id=
+         "ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__POLYMER__45__INST__45__CIS__45__DELTA3__45__ENOYL__45__COA__45__C16__45__H32__47____47__POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C16__45__H32__46__83__46__"
+       name="ENOYL-COA-DELTA-ISOM-RXN-POLYMER-INST-CIS-DELTA3-ENOYL-COA-C16-H32//POLYMER-INST-TRANS-D2-ENOYL-COA-C16-H32.83."
+       reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03615"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YLR284C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__CIS__45__DELTA3__45__ENOYL__45__COA__45__C16__45__H32_c"
+           stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C16__45__H32_c"
+           stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__CPD__45__14729__47____47__POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C4__45__H8__46__49__46__"
+       id=
+         "ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__CPD__45__14729__47____47__POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C4__45__H8__46__49__46__"
+       name="ENOYL-COA-DELTA-ISOM-RXN-CPD-14729//POLYMER-INST-TRANS-D2-ENOYL-COA-C4-H8.49." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03615"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YLR284C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14729_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C4__45__H8_c"
+           stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid="ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__CPD__45__14730__47____47__CPD__45__15568__46__21__46__"
+       id="ENOYL__45__COA__45__DELTA__45__ISOM__45__RXN__45__CPD__45__14730__47____47__CPD__45__15568__46__21__46__"
+       name="ENOYL-COA-DELTA-ISOM-RXN-CPD-14730//CPD-15568.21." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03615"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YLR284C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14730_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD__45__15568_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction metaid="RXN0__45__5391" id="RXN0__45__5391" name="RXN0-5391" reversible="true" fast="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+           xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
+            <rdf:Description rdf:about="#RXN0__45__5391">
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/biocyc/META:RXN0-5391"/>
+                  <rdf:li rdf:resource="http://identifiers.org/ec-code/5.3.3.8"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YLR284C"/>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD0__45__1162_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD0__45__1158_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ACYLCOADEHYDROG__45__RXN__45__POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C16__45__H32__47__ETF__45__Oxidized__47__PROTON__47____47__POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C16__45__H32__47__ETF__45__Reduced__46__119__46__"
+       id=
+         "ACYLCOADEHYDROG__45__RXN__45__POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C16__45__H32__47__ETF__45__Oxidized__47__PROTON__47____47__POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C16__45__H32__47__ETF__45__Reduced__46__119__46__"
+       name=
+         "ACYLCOADEHYDROG-RXN-POLYMER-INST-Saturated-Fatty-Acyl-CoA-C16-H32/ETF-Oxidized/PROTON//POLYMER-INST-TRANS-D2-ENOYL-COA-C16-H32/ETF-Reduced.119."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:geneProductRef fbc:geneProduct="G_G6105"/>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C16__45__H32_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="ETF__45__Oxidized_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="PROTON_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C16__45__H32_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="ETF__45__Reduced_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ACYLCOADEHYDROG__45__RXN__45__PALMITYL__45__COA__47__ETF__45__Oxidized__47__PROTON__47____47__CPD0__45__2117__47__ETF__45__Reduced__46__56__46__"
+       id=
+         "ACYLCOADEHYDROG__45__RXN__45__PALMITYL__45__COA__47__ETF__45__Oxidized__47__PROTON__47____47__CPD0__45__2117__47__ETF__45__Reduced__46__56__46__"
+       name="ACYLCOADEHYDROG-RXN-PALMITYL-COA/ETF-Oxidized/PROTON//CPD0-2117/ETF-Reduced.56." reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:geneProductRef fbc:geneProduct="G_G6105"/>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="PALMITYL__45__COA_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="ETF__45__Oxidized_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="PROTON_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD0__45__2117_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="ETF__45__Reduced_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ACYLCOADEHYDROG__45__RXN__45__CPD__45__196__47__ETF__45__Oxidized__47__PROTON__47____47__POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C4__45__H8__47__ETF__45__Reduced__46__79__46__"
+       id=
+         "ACYLCOADEHYDROG__45__RXN__45__CPD__45__196__47__ETF__45__Oxidized__47__PROTON__47____47__POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C4__45__H8__47__ETF__45__Reduced__46__79__46__"
+       name="ACYLCOADEHYDROG-RXN-CPD-196/ETF-Oxidized/PROTON//POLYMER-INST-TRANS-D2-ENOYL-COA-C4-H8/ETF-Reduced.79."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:geneProductRef fbc:geneProduct="G_G6105"/>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__196_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="ETF__45__Oxidized_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="PROTON_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__TRANS__45__D2__45__ENOYL__45__COA__45__C4__45__H8_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="ETF__45__Reduced_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ACYLCOADEHYDROG__45__RXN__45__POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C6__45__H12__47__ETF__45__Oxidized__47__PROTON__47____47__T2__45__DECENOYL__45__COA__47__ETF__45__Reduced__46__94__46__"
+       id=
+         "ACYLCOADEHYDROG__45__RXN__45__POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C6__45__H12__47__ETF__45__Oxidized__47__PROTON__47____47__T2__45__DECENOYL__45__COA__47__ETF__45__Reduced__46__94__46__"
+       name=
+         "ACYLCOADEHYDROG-RXN-POLYMER-INST-Saturated-Fatty-Acyl-CoA-C6-H12/ETF-Oxidized/PROTON//T2-DECENOYL-COA/ETF-Reduced.94."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:geneProductRef fbc:geneProduct="G_G6105"/>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C6__45__H12_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="ETF__45__Oxidized_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="PROTON_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="T2__45__DECENOYL__45__COA_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="ETF__45__Reduced_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ACYLCOASYN__45__RXN__45__POLYMER__45__INST__45__CPD66__45__39__45__C16__45__H32__47__CO__45__A__47__ATP__47____47__POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C16__45__H32__47__PPI__47__AMP__46__94__46__"
+       id=
+         "ACYLCOASYN__45__RXN__45__POLYMER__45__INST__45__CPD66__45__39__45__C16__45__H32__47__CO__45__A__47__ATP__47____47__POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C16__45__H32__47__PPI__47__AMP__46__94__46__"
+       name="ACYLCOASYN-RXN-POLYMER-INST-CPD66-39-C16-H32/CO-A/ATP//POLYMER-INST-Saturated-Fatty-Acyl-CoA-C16-H32/PPI/AMP.94."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06695"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT5G27600"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT3G05970"/>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__CPD66__45__39__45__C16__45__H32_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="CO__45__A_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="ATP_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C16__45__H32_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="PPI_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="AMP_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ACYLCOASYN__45__RXN__45__POLYMER__45__INST__45__CPD66__45__39__45__C6__45__H12__47__CO__45__A__47__ATP__47____47__POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C6__45__H12__47__PPI__47__AMP__46__92__46__"
+       id=
+         "ACYLCOASYN__45__RXN__45__POLYMER__45__INST__45__CPD66__45__39__45__C6__45__H12__47__CO__45__A__47__ATP__47____47__POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C6__45__H12__47__PPI__47__AMP__46__92__46__"
+       name="ACYLCOASYN-RXN-POLYMER-INST-CPD66-39-C6-H12/CO-A/ATP//POLYMER-INST-Saturated-Fatty-Acyl-CoA-C6-H12/PPI/AMP.92."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06695"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT5G27600"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT3G05970"/>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__CPD66__45__39__45__C6__45__H12_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="CO__45__A_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="ATP_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C6__45__H12_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="PPI_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="AMP_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ACYLCOASYN__45__RXN__45__POLYMER__45__INST__45__CPD66__45__39__45__C10__45__H20__47__CO__45__A__47__ATP__47____47__TETRADECANOYL__45__COA__47__PPI__47__AMP__46__66__46__"
+       id=
+         "ACYLCOASYN__45__RXN__45__POLYMER__45__INST__45__CPD66__45__39__45__C10__45__H20__47__CO__45__A__47__ATP__47____47__TETRADECANOYL__45__COA__47__PPI__47__AMP__46__66__46__"
+       name="ACYLCOASYN-RXN-POLYMER-INST-CPD66-39-C10-H20/CO-A/ATP//TETRADECANOYL-COA/PPI/AMP.66."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06695"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT5G27600"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT3G05970"/>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__CPD66__45__39__45__C10__45__H20_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="CO__45__A_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="ATP_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="TETRADECANOYL__45__COA_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="PPI_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="AMP_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "ACYLCOASYN__45__RXN__45__POLYMER__45__INST__45__CPD66__45__39__45__C4__45__H8__47__CO__45__A__47__ATP__47____47__CPD__45__196__47__PPI__47__AMP__46__54__46__"
+       id=
+         "ACYLCOASYN__45__RXN__45__POLYMER__45__INST__45__CPD66__45__39__45__C4__45__H8__47__CO__45__A__47__ATP__47____47__CPD__45__196__47__PPI__47__AMP__46__54__46__"
+       name="ACYLCOASYN-RXN-POLYMER-INST-CPD66-39-C4-H8/CO-A/ATP//CPD-196/PPI/AMP.54." reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06695"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT5G27600"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT3G05970"/>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__CPD66__45__39__45__C4__45__H8_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="CO__45__A_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="ATP_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD__45__196_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="PPI_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="AMP_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction metaid="OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__14916__47____47__CPD__45__22313__46__21__46__"
+       id="OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__14916__47____47__CPD__45__22313__46__21__46__"
+       name="OHBUTYRYL-COA-EPIM-RXN-CPD-14916//CPD-22313.21." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14916_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD__45__22313_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction metaid="OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__14918__47____47__CPD0__45__2107__46__21__46__"
+       id="OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__14918__47____47__CPD0__45__2107__46__21__46__"
+       name="OHBUTYRYL-COA-EPIM-RXN-CPD-14918//CPD0-2107.21." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14918_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD0__45__2107_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction metaid="OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__14923__47____47__CPD0__45__2171__46__21__46__"
+       id="OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__14923__47____47__CPD0__45__2171__46__21__46__"
+       name="OHBUTYRYL-COA-EPIM-RXN-CPD-14923//CPD0-2171.21." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14923_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD0__45__2171_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__14920__47____47__POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C12__45__H24__46__52__46__"
+       id=
+         "OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__14920__47____47__POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C12__45__H24__46__52__46__"
+       name="OHBUTYRYL-COA-EPIM-RXN-CPD-14920//POLYMER-INST-L-3-HYDROXYACYL-COA-C12-H24.52." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14920_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C12__45__H24_c"
+           stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction metaid="OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__10261__47____47__CPD0__45__2253__46__21__46__"
+       id="OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__10261__47____47__CPD0__45__2253__46__21__46__"
+       name="OHBUTYRYL-COA-EPIM-RXN-CPD-10261//CPD0-2253.21." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__10261_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD0__45__2253_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction metaid="OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__12777__47____47__CPD0__45__2244__46__21__46__"
+       id="OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__12777__47____47__CPD0__45__2244__46__21__46__"
+       name="OHBUTYRYL-COA-EPIM-RXN-CPD-12777//CPD0-2244.21." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__12777_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD0__45__2244_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid="OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__14915__47____47__OH__45__HEXANOYL__45__COA__46__27__46__"
+       id="OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__14915__47____47__OH__45__HEXANOYL__45__COA__46__27__46__"
+       name="OHBUTYRYL-COA-EPIM-RXN-CPD-14915//OH-HEXANOYL-COA.27." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14915_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="OH__45__HEXANOYL__45__COA_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__14275__47____47__POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C16__45__H32__46__52__46__"
+       id=
+         "OHBUTYRYL__45__COA__45__EPIM__45__RXN__45__CPD__45__14275__47____47__POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C16__45__H32__46__52__46__"
+       name="OHBUTYRYL-COA-EPIM-RXN-CPD-14275//POLYMER-INST-L-3-HYDROXYACYL-COA-C16-H32.52." reversible="true" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14275_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C16__45__H32_c"
+           stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "KETOACYLCOATHIOL__45__RXN__45__POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C6__45__H12__47__ACETYL__45__COA__47____47__CPD0__45__2105__47__CO__45__A__46__72__46__"
+       id=
+         "KETOACYLCOATHIOL__45__RXN__45__POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C6__45__H12__47__ACETYL__45__COA__47____47__CPD0__45__2105__47__CO__45__A__46__72__46__"
+       name="KETOACYLCOATHIOL-RXN-POLYMER-INST-Saturated-Fatty-Acyl-CoA-C6-H12/ACETYL-COA//CPD0-2105/CO-A.72."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10278"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7213"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2278"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YIL160C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06436"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03991"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS09539"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS00752"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT2G33150"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_2292"/>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD0__45__2105_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="CO__45__A_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C6__45__H12_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="ACETYL__45__COA_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "KETOACYLCOATHIOL__45__RXN__45__HEXANOYL__45__COA__47__ACETYL__45__COA__47____47__POLYMER__45__INST__45__3__45__KETOACYL__45__COA__45__C4__45__H8__47__CO__45__A__46__64__46__"
+       id=
+         "KETOACYLCOATHIOL__45__RXN__45__HEXANOYL__45__COA__47__ACETYL__45__COA__47____47__POLYMER__45__INST__45__3__45__KETOACYL__45__COA__45__C4__45__H8__47__CO__45__A__46__64__46__"
+       name="KETOACYLCOATHIOL-RXN-HEXANOYL-COA/ACETYL-COA//POLYMER-INST-3-KETOACYL-COA-C4-H8/CO-A.64."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10278"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7213"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2278"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YIL160C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06436"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03991"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS09539"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS00752"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT2G33150"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_2292"/>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__3__45__KETOACYL__45__COA__45__C4__45__H8_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="CO__45__A_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="HEXANOYL__45__COA_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="ACETYL__45__COA_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "KETOACYLCOATHIOL__45__RXN__45__STEAROYL__45__COA__47__ACETYL__45__COA__47____47__CPD__45__14271__47__CO__45__A__46__40__46__"
+       id=
+         "KETOACYLCOATHIOL__45__RXN__45__STEAROYL__45__COA__47__ACETYL__45__COA__47____47__CPD__45__14271__47__CO__45__A__46__40__46__"
+       name="KETOACYLCOATHIOL-RXN-STEAROYL-COA/ACETYL-COA//CPD-14271/CO-A.40." reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10278"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7213"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2278"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YIL160C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06436"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03991"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS09539"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS00752"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT2G33150"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_2292"/>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__14271_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="CO__45__A_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="STEAROYL__45__COA_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="ACETYL__45__COA_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "KETOACYLCOATHIOL__45__RXN__45__POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C16__45__H32__47__ACETYL__45__COA__47____47__CPD__45__10283__47__CO__45__A__46__73__46__"
+       id=
+         "KETOACYLCOATHIOL__45__RXN__45__POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C16__45__H32__47__ACETYL__45__COA__47____47__CPD__45__10283__47__CO__45__A__46__73__46__"
+       name="KETOACYLCOATHIOL-RXN-POLYMER-INST-Saturated-Fatty-Acyl-CoA-C16-H32/ACETYL-COA//CPD-10283/CO-A.73."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10278"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7213"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2278"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YIL160C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06436"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03991"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS09539"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS00752"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT2G33150"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_2292"/>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__10283_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="CO__45__A_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__Saturated__45__Fatty__45__Acyl__45__CoA__45__C16__45__H32_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="ACETYL__45__COA_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "KETOACYLCOATHIOL__45__RXN__45__PALMITYL__45__COA__47__ACETYL__45__COA__47____47__CPD__45__10260__47__CO__45__A__46__40__46__"
+       id=
+         "KETOACYLCOATHIOL__45__RXN__45__PALMITYL__45__COA__47__ACETYL__45__COA__47____47__CPD__45__10260__47__CO__45__A__46__40__46__"
+       name="KETOACYLCOATHIOL-RXN-PALMITYL-COA/ACETYL-COA//CPD-10260/CO-A.40." reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10278"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7213"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2278"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YIL160C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06436"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03991"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS09539"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS00752"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT2G33150"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_2292"/>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__10260_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="CO__45__A_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="PALMITYL__45__COA_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="ACETYL__45__COA_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "KETOACYLCOATHIOL__45__RXN__45__TETRADECANOYL__45__COA__47__ACETYL__45__COA__47____47__3__45__OXOPALMITOYL__45__COA__47__CO__45__A__46__54__46__"
+       id=
+         "KETOACYLCOATHIOL__45__RXN__45__TETRADECANOYL__45__COA__47__ACETYL__45__COA__47____47__3__45__OXOPALMITOYL__45__COA__47__CO__45__A__46__54__46__"
+       name="KETOACYLCOATHIOL-RXN-TETRADECANOYL-COA/ACETYL-COA//3-OXOPALMITOYL-COA/CO-A.54." reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10278"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7213"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2278"/>
+            <fbc:geneProductRef fbc:geneProduct="G_YIL160C"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06436"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03991"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS09539"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS00752"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT2G33150"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_2292"/>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="_3__45__OXOPALMITOYL__45__COA_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="CO__45__A_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="TETRADECANOYL__45__COA_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="ACETYL__45__COA_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "OHACYL__45__COA__45__DEHYDROG__45__RXN__45__CPD0__45__2253__47__NAD__47____47__CPD__45__10260__47__NADH__47__PROTON__46__37__46__"
+       id=
+         "OHACYL__45__COA__45__DEHYDROG__45__RXN__45__CPD0__45__2253__47__NAD__47____47__CPD__45__10260__47__NADH__47__PROTON__46__37__46__"
+       name="OHACYL-COA-DEHYDROG-RXN-CPD0-2253/NAD//CPD-10260/NADH/PROTON.37." reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT4G29010"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT3G06860"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03720"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06563"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS01071"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD0__45__2253_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="NAD_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD__45__10260_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="NADH_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="PROTON_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "OHACYL__45__COA__45__DEHYDROG__45__RXN__45__POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C16__45__H32__47__NAD__47____47__CPD__45__14271__47__NADH__47__PROTON__46__68__46__"
+       id=
+         "OHACYL__45__COA__45__DEHYDROG__45__RXN__45__POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C16__45__H32__47__NAD__47____47__CPD__45__14271__47__NADH__47__PROTON__46__68__46__"
+       name="OHACYL-COA-DEHYDROG-RXN-POLYMER-INST-L-3-HYDROXYACYL-COA-C16-H32/NAD//CPD-14271/NADH/PROTON.68."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT4G29010"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT3G06860"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03720"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06563"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS01071"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C16__45__H32_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="NAD_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPD__45__14271_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="NADH_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="PROTON_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "OHACYL__45__COA__45__DEHYDROG__45__RXN__45__CPD__45__22313__47__NAD__47____47__POLYMER__45__INST__45__3__45__KETOACYL__45__COA__45__C4__45__H8__47__NADH__47__PROTON__46__61__46__"
+       id=
+         "OHACYL__45__COA__45__DEHYDROG__45__RXN__45__CPD__45__22313__47__NAD__47____47__POLYMER__45__INST__45__3__45__KETOACYL__45__COA__45__C4__45__H8__47__NADH__47__PROTON__46__61__46__"
+       name="OHACYL-COA-DEHYDROG-RXN-CPD-22313/NAD//POLYMER-INST-3-KETOACYL-COA-C4-H8/NADH/PROTON.61."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT4G29010"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT3G06860"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03720"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06563"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS01071"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__22313_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="NAD_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="POLYMER__45__INST__45__3__45__KETOACYL__45__COA__45__C4__45__H8_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="NADH_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="PROTON_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction
+       metaid=
+         "OHACYL__45__COA__45__DEHYDROG__45__RXN__45__POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C12__45__H24__47__NAD__47____47__3__45__OXOPALMITOYL__45__COA__47__NADH__47__PROTON__46__77__46__"
+       id=
+         "OHACYL__45__COA__45__DEHYDROG__45__RXN__45__POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C12__45__H24__47__NAD__47____47__3__45__OXOPALMITOYL__45__COA__47__NADH__47__PROTON__46__77__46__"
+       name="OHACYL-COA-DEHYDROG-RXN-POLYMER-INST-L-3-HYDROXYACYL-COA-C12-H24/NAD//3-OXOPALMITOYL-COA/NADH/PROTON.77."
+       reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_EG10279"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G7212"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT4G29010"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G1G01_2277"/>
+            <fbc:geneProductRef fbc:geneProduct="G_AT3G06860"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS03720"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS06563"/>
+            <fbc:geneProductRef fbc:geneProduct="G_HS01071"/>
+            <fbc:geneProductRef fbc:geneProduct="G_G_9338"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="POLYMER__45__INST__45__L__45__3__45__HYDROXYACYL__45__COA__45__C12__45__H24_c"
+           stoichiometry="1" constant="true"/>
+          <speciesReference species="NAD_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="_3__45__OXOPALMITOYL__45__COA_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="NADH_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="PROTON_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction metaid="_2__46__3__46__1__46__49__45__RXN" id="_2__46__3__46__1__46__49__45__RXN" name="2.3.1.49-RXN"
+       reversible="false" fast="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+           xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
+            <rdf:Description rdf:about="#_2__46__3__46__1__46__49__45__RXN">
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/biocyc/META:2.3.1.49-RXN"/>
+                  <rdf:li rdf:resource="http://identifiers.org/ec-code/2.3.1.49"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+        <fbc:geneProductAssociation>
+          <fbc:geneProductRef fbc:geneProduct="G_G6343"/>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="HOLO__45__CITRATE__45__LYASE_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="S__45__ACETYLPHOSPHOPANTETHEINE_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CITRATE__45__LYASE_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="PANTETHEINE__45__P_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction metaid="RXN__45__18209" id="RXN__45__18209" name="RXN-18209" reversible="false" fast="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+           xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
+            <rdf:Description rdf:about="#RXN__45__18209">
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/biocyc/META:RXN-18209"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+        <listOfReactants>
+          <speciesReference species="CPD__45__19491_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="PROTON_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="CPDQT__45__27_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="CARBON__45__DIOXIDE_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction metaid="new_rxn_1" id="new_rxn_1" name="new_rxn_1" reversible="false" fast="false">
+        <fbc:geneProductAssociation>
+          <fbc:or>
+            <fbc:geneProductRef fbc:geneProduct="G_new_gene_1"/>
+            <fbc:and></fbc:and>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+        <listOfReactants>
+          <speciesReference species="reactant_1_c" stoichiometry="1" constant="true"/>
+          <speciesReference species="reactant_2_c" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="product_1_c" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+    </listOfReactions>
+    <fbc:listOfGeneProducts>
+      <fbc:geneProduct metaid="G_B2341" fbc:id="G_B2341" fbc:label="b2341" fbc:name="ETR1">
+      </fbc:geneProduct>
+    </fbc:listOfGeneProducts>
+  </model>
+</sbml>
