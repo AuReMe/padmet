@@ -112,7 +112,6 @@ def main(args=None):
             sys.exit(command + ' not a valid command.')
 
         # Import the corresponding module
-        print('.'+command, 'padmet.'+command_import_path)
         command_import = importlib.import_module('.'+command, 'padmet.'+command_import_path)
         if '-h' in command_args:
             # Return help for the command
