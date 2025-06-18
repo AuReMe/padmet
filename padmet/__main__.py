@@ -21,6 +21,7 @@ connection:
     gbk_to_faa    Extract the proteome from a genbank file
     gene_to_targets    From a list of genes and a PADMet extract the targets linked to each gene
     get_metacyc_ontology    From a PADMet Ref file of MetaCyc create an XML ontology file
+    metabolic_reconstruction    Large-scale metabolic reconstruction of bacterial genomes
     metexploreviz_export    Create a metexploreviz JSON to visualize metabolic network from padmet or sbml
     modelSeed_to_padmet    Create a PADMet file from modelSeed reactions and pathways files
     padmet_to_asp    Convert PADMet to ASP
@@ -87,7 +88,7 @@ def main(args=None):
             'compare_padmet', 'compare_sbml',
             'compare_sbml_padmet', 'convert_sbml_db',
             'dendrogram_reactions_distance', 'flux_analysis',
-            'get_pwy_from_rxn', 'padmet_stats',
+            'get_pwy_from_rxn', 'metabolic_reconstruction', 'padmet_stats',
             'pathway_production',
             'prot2genome', 'visu_path',
             'visu_network', 'visu_similarity_gsmn',
@@ -111,6 +112,7 @@ def main(args=None):
             sys.exit(command + ' not a valid command.')
 
         # Import the corresponding module
+        print('.'+command, 'padmet.'+command_import_path)
         command_import = importlib.import_module('.'+command, 'padmet.'+command_import_path)
         if '-h' in command_args:
             # Return help for the command
