@@ -15,4 +15,4 @@ You should have received a copy of the GNU General Public License
 along with padmet. If not, see <http://www.gnu.org/licenses/>.
 """
 
-__version__='5.1.3'
+__version__='5.0.4'
