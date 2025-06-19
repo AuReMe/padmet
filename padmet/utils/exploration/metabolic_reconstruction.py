@@ -6,12 +6,12 @@ Description:
     Large-scale metabolic reconstruction of bacterial genomes.
 
     usage:
-        padmet metabolic_reconstruction [-h] -i FOLDER -o FOLDER --tax FILE --padmet_ref FILE --ptsc FOLDER --ptsi FILE [--annot STR] [--egg_path FOLDER] [--bak_path FOLDER] [-c INT] [-k STR]
+        padmet metabolic_reconstruction [-h] -i FOLDER -o FOLDER --taxfile FILE --padmet_ref FILE --ptsc FOLDER --ptsi FILE [--annot STR] [--egg_path FOLDER] [--bak_path FOLDER] [-c INT] [--keep STR]
         
         -h --help   Show this help message and exit
-        -i --input=FOLDER   Path to the folder where the genomes are
-        -o --output=FOLDER     Path to the folder where you want to put the results in
-        --tax=FILE  Path to the taxon file (.tsv)
+        -i --input=STR   Path to the folder where the genomes are
+        -o --output=STR  Path to the folder where you want to put the results in
+        -t --taxfile=FILE    Path to the taxon file (.tsv)
         --padmet_ref=FILE   Path to the reference database in Padmet format.
         --ptsc=FOLDER     Path to the root folder (for construction of Singularity bridge, necessary to access distant files).
         --ptsi=FILE     Path to the singularity image of mpwt to use.
@@ -41,9 +41,9 @@ def command_help():
     """
     print(docopt.docopt(__doc__))
 
-def padmet_stats_cli(command_args):
+def metabolic_reconstruction_cli(command_args):
     args = docopt.docopt(__doc__, argv=command_args)
-    
+
     metabolic_reconstruction(args)
 
 
@@ -167,6 +167,10 @@ def bakta_annotation(input_dir, output_path, args):
     path_to_bak = args["--bak_path"]
     mkdir(os.path.join(output_path, 'bakta'))
     processed = pd.DataFrame(columns = ['genome', "bakta"])
+    if (args["--keep"]) != None :
+        to_keep = args["--keep"].split(",")  
+    else :
+        to_keep = []
 
     for genome_name in os.listdir(input_dir) :
         output = (os.path.join(output_path, "bakta", genome_name))
@@ -182,19 +186,21 @@ def bakta_annotation(input_dir, output_path, args):
             ## --compliant      Force Genbank/ENA/DDJB compliance
             ## --force          Force overwriting existing output folder
 
-            ## removing unused files
-            unused_files = set([".embl", ".faa", ".ffn", ".fna", ".gff3", ".hypotheticals.faa", ".hypotheticals.tsv", ".json", ".log", ".png", ".svg", ".tsv"]) - set(args["-k"].split(","))   
-            for extension in unused_files :
-                file_to_delete = os.path.join(output, genome_name + extension)
-                if os.path.exists(file_to_delete) : 
-                    os.remove(file_to_delete)
+        ## removing unused files
+        unused_files = set([".embl", ".faa", ".ffn", ".fna", ".gff3", ".hypotheticals.faa", ".hypotheticals.tsv", ".json", ".log", ".png", ".svg", ".tsv"]) - set(to_keep)   
+        for extension in unused_files :
+            file_to_delete = os.path.join(output, genome_name + extension)
+            if os.path.exists(file_to_delete) : 
+                os.remove(file_to_delete)
 
-            ## rename and count processed genomes
-            if os.path.exists(os.path.join(output, genome_name + ".gbff")):
-                move(os.path.join(output, genome_name + ".gbff"), final_file)
-            if os.path.exists(final_file):
-                processed.loc[len(processed)] = [genome_name, "OK"]
+        ## rename processed genomes
+        if os.path.exists(os.path.join(output, genome_name + ".gbff")):
+            move(os.path.join(output, genome_name + ".gbff"), final_file)
     
+        ## count processed genomes
+        if os.path.exists(final_file):
+            processed.loc[len(processed)] = [genome_name, "OK"]
+
     return processed
 
 
@@ -211,6 +217,10 @@ def prokka_annotation(input_dir, output_path, args) :
     print("Prokka annotation launched.\n")
     mkdir(os.path.join(output_path, 'prokka'))
     processed = pd.DataFrame(columns = ['genome', "prokka"])
+    if (args["--keep"]) != None :
+        to_keep = args["--keep"].split(",")  
+    else :
+        to_keep = []
 
     for genome_name in os.listdir(input_dir) : 
         prok_file = os.path.join(output_path, "prokka", genome_name, genome_name)
@@ -224,18 +234,20 @@ def prokka_annotation(input_dir, output_path, args) :
             bigprint(command_pro)
             os.system(command_pro)
             
-            ## removing unused files
-            unused_files=set([".ecn", ".err", ".ffn", ".fixed*", ".fsa", ".gff", ".log", ".sqn", ".tbl", ".val", ".faa "]) - set(args["-k"].split(","))
-            for extension in unused_files :
-                file_to_delete = f"{prok_file}{extension}" 
-                if os.path.exists(file_to_delete) : 
-                    os.remove(file_to_delete)
+        ## removing unused files
+        unused_files=set([".ecn", ".err", ".ffn", ".fixed*", ".fsa", ".gff", ".log", ".sqn", ".tbl", ".val", ".faa "]) - set(to_keep)
+        for extension in unused_files :
+            file_to_delete = f"{prok_file}{extension}" 
+            if os.path.exists(file_to_delete) : 
+                os.remove(file_to_delete)
 
-            ## rename and count processed genomes
-            if os.path.exists(prok_file + ".gbf"):
-                move(prok_file+".gbf",prok_file+".gbk")     # rename .gbf to .gbk
-            if os.path.exists(prok_file + ".gbk"): 
-                processed.loc[len(processed)] = [genome_name, "OK"]
+        ## rename processed genomes
+        if os.path.exists(prok_file + ".gbf"):
+            move(prok_file+".gbf",prok_file+".gbk")     # rename .gbf to .gbk
+
+        ## count processed genomes
+        if os.path.exists(prok_file + ".gbk"): 
+            processed.loc[len(processed)] = [genome_name, "OK"]
     
     return processed
         
@@ -275,9 +287,9 @@ def eggnog_annotation(input_dir, output_path, args):
             bigprint(command_egg2gbk)
             os.system(command_egg2gbk)
 
-            ## rename and count processed genomes
-            if os.path.exists(out_file):
-                processed.loc[len(processed)] = [genome_name, "OK"]
+        ## rename and count processed genomes
+        if os.path.exists(out_file):
+            processed.loc[len(processed)] = [genome_name, "OK"]
     
     return processed 
 
@@ -326,17 +338,17 @@ def run_mpwt(output_path, annotation, genomes_names, args):
     path_to_singularity = args["--ptsi"]
     mkdir(os.path.join(output_path, 'mpwt'))
 
-    for annotool in annotation : 
-        annotool_outdir = f"{output_path}mpwt/{annotool}/"
-        mkdir(annotool_outdir)
-
+    for annotool in annotation :        
         ## checking if mpwt has successfully run before
-        path =  os.path.join(output_path, "mpwt", annotool)
-        dat_dirs = [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]  ## lists subdirectories names                        ## filters for those which start with GCF
+        input_dir = os.path.join(output_path, annotool) 
+        outdir =  os.path.join(output_path, "mpwt", annotool)
+        mkdir(outdir)
+
+        dat_dirs = [d for d in os.listdir(outdir) if os.path.isdir(os.path.join(outdir, d))]  ## lists subdirectories names                        ## filters for those which start with GCF
         print(f"Mpwt on {annotool} : {len(dat_dirs)} mpwt repositories found out of {len(genomes_names)} genomes to process")
         
         if len(dat_dirs) != len(genomes_names):
-            command_mpwt = f"singularity exec -B {path_to_scratch}:{path_to_scratch} {path_to_scratch}{path_to_singularity} mpwt -f {output_path}{annotool}/ -o {annotool_outdir} --cpu {args['--cpus']} --patho --flat --clean --md -v"
+            command_mpwt = f"singularity exec -B {path_to_scratch}:{path_to_scratch} {path_to_scratch}{path_to_singularity} mpwt -f {input_dir}/ -o {outdir} --cpu {args['--cpus']} --patho --flat --clean --md -v"
             ## --patho : Launch PathoLogic inference on input folder
             ## --flat : Create BioPAX/attribute-value flat files
             ## --clean : Delete all PGDBs in ptools-local folder or only PGDB from input folder
@@ -344,7 +356,7 @@ def run_mpwt(output_path, annotation, genomes_names, args):
             bigprint(command_mpwt)
             os.system(command_mpwt)
         else :
-            print(f"    Nothing to process in {annotool_outdir}, moving on.\n")
+            print(f"    Nothing to process in {outdir}, moving on.\n")
 
 
 def check_mpwt(df_summary, path):
@@ -415,17 +427,16 @@ def convert2padmet(output_path, annotation, genomes_names, args):
         genomes_names (list) : list of genomes names to iterate on
         options (parser) : arguments from parser
     """
-    path_to_padmet_ref= args["--path_to_padmet_ref"]
+    path_to_padmet_ref= args["--padmet_ref"]
     path_to_scratch = args["--ptsc"]
     path_to_singularity = args["--ptsi"]
-    padmet_output = output_path + 'padmet'
+    padmet_output = os.path.join(output_path, 'padmet')
     mkdir(padmet_output)
 
     for annotool in annotation :
         dat_files = os.listdir(os.path.join(output_path, "mpwt", annotool))
-        print(f"Checking before launching pgdb2padmet on {annotool} files : {len(dat_files)} files generated till now out of {len(genomes_names)} considered processable\n")
+        print(f"Checking before launching pgdb2padmet on {annotool} files : {len(dat_files)} files generated till now out of {len(genomes_names)} considered processable")
         for genome_name in genomes_names :
-            print(f"testing if {os.path.join(padmet_output, genome_name, f'{genome_name}_{annotool}.padmet')} exists before launching padmet conversion" )
             if missing_or_empty(os.path.join(padmet_output, genome_name, f"{genome_name}_{annotool}.padmet")):
                 
                 ## create files in commune directories for annotations of the same genome 
@@ -543,7 +554,7 @@ def check_taxfile(args) :
                 - genomes (str) : path to genomes directory
     """
     genomes = args["--input"]
-    taxfile = args["--tax"]
+    taxfile = args["--taxfile"]
 
     if not os.path.exists(taxfile) : 
         return False, f"ERROR : no file found at {taxfile}"
@@ -552,7 +563,7 @@ def check_taxfile(args) :
         cols = df_taxa.columns
         col_filename = cols[2]
     except :
-        return False, f"ERROR : Error reading file at the following path ; are you sure it's a tab-separated file ? \n{taxfile}"
+        return False, f"ERROR : Error reading taxon file at the following path ; are you sure it's a tab-separated file ? \n{taxfile}"
 
     for i, row in df_taxa.iterrows() :
         file = row[col_filename]
@@ -581,7 +592,7 @@ def metabolic_reconstruction(args) :
 
     ## Creating output directory
     mkdir(output_path)    
-    annotation = args["--annot"]
+    annotation = args["--annot"].split(",")
     df_summary = pd.DataFrame(columns = ["genome"])
 
     ## unzipping and renaming to fasta if needed
@@ -604,7 +615,7 @@ def metabolic_reconstruction(args) :
         else :
             continue
         time_taken = time.time() - start
-        print(f"INFO : {annotool} annotation took {time_taken // 3600} hour(s) {(time_taken % 3600) // 60} minute(s) {time_taken % 60} seconds")
+        print(f"INFO : {annotool} annotation took {time_taken // 3600} hour(s) {(time_taken % 3600) // 60} minute(s) {time_taken % 60} seconds\n")
         
         df_summary = df_summary.merge(genomes_processed, on = "genome", how = "outer")
     
@@ -617,14 +628,14 @@ def metabolic_reconstruction(args) :
     start = time.time()
     run_mpwt(output_path, annotation, genomes_names, args)
     time_taken = time.time() - start
-    print(f"INFO : Mpwt step took {time_taken // 3600} hour(s) {(time_taken % 3600) // 60} minute(s) {time_taken % 60} seconds")
+    print(f"\nINFO : Mpwt step took {time_taken // 3600} hour(s) {(time_taken % 3600) // 60} minute(s) {time_taken % 60} seconds")
         
     ## checking if mpwt ran correctly for all annotools, identify convertible genomes and convert them using padmet
     df_summary, genomes_names = check_files("mpwt", output_path, df_summary, annotation)
     start = time.time()
     convert2padmet(output_path, annotation, genomes_names, args)
     time_taken = time.time() - start
-    print(f"INFO : Conversion to padmet took {time_taken // 3600} hour(s) {(time_taken % 3600) // 60} minute(s) {time_taken % 60} seconds")
+    print(f"\nINFO : Conversion to padmet took {time_taken // 3600} hour(s) {(time_taken % 3600) // 60} minute(s) {time_taken % 60} seconds")
     
     ## checking if padmet ran correctly for all annotools, save progression
     df_summary, genomes_names = check_files("padmet", output_path, df_summary, annotation)
