@@ -191,12 +191,12 @@ def create_intersection_files(root, cluster_leaf_species, reactions_dataframe, o
         intersect_ancestor_reactions = []
         ancestors = []
         for ancestor in element.iterancestors():
-            ancestor_reactions = reactions_dataframe[reactions_dataframe[cluster_leaf_species[ancestor.tag]].all(1)==True]
+            ancestor_reactions = reactions_dataframe[reactions_dataframe[cluster_leaf_species[ancestor.tag]].all(axis=1)==True]
             intersect_ancestor_reactions.extend(ancestor_reactions.index.tolist())
             ancestors.append(ancestor.tag)
-        element_reactions = reactions_dataframe[reactions_dataframe[cluster_leaf_species[element.tag]].all(1)==True]
+        element_reactions = reactions_dataframe[reactions_dataframe[cluster_leaf_species[element.tag]].all(axis=1)==True]
         # Option to select only reactions present in our subgroup and not in other species.
-        #element_reactions = element_reactions[element_reactions[list(set(reactions_dataframe.columns.tolist()) - set(cluster_leaf_species[element.tag]))].any(1)==False]
+        #element_reactions = element_reactions[element_reactions[list(set(reactions_dataframe.columns.tolist()) - set(cluster_leaf_species[element.tag]))].any(axis=1)==False]
         intersect_element_reactions = element_reactions.index.tolist()
         only_intersect_element = list(set(intersect_element_reactions) - set(intersect_ancestor_reactions))
         for reaction in only_intersect_element:
@@ -523,13 +523,13 @@ def absent_and_specific_reactions(reactions_dataframe, output_folder_tree_cluste
     specific_writer.writerow(['Organism', 'NB reactions', 'Unique reactions', 'Absent reactions'])
     for species in sorted(organisms):
         reactions_in_species = set(reactions_dataframe[reactions_dataframe[species]==True].index.tolist())
-        reactions_absent_in_others = set(reactions_dataframe[reactions_dataframe[list(set(organisms)-{species})].any(1)==False].index.tolist())
+        reactions_absent_in_others = set(reactions_dataframe[reactions_dataframe[list(set(organisms)-{species})].any(axis=1)==False].index.tolist())
         reactions_only_in_species = list(reactions_in_species.intersection(reactions_absent_in_others))
         tmp_reactions_dataframe = reactions_dataframe.loc[reactions_only_in_species]
         tmp_reactions_dataframe.to_csv(output_folder_specific+species+'.tsv', sep='\t')
 
         reactions_not_in_species = set(reactions_dataframe[reactions_dataframe[species]==False].index.tolist())
-        reactions_in_others = set(reactions_dataframe[reactions_dataframe[list(set(organisms)-{species})].all(1)==True].index.tolist())
+        reactions_in_others = set(reactions_dataframe[reactions_dataframe[list(set(organisms)-{species})].all(axis=1)==True].index.tolist())
         reactions_only_not_in_species = list(reactions_not_in_species.intersection(reactions_in_others))
         tmp_reactions_dataframe = reactions_dataframe.loc[reactions_only_not_in_species]
         tmp_reactions_dataframe.to_csv(output_folder_absent+species+'.tsv', sep='\t')
@@ -656,7 +656,7 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
         node_label = 'cluster_'+str(node.id).zfill(len_longest_cluster_id)
         if d[node_label] == []:
             species = cluster_leaf_species[node_label]
-            tmp_reactions = reactions_dataframe[reactions_dataframe[species].all(1) == True]
+            tmp_reactions = reactions_dataframe[reactions_dataframe[species].all(axis=1) == True]
             post_order_clusters[node_label] = tmp_reactions.index.tolist()
         else:
             if set(post_order_clusters[d[node_label][0]]).intersection(set(post_order_clusters[d[node_label][1]])) != set():
