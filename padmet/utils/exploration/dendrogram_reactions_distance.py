@@ -26,7 +26,7 @@ Description:
 
 import csv
 import docopt
-import pandas as pa
+import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -63,32 +63,32 @@ def dendrogram_reactions_distance_cli(command_args):
     reaction_figure_creation(reaction_pathname, output_pathname, upset_cluster, padmet_ref_file, pvclust)
 
 
-def pvclust_dendrogram(reactions_dataframe, organisms, output_folder):
+def pvclust_dendrogram(reactions_dataframe, output_folder):
     """
     Using a distance matrix, pvclust R package (with rpy2 package) create a dendrogram with bootstrap values.
 
     Parameters
     ----------
     reactions_dataframe: pandas.DataFrame
-        Reactions absence/presence matrix
-    organisms: list
-        organisms names
+        Reactions absence/presence matrix indexed by reactions
     output_folder: str
         path to the output folder
 
     """
     from rpy2.robjects.packages import importr
     from rpy2.robjects import pandas2ri
+    import rpy2.robjects as ro
 
     pvclust = importr("pvclust")
     grdevices = importr('grDevices')
     ape = importr('ape')
 
     # Make pandas dataframe compatible with R dataframe.
-    pandas2ri.activate()
+    with (ro.default_converter + pandas2ri.converter).context():
+        r_reactions_dataframe = ro.conversion.get_conversion().py2rpy(reactions_dataframe)
 
     # Launch pvclust on the data silently and in parallel.
-    result = pvclust.pvclust(reactions_dataframe, method_dist="binary", method_hclust="complete", nboot=10000, quiet=True, parallel=True)
+    result = pvclust.pvclust(r_reactions_dataframe, method_dist="binary", method_hclust="complete", nboot=10000, quiet=True, parallel=True)
 
     # Create the dendrogram picture.
     grdevices.png(file=output_folder+"/"+"pvclust_reaction_dendrogram.png", width=2048, height=2048, pointsize=24)
@@ -107,7 +107,7 @@ def create_pvclust_dendrogram(reaction_file, output_folder):
         os.mkdir(output_folder)
 
     # Read the reactions file with pandas.
-    all_reactions_dataframe = pa.read_csv(reaction_file, sep='\t')
+    all_reactions_dataframe = pd.read_csv(reaction_file, sep='\t')
     # Keep column containing absence-presence of reactions.
     # (columns with (sep=;) are column with gene name linked to reactions)
     # (columns with _formula contain the reaction formula)
@@ -117,11 +117,8 @@ def create_pvclust_dendrogram(reaction_file, output_folder):
 
     reactions_dataframe.set_index('reaction', inplace=True)
 
-    # Extract organisms.
-    organisms = reactions_dataframe.index.tolist()
-
     # Create pvclust dendrogram.
-    pvclust_dendrogram(reactions_dataframe, organisms, output_folder)
+    pvclust_dendrogram(reactions_dataframe, output_folder)
 
 
 def hclust_to_xml(linkage_matrix):
@@ -351,11 +348,11 @@ def create_intervene_graph(absence_presence_matrix, reactions_dataframe, temp_da
     folder_names = {}
     for cluster in cluster_classes:
         cluster_name = 'upset_cluster_' + str(n)
-        df = pa.DataFrame({cluster_name: list(cluster_reactions[cluster])})
+        df = pd.DataFrame({cluster_name: list(cluster_reactions[cluster])})
         df.to_csv(temp_data_folder+'/'+cluster_name+'.tsv', sep='\t', index=None, header=None)
         folder_names[cluster_name] = '_'.join(cluster_classes[cluster])
         n += 1
-    df_cluster_name = pa.DataFrame.from_dict(folder_names, orient='index')
+    df_cluster_name = pd.DataFrame.from_dict(folder_names, orient='index')
     df_cluster_name.reset_index(inplace=True)
     df_cluster_name.columns = ['species', 'cluster']
     df_cluster_name.to_csv(output_folder_upset+'/cluster_name.tsv', sep='\t', index=None)
@@ -576,7 +573,7 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
         raise FileNotFoundError("No reactions.tsv file accessible at " + reaction_file)
 
     # Read the reactions file with pandas.
-    all_reactions_dataframe = pa.read_csv(reaction_file, sep='\t')
+    all_reactions_dataframe = pd.read_csv(reaction_file, sep='\t')
     # Keep column containing absence-presence of reactions.
     # (columns with (sep=;) are column with gene name linked to reactions)
     # (columns with _formula contain the reaction formula)
@@ -616,7 +613,7 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
 
         pvclust_reactions_dataframe.set_index('reaction', inplace=True)
         # Create pvclust dendrogram.
-        pvclust_dendrogram(pvclust_reactions_dataframe, organisms, output_folder)
+        pvclust_dendrogram(pvclust_reactions_dataframe, output_folder)
 
     # Extract all the nodes inside the clustering. 
     _, node_list = to_tree(linkage_matrix, rd=True)
@@ -635,7 +632,7 @@ def reaction_figure_creation(reaction_file, output_folder, upset_cluster=None, p
         node_leafs = node.pre_order(lambda child: organisms[child.id] if child.is_leaf() else None)
         cluster_leaf_species['cluster_'+str(node.id).zfill(len_longest_cluster_id)] = node_leafs
 
-    species_clustered_df = pa.DataFrame(columns=organisms)
+    species_clustered_df = pd.DataFrame(columns=organisms)
     for cluster_leaf in cluster_leaf_species:
         tmp_organism_cluster = [True if organism in cluster_leaf_species[cluster_leaf] else False for organism in species_clustered_df.columns]
         species_clustered_df.loc[cluster_leaf]  = tmp_organism_cluster
