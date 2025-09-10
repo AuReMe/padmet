@@ -91,12 +91,12 @@ def precedence(op1, op2):
 class Type(Enum):
     """
     """
-    Letter = "[a-zA-Z0-9_\.:-]"
-    Op = "[" + OP_AND + OP_OR + "]"
-    Opening = "\("
-    Closing = "\)"
+    Letter = r"[a-zA-Z0-9_\.:-]"
+    Op = r"[" + OP_AND + OP_OR + "]"
+    Opening = r"\("
+    Closing = r"\)"
     Other = ""  # used as start-state
-    EndOfFile = "\0"
+    EndOfFile = r"\0"
 
 
 class Command(Enum):
