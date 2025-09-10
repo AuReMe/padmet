@@ -399,7 +399,7 @@ def dict_data_to_sbml(dict_data, dict_orthogroups=None, dict_orthologues=None, s
         ga_for_gbr = re.sub(r" or " , "|", ga)
         ga_for_gbr = re.sub(r" and " , "&", ga_for_gbr)
         ga_for_gbr = re.sub(r"\s" , "", ga_for_gbr)
-        if re.findall(r"\||&", ga_for_gbr):
+        if re.findall("\||&", ga_for_gbr):
             to_compare_ga_subsets = list(gbr.compile_input(ga_for_gbr))
         else:
             ga_for_gbr = re.sub(r"\(|\)" , "", ga_for_gbr)
@@ -458,6 +458,7 @@ def dict_data_to_sbml(dict_data, dict_orthogroups=None, dict_orthologues=None, s
     new_id = os.path.basename(os.path.splitext(output)[0])    
     model_to_compare.setId(new_id)
     libsbml.writeSBMLToFile(document_to_compare, output)   
+
 
 
 
