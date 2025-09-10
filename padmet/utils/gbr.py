@@ -96,7 +96,7 @@ class Type(Enum):
     Opening = r"\("
     Closing = r"\)"
     Other = ""  # used as start-state
-    EndOfFile = r"\0"
+    EndOfFile = "\0"
 
 
 class Command(Enum):
