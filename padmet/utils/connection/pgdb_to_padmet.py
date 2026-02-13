@@ -124,6 +124,7 @@ Description:
 import docopt
 import libsbml
 import re
+import sys
 import os
 
 from padmet.classes import PadmetRef, Node, Relation, instantiate_padmet
@@ -659,7 +660,7 @@ def pathways_parser(filePath, padmet, verbose = False):
                     current_id = value
                     dict_data[current_id] = {}
                 if attrib in ["COMMON-NAME", "TAXONOMIC-RANGE", "TYPES", "SYNONYMS", "DBLINKS", "IN-PATHWAY",
-                              "REACTION-LIST", "REACTION-LAYOUT"]:
+                              "REACTION-LIST", "REACTION-LAYOUT", "KEY-REACTIONS"]:
                     if attrib in dict_data[current_id]:
                         dict_data[current_id][attrib].append(value)
                     else:
@@ -674,14 +675,12 @@ def pathways_parser(filePath, padmet, verbose = False):
             #print(pathway_id)
         pathway_node = Node("pathway", pathway_id)
         padmet.dicOfNode[pathway_id] = pathway_node
-        try:
+        if "COMMON-NAME" in dict_values:
             pathway_node.misc["COMMON-NAME"] = dict_values["COMMON-NAME"]
-        except KeyError:
-            pass
-        try:
+        if "TAXONOMIC-RANGE" in dict_values:
             pathway_node.misc["TAXONOMIC-RANGE"] = dict_values["TAXONOMIC-RANGE"]
-        except KeyError:
-            pass
+        if "KEY-REACTIONS" in dict_values:
+            pathway_node.misc["KEY-REACTIONS"] = dict_values["KEY-REACTIONS"]
 
         if "REACTION-LAYOUT" in dict_values:
             reaction_layout_regex = r'\((?P<reaction_id>\S*)\s\(\:LEFT-PRIMARIES[\s]*(?P<reaction_left>[^\(]*)\)\s\(\:DIRECTION\s(?P<reaction_direction>\S*)\)\s\(:RIGHT-PRIMARIES[\s]*(?P<reaction_right>[^\(]*)\)\)'
@@ -1320,8 +1319,10 @@ def enhance_db(metabolic_reactions, padmet, with_genes, verbose = False):
     -------
     padmet.padmetRef:
         padmet instance with pgdb within pgdb + metabolic-reactions.xml data
-    """        
-    
+    """
+    if not os.path.exists(metabolic_reactions):
+        print("Missing xml file {0}, cannot enhance padmet. Either add the file or do not use --enhance.".format(metabolic_reactions))
+        sys.exit()
     print("loading sbml file: %s" % metabolic_reactions)
     reader = libsbml.SBMLReader()
     document = reader.readSBML(metabolic_reactions)
