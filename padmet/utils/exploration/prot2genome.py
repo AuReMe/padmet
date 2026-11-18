@@ -19,16 +19,16 @@ Description:
             -3. Run tblastn + exonerate with runAllAnalysis()
 
     options:
-        --query_faa=FILE #TODO.
+        --query_faa=FILE     Path to query Fasta sequences.
         --query_ids=FILE/STR #TODO.
         --subject_gbk=FILE #TODO.
         --subject_fna=FILE #TODO.
         --subject_faa=FILE #TODO.
         --output_folder=FILE #TODO.
         --cpu=INT     Number of cpu to use for the multiprocessing (if none use 1 cpu). [default: 1]
-        blastp #TODO.
-        tblastn #TODO.
-        debug #TODO.
+        blastp: bool    If true run blastp during analysis.
+        tblastn: bool     If true run tblastn during analysis.
+        debug: bool     If true, print all raw informations of analysis.
 """
 
 import csv
@@ -38,8 +38,8 @@ import os
 import shutil
 import subprocess
 import sys
+import glob
 
-from Bio.Blast.Applications import NcbiblastpCommandline, NcbitblastnCommandline
 from Bio.SeqFeature import FeatureLocation
 from Bio import SearchIO
 from Bio import SeqIO
@@ -104,7 +104,7 @@ def fromAucome(run_folder, cpu, padmetRef, blastp=True, tblastn=True, exonerate=
     keep_tmp: bool
         If true keep temporary files of analysis (with predicted gene sequence)
     debug: bool
-        if true, print all raw informations of analysis
+        If true, print all raw informations of analysis
     """
     prot2genome_folder = os.path.join(run_folder,"structural_check")
     padmet_folder = os.path.join(run_folder,"orthology_based","3_padmet_filtered")
@@ -367,13 +367,14 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
         subject_gbk = os.path.join(studied_organisms_folder, org_b, "%s.gbk"%org_b)
         subject_faa = os.path.join(studied_organisms_folder, org_b, "%s.faa"%org_b)
         subject_fna = os.path.join(studied_organisms_folder, org_b, "%s.fna"%org_b)
-        #If GBK given and no fna, create fna from genbank
+        # If GBK given and no fna, create fna from genbank
         if not os.path.exists(subject_fna):
             SeqIO.convert(subject_gbk, "genbank", subject_fna, "fasta")
 
         if not os.path.isfile(analysis_output):
             all_query_seq_ids = extractGenes(rxn_file)
-            #Create a list of dict, each dict is the arg given to runAllAnalysis fct
+            # Create a list of dict, each dict is the arg given to
+            # runAllAnalysis() function.
             print("Extracting all data for %s vs %s" %(org_a, org_b))
             print("%s query ids to search" %len(all_query_seq_ids))
     
@@ -386,12 +387,12 @@ def mp_runAnalysis(spec_reactions_folder, studied_organisms_folder, output_folde
                     os.mkdir(org_receiver_folder)
             #list of dict to give to dictWritter
             all_analysis_result = []
-            #Run runAllAnalysis in multiproccess.
+            # Run runAllAnalysis in multiproccess.
             mp_results = pool.map(runAllAnalysis, all_dict_args)
             for _list in mp_results:
                 all_analysis_result += _list
             print("Creating output analysis: %s" %analysis_output)
-            #Create output file
+            # Create output file.
             analysisOutput(all_analysis_result, analysis_output)
             if not keep_tmp:
                 cleanTmp(tmp_folder)
@@ -458,23 +459,25 @@ def runAllAnalysis(dict_args):
     with open(query_faa, "r") as faa:
         query_seqs = [seq_record for seq_record in SeqIO.parse(faa, "fasta") if seq_record.id.startswith(query_seq_id+"_isoform") or seq_record.id == query_seq_id]
     if len(query_seqs) > 1:
-        print("/!\ Isoforms found for %s: %s"%(query_seq_id, [i.name for i in query_seqs]))
+        print("BE CAREFUL Isoforms found for %s: %s" %(query_seq_id, [i.name for i in query_seqs]))
     analysis_result = list()
     for query_seq in query_seqs:
         query_seq_id = query_seq.id
-        query_seq_faa = os.path.join(output_folder,query_seq_id+".faa")
+        query_seq_faa = os.path.join(output_folder, query_seq_id + ".faa")
         if not os.path.exists(query_seq_faa):
             SeqIO.write(query_seq, query_seq_faa, "fasta")
         current_result = {"query_seq_id": query_seq_id,}
     
         # Run BLASTP and parse the output
         if blastp:
-            blastp_result = runBlastp(query_seq_faa, subject_faa, debug=debug)
+            blastp_output = os.path.join(output_folder, "blastp_output_%s_vs_%s.txt" %(query_seq_id, os.path.splitext(os.path.basename(subject_faa))[0]))
+            blastp_result = runBlastp(query_seq_faa, subject_faa, blastp_output, debug=debug)
             if blastp_result:
                 current_result.update(blastp_result)
         # Run TBLASTN and parse the output
         if tblastn:
-            tblastn_result = runTblastn(query_seq_faa, subject_fna, debug=debug)
+            tblastn_output = os.path.join(output_folder, "tblastn_output_%s_vs_%s.txt" %(query_seq_id, os.path.splitext(os.path.basename(subject_fna))[0]))
+            tblastn_result = runTblastn(query_seq_faa, subject_fna, tblastn_output, debug=debug)
             if tblastn_result:
                 current_result.update(tblastn_result)
         
@@ -552,14 +555,16 @@ def runSearchOnProteome(proteome_orgA, genome_orgB, output_folder, proteome_orgB
 
     if proteome_orgB:
         current_result = {"query_seq_id": proteome_orgB,}
-        blastp_result = runBlastp(proteome_orgA, proteome_orgB, header=["sseqid", "evalue", "bitscore"], debug=False)
+        blastp_output = os.path.join(output_folder, "blastp_output_%s_vs_%s.txt" %(os.path.splitext(os.path.basename(proteome_orgA))[0], os.path.splitext(os.path.basename(proteome_orgB))[0]))
+        blastp_result = runBlastp(proteome_orgA, proteome_orgB, blastp_output, header=["sseqid", "evalue", "bitscore"], debug=False)
         if blastp_result:
             current_result.update(blastp_result)
     else:
         current_result = {}
 
     tblast_hit = None
-    tblastn_result = runTblastn(proteome_orgA, genome_orgB)
+    tblastn_output = os.path.join(output_folder, "tblastn_output_%s_vs_%s.txt" %(os.path.splitext(os.path.basename(proteome_orgA))[0], os.path.splitext(os.path.basename(genome_orgB))[0]))
+    tblastn_result = runTblastn(proteome_orgA, genome_orgB, tblastn_output)
     if tblastn_result:
         current_result.update(tblastn_result)
     try:
@@ -583,11 +588,68 @@ def runSearchOnProteome(proteome_orgA, genome_orgB, output_folder, proteome_orgB
         analysisOutput(analysis_result, prot2genomes_output)
 
 
-def runBlastp(query_seq_faa, subject_faa, header=["sseqid", "evalue", "bitscore"], debug=False):
+def runBlast(query, subject, output, header, command, program, debug=False):
     """
-    Run blastp on querry_seq vs subectj faa and return output based on header
-    Use NcbiblastpCommandline fct and extract output
-    Extract 1st best hit based on bitscore
+    Run a Blast command on query versus subject and return output based on
+    header.
+    Extract 1st best hit based on bitscore.
+
+    Parameters
+    ----------
+    query: str
+        path to query fasta sequence
+    subject: str
+        path to subject fasta sequence
+    output: str
+        path to the Blast output resuls
+    header: list
+        output format of blastp
+    command: str
+        command line for the Blast program to be run
+    program: str
+         program name: 'blastp' or 'tblastn'
+    debug: bool
+        if true print all raw Blast output
+
+    Returns
+    -------
+    dict
+        dict of the best blast hit, add 'program_' tag, or empty dict if no hit
+    """
+    if debug:
+        print("\tRunning %s %s vs %s" %(program, os.path.basename(query), os.path.basename(subject)))
+    subprocess.run([command], shell=True)
+    output = [line.rstrip().split('\t') for line in open(output, 'r')]
+    blast_result = {}
+    count = 0
+    for line in output:
+        count += 1
+        blast_result[count] = {}
+        for (index, h) in enumerate(header):
+            blast_result[count][program+"_"+h] = line[index]
+    try:
+        max_bitscore = max([float(hsp[program+"_bitscore"]) for hsp in blast_result.values()])
+    except ValueError:
+        max_bitscore = "N.A"
+    if debug:
+        print("\t\tAll hsp from "+program+":")
+        if blast_result.values():
+            for hsp in blast_result.values():
+                print(hsp)
+                print("\t\tMax biscore: %s"%max_bitscore)
+        else: print('\t\tNo HPS')
+    try:
+        result = [hsp for hsp in blast_result.values() if float(hsp[program+"_bitscore"]) == max_bitscore][0]
+    except IndexError:
+        result = {}
+    return result
+
+
+def runBlastp(query_seq_faa, subject_faa, output, header=["sseqid", "evalue", "bitscore"], debug=False):
+    """
+    Run Blastp on query_seq versus subject_faa and return output based on
+    header.
+    Extract 1st best hit based on bitscore.
 
     Parameters
     ----------
@@ -595,52 +657,28 @@ def runBlastp(query_seq_faa, subject_faa, header=["sseqid", "evalue", "bitscore"
         path to query fasta sequence
     subject_faa: str
         path to subject fasta sequence
+    output: str
+        path to the Blastp output resuls
     header: list
-        output format of blastp
+        output format of Blastp
     debug: bool
-        if true print all raw blastp output
+        if true print all raw Blastp output
 
     Returns
     -------
     dict
         dict of the best blastp hit, add 'blastp_' tag, or empty dict if no hit
     """
-    if debug:
-        print("\tRunning Blastp %s vs %s" %(os.path.basename(query_seq_faa), os.path.basename(subject_faa)))
-    outfmt_arg = '"%s %s"'%(6, " ".join(header))
-    output = NcbiblastpCommandline(query=query_seq_faa, subject=subject_faa, evalue=1e-20, outfmt=outfmt_arg)()[0]
-    output = [line.split("\t") for line in output.splitlines()]
-    blastp_result = {}
-    count = 0
-    for line in output:
-        count += 1
-        blastp_result[count] = {}
-        for (index, h) in enumerate(header):
-            blastp_result[count]["blastp_"+h] = line[index]
-    try:
-        max_bitscore = max([float(hsp["blastp_bitscore"]) for hsp in blastp_result.values()])
-    except ValueError:
-        max_bitscore = "N.A"
-    if debug:
-        print("\t\tAll hsp from blastp:")
-        if blastp_result.values():
-            for hsp in blastp_result.values():
-                print(hsp)
-            print("\t\tMax biscore: %s"%max_bitscore)
-        else:
-            print("\t\tNo HPS")
-    try:
-        result = [hsp for hsp in blastp_result.values() if float(hsp["blastp_bitscore"]) == max_bitscore][0]
-    except IndexError:
-        result = {}
-    return result
+    command = 'blastp -query ' + query_seq_faa + ' -subject ' + subject_faa + ' -evalue 1e-20 -out ' + output + ' -outfmt ' + '"%s %s"' %(6, " ".join(header))
+    return runBlast(query_seq_faa, subject_faa, output, header, command, 'blastp', debug)
 
 
-def runTblastn(query_seq_faa, subject_fna, header=["sseqid", "evalue", "bitscore", "sstart", "send"], debug=False):
+
+def runTblastn(query_seq_faa, subject_fna, output, header=["sseqid", "evalue", "bitscore", "sstart", "send"], debug=False):
     """
-    Run tblastn on querry_seq vs subectj fna and return output based on header
-    Use NcbitblastnCommandline fct and extract output
-    Extract 1st best hit based on bitscore
+    Run Tblastn on query_seq versus subject_fna and return output based on
+    header.
+    Extract 1st best hit based on bitscore.
 
     Parameters
     ----------
@@ -648,41 +686,26 @@ def runTblastn(query_seq_faa, subject_fna, header=["sseqid", "evalue", "bitscore
         path to query fasta sequence
     subject_fna: str
         path to subject fna sequence
+    output: str
+        path to the Tblastn output resuls
     header: list
-        output format of tblastn
+        output format of Tblastn
     debug: bool
-        if true print all raw tblastn output
+        if true print all raw Tblastn output
 
     Returns
     -------
     dict
-        dict of the best tblastn hit, add 'tblastn_' tag, or empty dict if no hit
-    """    
-    print("\tRunning tBlastn %s vs %s" %(os.path.basename(query_seq_faa), os.path.basename(subject_fna)))
-    outfmt_arg = '"%s %s"'%(6, " ".join(header))
-    output = NcbitblastnCommandline(query=query_seq_faa, subject=subject_fna, evalue=1e-20, outfmt=outfmt_arg)()[0]
-    output = [line.split("\t") for line in output.splitlines()]
-    tblastn_result = {}
-    count = 0
-    for line in output:
-        count += 1
-        tblastn_result[count] = {}
-        for (index, h) in enumerate(header):
-            tblastn_result[count]["tblastn_"+h] = line[index]
-    try:
-        max_bitscore = max([float(hsp["tblastn_bitscore"]) for hsp in tblastn_result.values()])
-    except ValueError:
-        max_bitscore = "N.A"
-    if debug:
-        print("\t\tAll hsp from tblastn:")
-        for hsp in tblastn_result.values():
-            print(hsp)
-        print("\t\tMax biscore: %s"%max_bitscore)
-    try:           
-        result = [hsp for hsp in tblastn_result.values() if float(hsp["tblastn_bitscore"]) == max_bitscore][0]
-    except IndexError:
-        result = {}
+        dict of the best tblastn hit, add 'tblastn_' tag, or empty dict if no
+        hit
+    """
+    command = 'makeblastdb -in ' + subject_fna + ' -dbtype nucl'
+    subprocess.run([command], shell=True)
+    command = 'tblastn -query ' + query_seq_faa + ' -subject ' + subject_fna + ' -evalue 1e-20 -out ' + output + ' -outfmt ' + '"%s %s"' %(6, " ".join(header))
+    result = runBlast(query_seq_faa, subject_fna, output, header, command, 'tblastn', debug)
+    for f in glob.glob(subject_fna+'.*'): os.remove(f)
     return result
+
 
 
 def createSeqFromTblastn(subject_fna, sseq_seq_faa, exonerate_target_id, start_match, end_match):
@@ -848,4 +871,3 @@ def extractAnalysis(blast_analysis_folder, spec_reactions_folder, output_folder)
                 if rate > 0.0:
                     line = {'idRef': reaction_id, 'Comment': 'Has Orthologues with %s'%";".join(org_with_orthologues),'Action':'add', 'Genes':';'.join(inferred_genes)}
                     writer.writerow(line)
-
