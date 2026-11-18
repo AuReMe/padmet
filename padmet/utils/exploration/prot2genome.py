@@ -24,7 +24,7 @@ Description:
         --subject_gbk=FILE #TODO.
         --subject_fna=FILE #TODO.
         --subject_faa=FILE #TODO.
-        --output_folder=FILE #TODO.
+        --output_folder=FOLDER     Path to the Blast analyses.
         --cpu=INT     Number of cpu to use for the multiprocessing (if none use 1 cpu). [default: 1]
         blastp: bool    If true run blastp during analysis.
         tblastn: bool     If true run tblastn during analysis.
