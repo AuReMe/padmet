@@ -32,7 +32,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Set up R
-      uses: r-lib/actions/setup-r@v5
+      uses: r-lib/actions/setup-pandoc@v2
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
